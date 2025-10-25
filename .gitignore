@@ -361,3 +361,28 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Node/Angular
+**/node_modules/
+**/dist/
+**/tmp/
+**/.angular/
+**/npm-debug.log
+**/yarn-error.log
+
+# IDE
+**/.idea/
+**/*.swp
+**/*.swo
+
+# OS
+**/.DS_Store
+**/Thumbs.db
+
+# Database
+**/*.db
+**/*.db-shm
+**/*.db-wal
+
+# Logs
+**/*.log
