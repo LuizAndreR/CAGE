@@ -86,7 +86,9 @@ O projeto segue os princípios de **Domain-Driven Design (DDD)**, **SOLID** e **
 - Cadastro de Receitas
 - Controle de Pedidos
 
-### Estrutura de Pastas (Backend)
+
+## 🏗️ Estrutura de Pastas 
+
 ```bash
 cake-gestao-cage/
 │
