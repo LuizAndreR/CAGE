@@ -1,0 +1,29 @@
+services:
+  api:
+    build:
+      context: .                   
+      dockerfile: backend\src\CakeGestao.API\Dockerfile
+    container_name: CAGE_API
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=db;Database=cage_db;Username=admim;Password=admim123
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15
+    container_name: CAGE_DB
+    environment:
+      POSTGRES_USER: admim
+      POSTGRES_PASSWORD: admim123
+      POSTGRES_DB: cage_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:
