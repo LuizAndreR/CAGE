@@ -61,9 +61,8 @@ O projeto segue os princípios de **Domain-Driven Design (DDD)**, **SOLID** e **
 - **FluentValidation** - Validação de dados
 - **FluentResults** - Tratamento de resultados
 - **AutoMapper** - Mapeamento de objetos
-- **BCrypt.Net** - Criptografia de senhas
 - **xUnit** - Testes unitários
-- **Swagger/OpenAPI** - Documentação da API
+- **Swagger** - Documentação da API
 
 ### Frontend
 - **Angular 17** - Framework SPA
