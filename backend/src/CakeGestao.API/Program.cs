@@ -1,4 +1,5 @@
 using CakeGestao.API.Middlewares;
+using CakeGestao.Application.Mappings;
 using CakeGestao.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -23,6 +24,8 @@ builder.Host.UseSerilog();
 builder.Services.AddDbContext<CageContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
         x => x.MigrationsAssembly("CakeGestao.Infrastructure")));
+
+builder.Services.AddAutoMapper(_ => {}, typeof(ReceitaProfile).Assembly);
 
 builder.Services.AddControllers();
 

@@ -12,4 +12,15 @@
     <PackageReference Include="FluentValidation" Version="12.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Common\" />
+    <Folder Include="Dtos\Responses\" />
+    <Folder Include="Services\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CakeGestao.Domain\CakeGestao.Domain.csproj" />
+    <ProjectReference Include="..\CakeGestao.Infrastructure\CakeGestao.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>

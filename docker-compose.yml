@@ -2,7 +2,7 @@ services:
   api:
     build:
       context: .                   
-      dockerfile: backend\src\CakeGestao.API\Dockerfile
+      dockerfile: backend/src/CakeGestao.API/Dockerfile
     container_name: CAGE_API
     ports:
       - "8080:8080"
