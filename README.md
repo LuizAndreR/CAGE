@@ -60,6 +60,7 @@ O projeto segue os princípios de **Domain-Driven Design (DDD)**, **SOLID** e **
 - **PostgreSQL 16** - Banco de dados
 - **FluentValidation** - Validação de dados
 - **FluentResults** - Tratamento de resultados
+- **BCrypt.Net** - Criptografia de senhas
 - **AutoMapper** - Mapeamento de objetos
 - **xUnit** - Testes unitários
 - **Swagger** - Documentação da API
