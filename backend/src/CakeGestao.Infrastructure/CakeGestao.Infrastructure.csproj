@@ -26,4 +26,8 @@
     <ProjectReference Include="..\CakeGestao.Domain\CakeGestao.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
 </Project>

@@ -1,6 +1,7 @@
 using AutoMapper;
 using CakeGestao.Application.Dtos.Requests.Receita;
 using CakeGestao.Application.UseCases.Receitas.Interface;
+using CakeGestao.Domain.Entities;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
 using FluentValidation;
@@ -23,7 +24,7 @@ public class CreateReceitaUseCase : ICreateReceitaUseCase
         _logger = logger;
     }
 
-    public Task<Result> Execute(CreateReceitaRequest request)
+    public async Task<Result> Execute(CreateReceitaRequest request)
     {
         _logger.LogInformation("Iniciando o processo de criação de uma nova receita de nome: {Nome}", request.Nome);
         
@@ -32,6 +33,26 @@ public class CreateReceitaUseCase : ICreateReceitaUseCase
         if (!resultValidato.IsValid)
         {
             _logger.LogInformation("A varificação da request de criação de uma nova receita de nome: {Nome} falou",  request.Nome);
+            throw new ValidationError(resultValidato.Errors.Select(e => e.ErrorMessage).ToList());
         }
+        _logger.LogInformation("Request de criação de uma nova receita de nome: {Nome} verificada com sucesso", request.Nome);
+
+        _logger.LogInformation("Iniciando o processo de verificação de existência de receita de nome: {Nome}", request.Nome);
+        var receitaExistsResult = await _repository.ExistReceitaAsync(request.Nome);
+        if (receitaExistsResult.Value is true)
+        {
+            _logger.LogError("Erro ao verificar existência de receita de nome: {Nome}", request.Nome);
+            throw new ConflictError($"Já existe uma receita cadastrada com o nome: {request.Nome}");
+        }
+        _logger.LogInformation("Verificação de existência de receita de nome: {Nome} realizada com sucesso", request.Nome);
+
+        _logger.LogInformation("Iniciando o mapeamento da request para a entidade de receita");
+        var receita = _mapper.Map<Receita>(request);
+        _logger.LogInformation("Mapeamento da request para a entidade de receita realizado com sucesso");
+
+        await _repository.CreateReceitaAsync(receita);
+        _logger.LogInformation("Receita de nome: {Nome} criada com sucesso", request.Nome);
+
+        return Result.Ok();
     }
 }

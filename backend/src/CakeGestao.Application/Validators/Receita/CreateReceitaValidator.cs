@@ -10,10 +10,10 @@ public class CreateReceitaValidator : AbstractValidator<CreateReceitaRequest>
         RuleFor(r => r.Nome)
             .NotEmpty().WithMessage("O nome e obrigatório");
         
-        RuleFor(r => r.ModePreparo)
+        RuleFor(r => r.ModoPreparo)
             .NotEmpty().WithMessage("O Modo de preparo é obrigatório");
         
-        RuleFor(r => r.Preco)
+        RuleFor(r => r.PrecoVenda)
             .GreaterThanOrEqualTo(0).WithMessage("O preço não pode ser um valor negativo.");
     }
 }

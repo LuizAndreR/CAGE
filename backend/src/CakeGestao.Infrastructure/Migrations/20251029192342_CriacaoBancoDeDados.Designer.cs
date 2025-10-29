@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CakeGestao.Infrastructure.Migrations
 {
     [DbContext(typeof(CageContext))]
-    [Migration("20251027183336_CriandoTabelas")]
-    partial class CriandoTabelas
+    [Migration("20251029192342_CriacaoBancoDeDados")]
+    partial class CriacaoBancoDeDados
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,18 +27,20 @@ namespace CakeGestao.Infrastructure.Migrations
 
             modelBuilder.Entity("CakeGestao.Domain.Entities.Ingrediente", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
 
-                    b.Property<Guid>("ItemId")
-                        .HasColumnType("uuid");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ItemId")
+                        .HasColumnType("integer");
 
                     b.Property<decimal>("Quantidade")
                         .HasColumnType("decimal(10,2)");
 
-                    b.Property<Guid>("ReceitaId")
-                        .HasColumnType("uuid");
+                    b.Property<int>("ReceitaId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("UnidadeMedida")
                         .IsRequired()
@@ -56,9 +58,11 @@ namespace CakeGestao.Infrastructure.Migrations
 
             modelBuilder.Entity("CakeGestao.Domain.Entities.ItemEstoque", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Nome")
                         .IsRequired()
@@ -82,18 +86,20 @@ namespace CakeGestao.Infrastructure.Migrations
 
             modelBuilder.Entity("CakeGestao.Domain.Entities.ItemPedido", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
 
-                    b.Property<Guid>("PedidoId")
-                        .HasColumnType("uuid");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("PedidoId")
+                        .HasColumnType("integer");
 
                     b.Property<int>("Quantidade")
                         .HasColumnType("integer");
 
-                    b.Property<Guid>("ReceitaId")
-                        .HasColumnType("uuid");
+                    b.Property<int>("ReceitaId")
+                        .HasColumnType("integer");
 
                     b.Property<decimal>("ValorUnitario")
                         .HasColumnType("numeric");
@@ -109,9 +115,11 @@ namespace CakeGestao.Infrastructure.Migrations
 
             modelBuilder.Entity("CakeGestao.Domain.Entities.Pedido", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClienteNome")
                         .IsRequired()
@@ -144,9 +152,11 @@ namespace CakeGestao.Infrastructure.Migrations
 
             modelBuilder.Entity("CakeGestao.Domain.Entities.Receita", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ModoPreparo")
                         .IsRequired()
@@ -170,9 +180,11 @@ namespace CakeGestao.Infrastructure.Migrations
 
             modelBuilder.Entity("CakeGestao.Domain.Entities.TransacaoFinanceira", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Data")
                         .HasColumnType("timestamp with time zone");
@@ -182,8 +194,8 @@ namespace CakeGestao.Infrastructure.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)");
 
-                    b.Property<Guid>("PedidoId")
-                        .HasColumnType("uuid");
+                    b.Property<int>("PedidoId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Tipo")
                         .IsRequired()

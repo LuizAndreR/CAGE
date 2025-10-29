@@ -2,7 +2,7 @@
 
 public class ItemEstoque
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
     public required string Nome { get; set; }
     public decimal QuantidadeAtual { get; set; } = 0;
     public required string UnidadeMedida { get; set; }

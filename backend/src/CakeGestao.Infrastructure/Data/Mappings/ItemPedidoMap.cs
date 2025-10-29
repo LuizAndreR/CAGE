@@ -21,7 +21,7 @@ internal class ItemPedidoMap : IEntityTypeConfiguration<ItemPedido>
         builder.HasOne(i => i.Pedido)
             .WithMany(p => p.Itens)
             .HasForeignKey(i => i.PedidoId)
-             .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(i => i.Receita) 
             .WithMany(r => r.ItemPedidos) 

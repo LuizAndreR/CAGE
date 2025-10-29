@@ -1,6 +1,7 @@
 ﻿using CakeGestao.Domain.Entities;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace CakeGestao.Infrastructure.Data.Repositories;
@@ -14,6 +15,15 @@ public class ReceitaRepository : IReceitaRepository
     {
         _context = context;
         _logger = logger;
+    }
+
+    public async Task<Result<bool>> ExistReceitaAsync(string nome)
+    {
+        _logger.LogInformation("Verificando existência de receita de nome: {Nome}", nome);
+
+        var exists = await _context.Receitas.AnyAsync(r => r.Nome == nome);
+
+        return Result.Ok(exists);
     }
 
     public async Task<Result> CreateReceitaAsync(Receita receita)

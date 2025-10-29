@@ -1,9 +1,16 @@
 using CakeGestao.API.Middlewares;
 using CakeGestao.Application.Mappings;
+using CakeGestao.Application.Services.Interface;
+using CakeGestao.Application.Services.Service;
+using CakeGestao.Application.UseCases.Receitas.Interface;
+using CakeGestao.Application.UseCases.Receitas.UseCase;
+using CakeGestao.Domain.Interfaces.Repositories;
 using CakeGestao.Infrastructure.Data;
+using CakeGestao.Infrastructure.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Formatting.Json;
+using FluentValidation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +35,14 @@ builder.Services.AddDbContext<CageContext>(options =>
 builder.Services.AddAutoMapper(_ => {}, typeof(ReceitaProfile).Assembly);
 
 builder.Services.AddControllers();
+
+builder.Services.AddScoped<ICreateReceitaUseCase, CreateReceitaUseCase>();
+
+builder.Services.AddScoped<IReceitaService, ReceitaService>();
+
+builder.Services.AddScoped<IReceitaRepository, ReceitaRepository>();
+
+builder.Services.AddValidatorsFromAssembly(typeof(CreateReceitaUseCase).Assembly);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

@@ -2,7 +2,7 @@
 
 public class Receita
 {
-    public Guid Id { get; set; }
+    public int Id { get; set; }
     public required string Nome { get; set; }
     public required string ModoPreparo { get; set; }
     public decimal PrecoVenda { get; set; } = 0;
