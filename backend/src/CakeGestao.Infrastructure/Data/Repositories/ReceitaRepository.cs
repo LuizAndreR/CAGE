@@ -17,6 +17,18 @@ public class ReceitaRepository : IReceitaRepository
         _logger = logger;
     }
 
+    public async Task<Result<Receita>> GetReceitaByIdAsync(int id)
+    {
+        _logger.LogInformation("Buscando receita por ID: {Id}", id);
+        var receita = await _context.Receitas.FindAsync(id);
+        if (receita == null)
+        {
+            _logger.LogWarning("Receita com ID: {Id} não encontrada", id);
+            return Result.Fail<Receita>($"Receita com ID {id} não encontrada.");
+        }
+        return Result.Ok(receita);
+    }
+
     public async Task<Result<bool>> ExistReceitaAsync(string nome)
     {
         _logger.LogInformation("Verificando existência de receita de nome: {Nome}", nome);

@@ -37,6 +37,7 @@ builder.Services.AddAutoMapper(_ => {}, typeof(ReceitaProfile).Assembly);
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<ICreateReceitaUseCase, CreateReceitaUseCase>();
+builder.Services.AddScoped<IGetReceitaUseCase, GetReceitaUseCase>();
 
 builder.Services.AddScoped<IReceitaService, ReceitaService>();
 

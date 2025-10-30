@@ -17,6 +17,15 @@ public class ReceitaController : ControllerBase
         _receitaService = receitaService;
     }
 
+    [HttpGet("get/{id}")]
+    public async Task<IActionResult> GetReceitaById([FromRoute]int id)
+    {
+        _logger.LogInformation("Recebendo requisição para busca de receita de ID: {Id}", id);
+        var receitaResponse = await _receitaService.GetReceita(id);
+        _logger.LogInformation("Receita de ID: {Id} encontrada com sucesso. Código HTTP 200.", id);
+        return Ok(receitaResponse.Value);
+    }
+
     [HttpPost("create")]
     public async Task<IActionResult> CreateReceita([FromBody]CreateReceitaRequest request)
     {
