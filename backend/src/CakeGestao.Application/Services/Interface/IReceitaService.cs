@@ -8,4 +8,5 @@ public interface IReceitaService
 {
     public Task<Result> CreateReceita(CreateReceitaRequest request);
     public Task<Result<ReceitaResponse>> GetReceita(int id);
+    public Task<Result<List<ReceitaResponse>>> GetAllReceita();
 }

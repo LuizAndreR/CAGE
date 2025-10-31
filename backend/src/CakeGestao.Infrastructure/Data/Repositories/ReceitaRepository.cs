@@ -17,6 +17,21 @@ public class ReceitaRepository : IReceitaRepository
         _logger = logger;
     }
 
+    public async Task<Result<List<Receita>>> GetAllReceitasAsync()
+    {
+        _logger.LogInformation("buscando todas as receitas do banco de dados");
+        
+        var receitas = await _context.Receitas.ToListAsync();
+
+        if (receitas.Count == 0)
+        {
+            _logger.LogInformation("Nenhuma receita foi encontrada.");
+            return Result.Fail<List<Receita>>("Nenhuma receita foi encontrada.");
+        }
+        
+        return Result.Ok(receitas);
+    }
+    
     public async Task<Result<Receita>> GetReceitaByIdAsync(int id)
     {
         _logger.LogInformation("Buscando receita por ID: {Id}", id);

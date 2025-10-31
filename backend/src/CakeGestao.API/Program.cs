@@ -38,6 +38,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddScoped<ICreateReceitaUseCase, CreateReceitaUseCase>();
 builder.Services.AddScoped<IGetReceitaUseCase, GetReceitaUseCase>();
+builder.Services.AddScoped<IGetAllReceitaUseCase, GetAllReceitaUseCase>();
 
 builder.Services.AddScoped<IReceitaService, ReceitaService>();
 

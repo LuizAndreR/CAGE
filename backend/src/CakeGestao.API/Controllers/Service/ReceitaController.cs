@@ -1,6 +1,5 @@
 ﻿using CakeGestao.Application.Dtos.Requests.Receita;
 using CakeGestao.Application.Services.Interface;
-using CakeGestao.Application.Services.Service;
 using Microsoft.AspNetCore.Mvc;
 namespace CakeGestao.API.Controllers.Service;
 
@@ -24,6 +23,15 @@ public class ReceitaController : ControllerBase
         var receitaResponse = await _receitaService.GetReceita(id);
         _logger.LogInformation("Receita de ID: {Id} encontrada com sucesso. Código HTTP 200.", id);
         return Ok(receitaResponse.Value);
+    }
+
+    [HttpGet("getall")]
+    public async Task<IActionResult> GetAllReceitas()
+    {
+        _logger.LogInformation("Recebendo requisição para busca todas receita cadastradas com sucesso.");
+        var receitaResult = await _receitaService.GetAllReceita();
+        _logger.LogInformation("Foi encontrado com susseso {Numero} receitas cadastrada no banco de dados", receitaResult.Value.Count);
+        return Ok(receitaResult.Value);
     }
 
     [HttpPost("create")]
