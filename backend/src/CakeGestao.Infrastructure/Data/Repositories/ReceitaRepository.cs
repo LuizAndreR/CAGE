@@ -62,4 +62,20 @@ public class ReceitaRepository : IReceitaRepository
 
         return Result.Ok();
     }
+
+    public async Task<Result> UpdateReceitaAsync(Receita receita)
+    {
+        _logger.LogInformation("Atualizando receita de ID: {Id}", receita.Id);
+        _context.Receitas.Update(receita);
+        await _context.SaveChangesAsync();
+        return Result.Ok();
+    }
+
+    public async Task<Result> DeleteReceitaAsync(Receita receita)
+    {
+        _logger.LogInformation("Deletando receita de ID: {Id}", receita.Id);
+        _context.Receitas.Remove(receita);
+        await _context.SaveChangesAsync();
+        return Result.Ok();
+    }
 }
