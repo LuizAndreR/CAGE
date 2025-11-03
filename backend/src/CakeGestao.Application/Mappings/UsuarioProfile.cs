@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CakeGestao.Application.Dtos.Requests.Auth;
+using CakeGestao.Application.Dtos.Responses;
 using CakeGestao.Domain.Entities;
 using CakeGestao.Infrastructure.Data.Repositories;
 
@@ -11,7 +12,7 @@ public class UsuarioProfile : Profile
     {
         CreateMap<Usuario, CadastroRequest>()
             .ReverseMap();
-        CreateMap<Usuario, UsuarioRepository>()
+        CreateMap<Usuario, UsuarioResponse>()
             .ReverseMap();
     }
 }

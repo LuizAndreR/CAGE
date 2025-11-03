@@ -1,9 +1,13 @@
-﻿using CakeGestao.Application.Services.Interface;
+﻿using CakeGestao.API.Extensions;
+using CakeGestao.Application.Dtos.Requests.Usuario;
+using CakeGestao.Application.Services.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CakeGestao.API.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/user/")]
 public class UserController : ControllerBase
 {
@@ -19,10 +23,42 @@ public class UserController : ControllerBase
     [HttpGet("getuser")]
     public async Task<IActionResult> GetUserById()
     {
-        _logger.LogInformation("Recebendo requisição para obter o usuário com ID: {Id}", id);
-        var userResult = await _userService.GetUsuarioByIdAsync(id);
+        _logger.LogInformation("Recebendo requisição para obter o usuário");
+        
+        _logger.LogInformation("Pegando o id do usuairo meio de token");
+        var id = User.GetUserId();
+
+        if (id.IsFailed)
+        {
+            _logger.LogWarning("Token de autorização inválido ou não contém ID.");
+            return Unauthorized("Token inválido.");
+        }
+        
+        _logger.LogInformation("Iniciando a requisição para obter o usuário com ID: {Id}", id);
+        var userResult = await _userService.GetUsuarioByIdAsync(id.Value);
 
         _logger.LogInformation("Usuário com ID: {Id} obtido com sucesso. Código HTTP 200.", id);
         return Ok(userResult.Value);
+    }
+
+    [HttpPut("update")]
+    public async Task<IActionResult> UpdateUsuario([FromBody]UpdateUsuarioRequest request)
+    {
+        _logger.LogInformation("Recebendo requisição para update de usuario");
+        
+        _logger.LogInformation("Pegando o id do usuairo meio de token");
+        var id = User.GetUserId();
+
+        if (id.IsFailed)
+        {
+            _logger.LogWarning("Token de autorização inválido ou não contém ID.");
+            return Unauthorized("Token inválido.");
+        }
+        
+        _logger.LogInformation("Iniciando a requisição para update do usuário com ID: {Id}", id);
+        await _userService.UpdateUsuarioAsync(request, id.Value);
+
+        _logger.LogInformation("Usuário com ID: {Id} atulizado com sucesso. Código HTTP 201.", id.Value);
+        return Created();
     }
 }

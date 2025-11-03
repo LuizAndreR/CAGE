@@ -16,10 +16,11 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.IdentityModel.Tokens.Experimental;
 using Serilog;
 using Serilog.Formatting.Json;
 using System.Text;
+using CakeGestao.Application.UseCases.User.Interface;
+using CakeGestao.Application.UseCases.User.UseCase;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -70,11 +71,15 @@ builder.Services.AddScoped<ICadastroUseCase, CadastroUseCase>();
 builder.Services.AddScoped<ILoginUseCase, LoginUseCase>();
 builder.Services.AddScoped<IRefreshTokenUseCase, RefreshTokenUseCase>();
 
+builder.Services.AddScoped<IGetUsuarioUseCase, GetUsuarioUseCase>();
+builder.Services.AddScoped<IUpdateUserUseCase, UpdateUserUseCase>();
+
 builder.Services.AddScoped<ICreateReceitaUseCase, CreateReceitaUseCase>();
 builder.Services.AddScoped<IGetReceitaUseCase, GetReceitaUseCase>();
 builder.Services.AddScoped<IGetAllReceitaUseCase, GetAllReceitaUseCase>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IReceitaService, ReceitaService>();
 
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
