@@ -1,7 +1,7 @@
 ﻿using CakeGestao.Application.Dtos.Requests.Receita;
 using CakeGestao.Application.Services.Interface;
 using Microsoft.AspNetCore.Mvc;
-namespace CakeGestao.API.Controllers.Service;
+namespace CakeGestao.API.Controllers;
 
 [ApiController]
 [Route("api/receita/")]

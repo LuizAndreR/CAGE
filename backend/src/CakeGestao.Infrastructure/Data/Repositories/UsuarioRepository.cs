@@ -1,0 +1,61 @@
+﻿using CakeGestao.Domain.Entities;
+using CakeGestao.Domain.Interfaces.Repositories;
+using FluentResults;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+
+namespace CakeGestao.Infrastructure.Data.Repositories;
+
+public class UsuarioRepository : IUsuarioRepository
+{
+    private readonly CageContext _context;
+    private readonly ILogger<UsuarioRepository> _logger;
+
+    public UsuarioRepository(CageContext context, ILogger<UsuarioRepository> logger)
+    {
+        _context = context;
+        _logger = logger;
+    }
+
+    public async Task<Result> ExistUsuarioByEmailAsync(string email)
+    {
+        _logger.LogInformation("Verificando a existencia do usuario no banco de dados: {Email}", email);
+
+        var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == email);
+
+        if (usuario == null)
+        {
+            _logger.LogInformation("Usuario não encontrado no banco de dados: {Email}", email);
+            return Result.Fail("Usuário não encontrado.");
+        }
+
+        _logger.LogInformation("Usuario encontrado no banco de dados: {Email}", email);
+        return Result.Ok();
+    }
+
+    public async Task<Result<Usuario>> GetByIdAsync(int id)
+    {
+        _logger.LogInformation("Buscando usuario por ID no banco de dados: {Id}", id);
+
+        var usuario = await _context.Usuarios.FindAsync(id);
+        
+        if (usuario == null)
+        {
+            _logger.LogInformation("Usuario não encontrado no banco de dados: {Id}", id);
+            return Result.Fail<Usuario>("Usuário não encontrado.");
+        }
+
+        _logger.LogInformation("Usuario encontrado no banco de dados: {Id}", id);
+        return Result.Ok(usuario);
+    }
+
+    public async Task<Result> CreateUserAsync(Usuario usuario)
+    {
+        _logger.LogInformation("Criando um usuario no banco de dados: {Email}", usuario.Email);
+
+        await _context.Usuarios.AddAsync(usuario);
+        await _context.SaveChangesAsync();
+
+        return Result.Ok();
+    }
+}

@@ -3,6 +3,7 @@ using System;
 using CakeGestao.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CakeGestao.Infrastructure.Migrations
 {
     [DbContext(typeof(CageContext))]
-    partial class CageContextModelSnapshot : ModelSnapshot
+    [Migration("20251102205406_CriandoTabelaTokenRefresh")]
+    partial class CriandoTabelaTokenRefresh
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -8,8 +8,7 @@ public class UpdateReceitaValidator : AbstractValidator<UpdateReceitaRequest>
     public UpdateReceitaValidator()
     {
         RuleFor(x => x.Nome)
-            .NotEmpty().WithMessage("O nome da receita é obrigatório.")
-            .MaximumLength(100).WithMessage("O nome da receita não pode exceder 100 caracteres.");
+            .NotEmpty().WithMessage("O nome da receita é obrigatório.");
 
         RuleFor(x => x.ModoPreparo)
             .NotEmpty().WithMessage("O modo de preparo é obrigatório.");
