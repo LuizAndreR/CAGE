@@ -17,7 +17,7 @@ public class UsuarioRepository : IUsuarioRepository
         _logger = logger;
     }
 
-    public async Task<Result> ExistUsuarioByEmailAsync(string email)
+    public async Task<Result<Usuario>> GetUsuarioByEmailAsync(string email)
     {
         _logger.LogInformation("Verificando a existencia do usuario no banco de dados: {Email}", email);
 
@@ -30,7 +30,7 @@ public class UsuarioRepository : IUsuarioRepository
         }
 
         _logger.LogInformation("Usuario encontrado no banco de dados: {Email}", email);
-        return Result.Ok();
+        return Result.Ok(usuario);
     }
 
     public async Task<Result<Usuario>> GetByIdAsync(int id)
@@ -56,6 +56,15 @@ public class UsuarioRepository : IUsuarioRepository
         await _context.Usuarios.AddAsync(usuario);
         await _context.SaveChangesAsync();
 
+        return Result.Ok();
+    }
+
+    public async Task<Result> UpdateUsuarioAsync(Usuario usuario)
+    {
+        _logger.LogInformation("Atualizando usuario no banco de dados: {Email}", usuario.Email);
+        _context.Usuarios.Update(usuario);
+        await _context.SaveChangesAsync();
+        _logger.LogInformation("Usuario atualizado com sucesso no banco de dados: {Email}", usuario.Email);
         return Result.Ok();
     }
 }

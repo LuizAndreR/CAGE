@@ -1,7 +1,9 @@
-﻿using CakeGestao.Application.Dtos.Responses;
+﻿using CakeGestao.Application.Dtos.Requests.Auth;
+using CakeGestao.Application.Dtos.Responses;
 using CakeGestao.Domain.Interfaces.Repositories;
 using CakeGestao.Domain.Interfaces.Security;
 using FluentResults;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.Extensions.Logging;
 
 namespace CakeGestao.Application.UseCases.Auth.Refresh;
@@ -21,11 +23,11 @@ public class RefreshTokenUseCase : IRefreshTokenUseCase
         _jwtTokenService = jwtTokenService;
     }
 
-    public async Task<Result<RefreshTokenResponce>> Execute(string refreshToken)
+    public async Task<Result<TokensResponce>> Execute(RefreshTokenRequest request)
     {
         _logger.LogInformation("Iniciando o processo refrash do token");
 
-        var tokenResult = await _tokenRepository.GetRefreshTokenAsync(refreshToken);
+        var tokenResult = await _tokenRepository.GetRefreshTokenAsync(request.RefreshToken);
         _logger.LogInformation("Busca do refresh token realizado com susseso");
 
         _logger.LogInformation("Validando refresh token");
@@ -57,7 +59,7 @@ public class RefreshTokenUseCase : IRefreshTokenUseCase
         _logger.LogInformation("Novos tokens gerados com sucesso para o usuario Id: {Id}", usuarioResult.Value.Id);
 
         _logger.LogInformation("Mapeando RefreshTokenResponce com os novos tokens do usuario Id: {Id}", usuarioResult.Value.Id);
-        var tokenResponse = new RefreshTokenResponce
+        var tokenResponse = new TokensResponce
         {
             AccessToken = tokens.accessToken,
             RefreshToken = tokens.refreshToken

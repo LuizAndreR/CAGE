@@ -3,6 +3,7 @@ using CakeGestao.Application.Mappings;
 using CakeGestao.Application.Services.Interface;
 using CakeGestao.Application.Services.Service;
 using CakeGestao.Application.UseCases.Auth.Cadastro;
+using CakeGestao.Application.UseCases.Auth.Login;
 using CakeGestao.Application.UseCases.Auth.Refresh;
 using CakeGestao.Application.UseCases.Receitas.Interface;
 using CakeGestao.Application.UseCases.Receitas.UseCase;
@@ -66,6 +67,7 @@ builder.Services.AddAutoMapper(_ => {}, typeof(ReceitaProfile).Assembly);
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<ICadastroUseCase, CadastroUseCase>();   
+builder.Services.AddScoped<ILoginUseCase, LoginUseCase>();
 builder.Services.AddScoped<IRefreshTokenUseCase, RefreshTokenUseCase>();
 
 builder.Services.AddScoped<ICreateReceitaUseCase, CreateReceitaUseCase>();

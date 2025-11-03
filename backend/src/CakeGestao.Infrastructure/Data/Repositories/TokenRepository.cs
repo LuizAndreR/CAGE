@@ -1,6 +1,7 @@
 ﻿using CakeGestao.Domain.Entities;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace CakeGestao.Infrastructure.Data.Repositories;
@@ -20,7 +21,7 @@ public class TokenRepository : ITokenRepository
     {
         _logger.LogInformation("Buscando refresh token no banco de dados.");
 
-        var token = await _context.TokensRefresh.FindAsync(refreshToken);
+        var token = await _context.TokensRefresh.FirstOrDefaultAsync(r => r.RefreshToken == refreshToken);
         if (token == null)
         {
             _logger.LogInformation("Refresh token não encontrado no banco de dados.");

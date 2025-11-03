@@ -46,7 +46,7 @@ public class CadastroUseCase : ICadastroUseCase
         _logger.LogInformation("Role verificado com sucesso para o novo usuario {Email}", request.Email);
 
         _logger.LogInformation("Verificando se existencia do usuario {Email}", request.Email);
-        var usuarioExistenteResult = await _usuarioRepository.ExistUsuarioByEmailAsync(request.Email);
+        var usuarioExistenteResult = await _usuarioRepository.GetUsuarioByEmailAsync(request.Email);
         if (usuarioExistenteResult.IsSuccess)
         {
             _logger.LogWarning("Usuario {Email} já existe no sistema", request.Email);

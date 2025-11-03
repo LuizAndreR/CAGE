@@ -82,7 +82,7 @@ public class JwtTokenService : IJwtTokenService
         {
             UsuarioId = usuarioId,
             RefreshToken = refreshToken,
-            CreatedAt = DateTime.UtcNow.AddDays(accessTokenExpiration),
+            CreatedAt = DateTime.UtcNow,
             ExpiresAt = DateTime.UtcNow.AddDays(expirationDays),
             IsRevoked = false,
             IsUsed = false
