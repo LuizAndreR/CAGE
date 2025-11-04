@@ -73,6 +73,7 @@ builder.Services.AddScoped<IRefreshTokenUseCase, RefreshTokenUseCase>();
 
 builder.Services.AddScoped<IGetUsuarioUseCase, GetUsuarioUseCase>();
 builder.Services.AddScoped<IUpdateUserUseCase, UpdateUserUseCase>();
+builder.Services.AddScoped<IUpdateSenhaUsuarioUseCase, UpdateSenhaUsuarioUseCase>();
 
 builder.Services.AddScoped<ICreateReceitaUseCase, CreateReceitaUseCase>();
 builder.Services.AddScoped<IGetReceitaUseCase, GetReceitaUseCase>();

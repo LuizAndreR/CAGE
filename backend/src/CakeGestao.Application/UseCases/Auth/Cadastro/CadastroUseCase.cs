@@ -64,7 +64,7 @@ public class CadastroUseCase : ICadastroUseCase
         usuario.Role = userRole;
         _logger.LogInformation("Mapeamento realizado com sucesso para o novo usuario {Email}", request.Email);
 
-        var createUserResult = await _usuarioRepository.CreateUserAsync(usuario);
+        await _usuarioRepository.CreateUserAsync(usuario);
         return Result.Ok();
     }
 }

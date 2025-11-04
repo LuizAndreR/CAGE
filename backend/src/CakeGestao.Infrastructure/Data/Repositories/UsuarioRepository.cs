@@ -17,6 +17,19 @@ public class UsuarioRepository : IUsuarioRepository
         _logger = logger;
     }
 
+    public async Task<Result<List<Usuario>>> GetAllUsuariosAsync()
+    {
+        _logger.LogInformation("Iniciando a busca no banco de dados");
+        var usuarios = await _context.Usuarios.ToListAsync();
+        if (usuarios.Count == 0)
+        {
+            _logger.LogInformation("Nenhum usuario encontrado");
+            return Result.Fail<List<Usuario>>("Nenhum usuario encontrado.");
+        }
+        _logger.LogInformation("Usuario encontrado com sucesso");
+        return Result.Ok(usuarios);
+    }
+    
     public async Task<Result<Usuario>> GetUsuarioByEmailAsync(string email)
     {
         _logger.LogInformation("Verificando a existencia do usuario no banco de dados: {Email}", email);

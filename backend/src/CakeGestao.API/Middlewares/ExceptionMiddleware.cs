@@ -45,7 +45,7 @@ public class ExceptionMiddleware
             {
                 title = "Recurso não encontrado",
                 status = context.Response.StatusCode,
-                message = nfex.Message,
+                message = nfex.Errors,
                 traceId = context.TraceIdentifier
             };
             await context.Response.WriteAsJsonAsync(response);
@@ -58,7 +58,7 @@ public class ExceptionMiddleware
             {
                 title = "Conflito de dados",
                 status = context.Response.StatusCode,
-                message = cfex.Message,
+                message = cfex.Errors,
                 traceId = context.TraceIdentifier
             };
             await context.Response.WriteAsJsonAsync(response);

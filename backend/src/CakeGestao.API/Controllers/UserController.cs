@@ -13,11 +13,22 @@ public class UserController : ControllerBase
 {
     private readonly ILogger<UserController> _logger;
     private readonly IUserService _userService;
-
+    
     public UserController(ILogger<UserController> logger, IUserService userService)
     {
         _logger = logger;
         _userService = userService;
+    }
+
+    [HttpGet("getall")]
+    [Authorize(Roles = "Admin, Dono")]
+    public async Task<IActionResult> GetAllUsers()
+    {
+        _logger.LogInformation("ecebendo requisição para obter todos os usuários cadastro no banco de dados");
+
+        var listUserResult = await _userService.GetAllUsuarioAsync();
+        _logger.LogInformation("{Count} Usuários obtido com sucesso. Código HTTP 200.", listUserResult.Value.Count);
+        return Ok(listUserResult.Value);
     }
 
     [HttpGet("getuser")]
@@ -61,7 +72,7 @@ public class UserController : ControllerBase
         return Created();
     }
 
-    [HttpPut("updatesenha")]
+    [HttpPatch("updatesenha")]
     public async Task<IActionResult> UpdateSenhaUsuario([FromBody]UpdateSenhaUsuarioRequest request)
     {
         _logger.LogInformation("Recebendo requisição para update da senha do usuario");
