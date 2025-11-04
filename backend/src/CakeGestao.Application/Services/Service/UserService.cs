@@ -10,13 +10,16 @@ public class UserService : IUserService
 {
     private readonly IGetUsuarioUseCase _getUsuarioUseCase;
     private readonly IUpdateUserUseCase _updateUserUseCase;
-    
-    public UserService(IGetUsuarioUseCase getUsuarioUseCase, IUpdateUserUseCase updateUserUseCase)
+    private readonly IUpdateSenhaUsuarioUseCase _updateSenhaUsuarioUseCase;
+
+    public UserService(IGetUsuarioUseCase getUsuarioUseCase, IUpdateUserUseCase updateUserUseCase, IUpdateSenhaUsuarioUseCase updateSenhaUsuarioUseCase)
     {
         _getUsuarioUseCase = getUsuarioUseCase;
         _updateUserUseCase = updateUserUseCase;
+        _updateSenhaUsuarioUseCase = updateSenhaUsuarioUseCase;
     }
 
     public async Task<Result<UsuarioResponse>> GetUsuarioByIdAsync(int id) => await _getUsuarioUseCase.Execute(id);
     public async Task<Result> UpdateUsuarioAsync(UpdateUsuarioRequest request, int id) => await _updateUserUseCase.ExecuteAsync(request, id);
+    public async Task<Result> UpdateSenhaUsuarioAsync(UpdateSenhaUsuarioRequest request, int id) => await _updateSenhaUsuarioUseCase.ExecuteAsync(request, id);
 }

@@ -48,7 +48,6 @@ public class UserController : ControllerBase
         
         _logger.LogInformation("Pegando o id do usuairo meio de token");
         var id = User.GetUserId();
-
         if (id.IsFailed)
         {
             _logger.LogWarning("Token de autorização inválido ou não contém ID.");
@@ -61,4 +60,25 @@ public class UserController : ControllerBase
         _logger.LogInformation("Usuário com ID: {Id} atulizado com sucesso. Código HTTP 201.", id.Value);
         return Created();
     }
+
+    [HttpPut("updatesenha")]
+    public async Task<IActionResult> UpdateSenhaUsuario([FromBody]UpdateSenhaUsuarioRequest request)
+    {
+        _logger.LogInformation("Recebendo requisição para update da senha do usuario");
+        
+        _logger.LogInformation("Pegando o id do usuairo meio de token");
+        var id = User.GetUserId();
+        if (id.IsFailed)
+        {
+            _logger.LogWarning("Token de autorização inválido ou não contém ID.");
+            return Unauthorized("Token inválido.");
+        }
+        
+        _logger.LogInformation("Iniciando a requisição para update da senha do usuário com ID: {Id}", id);
+        await _userService.UpdateSenhaUsuarioAsync(request, id.Value);
+
+        _logger.LogInformation("Senha do usuário com ID: {Id} atulizada com sucesso. Código HTTP 201.", id.Value);
+        return Created();
+    }
+
 }
