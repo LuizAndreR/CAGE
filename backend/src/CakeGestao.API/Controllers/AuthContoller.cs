@@ -1,5 +1,6 @@
 ﻿using CakeGestao.Application.Dtos.Requests.Auth;
 using CakeGestao.Application.Services.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CakeGestao.API.Controllers;
@@ -18,6 +19,7 @@ public class AuthContoller : ControllerBase
     }
 
     [HttpPost("cadastro")]
+    [Authorize(Roles = "Admin, Dono")]
     public async Task<IActionResult> Cadastro([FromBody] CadastroRequest request)
     {
         _logger.LogInformation("Recebendo requisição para cadastro de novo usuário com email: {Email}", (string)request.Email);

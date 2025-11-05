@@ -62,22 +62,29 @@ public class UsuarioRepository : IUsuarioRepository
         return Result.Ok(usuario);
     }
 
-    public async Task<Result> CreateUserAsync(Usuario usuario)
+    public async Task CreateUserAsync(Usuario usuario)
     {
         _logger.LogInformation("Criando um usuario no banco de dados: {Email}", usuario.Email);
 
         await _context.Usuarios.AddAsync(usuario);
         await _context.SaveChangesAsync();
-
-        return Result.Ok();
     }
 
-    public async Task<Result> UpdateUsuarioAsync(Usuario usuario)
+    public async Task UpdateUsuarioAsync(Usuario usuario)
     {
         _logger.LogInformation("Atualizando usuario no banco de dados: {Email}", usuario.Email);
         _context.Usuarios.Update(usuario);
         await _context.SaveChangesAsync();
         _logger.LogInformation("Usuario atualizado com sucesso no banco de dados: {Email}", usuario.Email);
-        return Result.Ok();
+    }
+
+    public async Task DeleteAsync(Usuario usuario)
+    {
+        _logger.LogInformation("Deletando usuario no banco de dados: {Email}", usuario.Email);
+
+        _context.Usuarios.Remove(usuario);
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation("Usuario deletado com sucesso no banco de dados: {Email}", usuario.Email);
     }
 }

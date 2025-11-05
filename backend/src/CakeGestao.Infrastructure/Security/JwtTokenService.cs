@@ -16,14 +16,12 @@ public class JwtTokenService : IJwtTokenService
     private readonly IConfiguration _configuration;
     private readonly ILogger<JwtTokenService> _logger;
     private readonly ITokenRepository _tokenRepository;
-    private readonly IUsuarioRepository _usuarioRepository;
 
-    public JwtTokenService(IConfiguration configuration, ILogger<JwtTokenService> logger, ITokenRepository tokenRepository, IUsuarioRepository usuarioRepository)
+    public JwtTokenService(IConfiguration configuration, ILogger<JwtTokenService> logger, ITokenRepository tokenRepository)
     {
         _configuration = configuration;
         _logger = logger;
-        _tokenRepository = tokenRepository; 
-        _usuarioRepository = usuarioRepository;
+        _tokenRepository = tokenRepository;
     }
 
     public async Task<(string accessToken, string refreshToken)> TokenService(int usuarioId, string email, string role)
