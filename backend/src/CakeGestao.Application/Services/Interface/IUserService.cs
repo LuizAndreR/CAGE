@@ -10,5 +10,6 @@ public interface IUserService
     public Task<Result<UsuarioResponse>> GetUsuarioByIdAsync(int id);
     public Task<Result> UpdateUsuarioAsync(UpdateUsuarioRequest request, int id);
     public Task<Result> UpdateSenhaUsuarioAsync(UpdateSenhaUsuarioRequest request, int id);
+    public Task<Result> UpdateFuncionarioAsync(UpdateFuncionarioUsuarioRequest request);
     public Task<Result> DeleteUsuarioAsync(int usuarioId);
 }

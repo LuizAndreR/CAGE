@@ -72,8 +72,11 @@ builder.Services.AddScoped<ILoginUseCase, LoginUseCase>();
 builder.Services.AddScoped<IRefreshTokenUseCase, RefreshTokenUseCase>();
 
 builder.Services.AddScoped<IGetUsuarioUseCase, GetUsuarioUseCase>();
+builder.Services.AddScoped<IGetAllUsuarioUseCase, GetAllUsuarioUseCase>();
 builder.Services.AddScoped<IUpdateUserUseCase, UpdateUserUseCase>();
 builder.Services.AddScoped<IUpdateSenhaUsuarioUseCase, UpdateSenhaUsuarioUseCase>();
+builder.Services.AddScoped<IUpdateFuncionarioUseCase, UpdateFuncionarioUseCase>();
+builder.Services.AddScoped<IDeleteUsuarioUseCase, DeleteUsuarioUseCase>();
 
 builder.Services.AddScoped<ICreateReceitaUseCase, CreateReceitaUseCase>();
 builder.Services.AddScoped<IGetReceitaUseCase, GetReceitaUseCase>();

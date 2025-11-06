@@ -72,25 +72,6 @@ public class UserController : ControllerBase
         return Created();
     }
 
-    [HttpPut("updatefuncao")]
-    public async Task<IActionResult> UpdateFuncaoUsuario([FromBody]UpdateFuncaoUsuarioRequest request)
-    {
-        _logger.LogInformation("Recebendo requisição para update da função do usuario");
-        
-        _logger.LogInformation("Pegando o id do usuairo meio de token");
-        var id = User.GetUserId();
-        if (id.IsFailed)
-        {
-            _logger.LogWarning("Token de autorização inválido ou não contém ID.");
-            return Unauthorized("Token inválido.");
-        }
-        
-        _logger.LogInformation("Iniciando a requisição para update da função do usuário com ID: {Id}", id);
-        await _userService.UpdateFuncaoUsuarioAsync(request, id.Value);
-        _logger.LogInformation("Função do usuário com ID: {Id} atulizada com sucesso. Código HTTP 201.", id.Value);
-        return Created();
-    }
-
     [HttpPatch("updatesenha")]
     public async Task<IActionResult> UpdateSenhaUsuario([FromBody]UpdateSenhaUsuarioRequest request)
     {
@@ -111,22 +92,24 @@ public class UserController : ControllerBase
         return Created();
     }
 
-    [HttpDelete("delete")]
-    public async Task<IActionResult> DeleteUsuario()
+    [HttpPatch("updatefuncionario")]
+    [Authorize(Roles = "Admin, Dono")]
+    public async Task<IActionResult> UpdateFuncaoUsuario([FromBody] UpdateFuncionarioUsuarioRequest request)
     {
-        _logger.LogInformation("Recebendo requisição para deletar o usuario");
-        
-        _logger.LogInformation("Pegando o id do usuairo meio de token");
-        var id = User.GetUserId();
-        if (id.IsFailed)
-        {
-            _logger.LogWarning("Token de autorização inválido ou não contém ID.");
-            return Unauthorized("Token inválido.");
-        }
-        
-        _logger.LogInformation("Iniciando a requisição para deletar o usuário com ID: {Id}", id);
-        await _userService.DeleteUsuarioAsync(id.Value);
-        _logger.LogInformation("Usuário com ID: {Id} deletado com sucesso. Código HTTP 204.", id.Value);
+        _logger.LogInformation("Recebendo requisição para update da função do usuario");
+        await _userService.UpdateFuncionarioAsync(request);
+        _logger.LogInformation("Função do usuário com ID: {Id} atulizada com sucesso. Código HTTP 201.", request.Id);
+        return Created();
+    }
+
+    [HttpDelete("delete/{id}")]
+    [Authorize(Roles = "Admin, Dono")]
+    public async Task<IActionResult> DeleteUsuario([FromRoute]int id)
+    {
+        _logger.LogInformation("Recebendo requisição para deletar um usuário");
+        int idValue = id;
+        await _userService.DeleteUsuarioAsync(id);
+        _logger.LogInformation("Usuário com ID: {Id} deletado com sucesso. Código HTTP 204.", idValue);
         return NoContent();
     }
 }

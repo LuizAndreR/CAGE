@@ -12,14 +12,16 @@ public class UserService : IUserService
     private readonly IGetUsuarioUseCase _getUsuarioUseCase;
     private readonly IUpdateUserUseCase _updateUserUseCase;
     private readonly IUpdateSenhaUsuarioUseCase _updateSenhaUsuarioUseCase;
+    private readonly IUpdateFuncionarioUseCase _updateUsuarioFuncaoUseCase;
     private readonly IDeleteUsuarioUseCase _deleteUsuarioUseCase;
 
-    public UserService(IGetAllUsuarioUseCase getAllUserUseCase,IGetUsuarioUseCase getUsuarioUseCase, IUpdateUserUseCase updateUserUseCase, IUpdateSenhaUsuarioUseCase updateSenhaUsuarioUseCase, IDeleteUsuarioUseCase deleteUsuarioUseCase)
+    public UserService(IGetAllUsuarioUseCase getAllUserUseCase,IGetUsuarioUseCase getUsuarioUseCase, IUpdateUserUseCase updateUserUseCase, IUpdateSenhaUsuarioUseCase updateSenhaUsuarioUseCase, IUpdateFuncionarioUseCase updateUsuarioFuncaoUseCase, IDeleteUsuarioUseCase deleteUsuarioUseCase)
     {
         _getAllUserUseCase = getAllUserUseCase;
         _getUsuarioUseCase = getUsuarioUseCase;
         _updateUserUseCase = updateUserUseCase;
         _updateSenhaUsuarioUseCase = updateSenhaUsuarioUseCase;
+        _updateUsuarioFuncaoUseCase = updateUsuarioFuncaoUseCase;
         _deleteUsuarioUseCase = deleteUsuarioUseCase;
     }
     
@@ -27,5 +29,6 @@ public class UserService : IUserService
     public async Task<Result<UsuarioResponse>> GetUsuarioByIdAsync(int id) => await _getUsuarioUseCase.Execute(id);
     public async Task<Result> UpdateUsuarioAsync(UpdateUsuarioRequest request, int id) => await _updateUserUseCase.ExecuteAsync(request, id);
     public async Task<Result> UpdateSenhaUsuarioAsync(UpdateSenhaUsuarioRequest request, int id) => await _updateSenhaUsuarioUseCase.ExecuteAsync(request, id);
+    public async Task<Result> UpdateFuncionarioAsync(UpdateFuncionarioUsuarioRequest request) => await _updateUsuarioFuncaoUseCase.ExecuteAsync(request);
     public async Task<Result> DeleteUsuarioAsync(int usuarioId) => await _deleteUsuarioUseCase.ExecuteAsync(usuarioId); 
 }

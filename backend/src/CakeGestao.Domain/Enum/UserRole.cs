@@ -3,5 +3,10 @@
 public enum UserRole
 {
     Admin,
-    Dono    
+    Dono,
+    Confeiteiro,
+    Auxiliar,
+    Decorador,
+    Atendente,
+    Caixa
 }
