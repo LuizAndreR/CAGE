@@ -1,4 +1,6 @@
-﻿public class ConflictError : Exception
+﻿using FluentResults;
+
+public class ConflictError : Error
 {
     public string Errors { get; }
 

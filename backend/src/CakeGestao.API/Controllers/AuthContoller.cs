@@ -25,8 +25,46 @@ public class AuthContoller : ControllerBase
         _logger.LogInformation("Recebendo requisição para cadastro de novo usuário com email: {Email}", (string)request.Email);
         var result = await _authService.CreateUserAsync(request);
 
-        _logger.LogInformation("Usuário com email: {Email} cadastrado com sucesso. Código HTTP 201.", (string)request.Email);
-        return Created();
+        if (result.IsSuccess)
+        {
+            _logger.LogInformation("Usuário com email: {Email} cadastrado com sucesso. Código HTTP 201.", (string)request.Email);
+            return Created();
+        }
+
+        var erro = result.Errors.First();
+        var traceId = HttpContext.TraceIdentifier;
+
+        if (erro is ValidationError validationError)
+        {
+            _logger.LogWarning("Erro de validação ao cadastrar usuário com email: {Email}. Erros: {Errors}. TraceId: {TraceId}", (string)request.Email, string.Join(", ", validationError.Errors), traceId);
+            return BadRequest(new
+            {
+                title = "Erro de Validação",
+                status = 400,
+                errors = validationError.Errors,
+                traceId = traceId
+            });
+        }
+        else if (erro is ConflictError conflictError)
+        {
+            _logger.LogWarning("Conflito ao cadastrar usuário com email: {Email}. Mensagem: {Message}. TraceId: {TraceId}", (string)request.Email, conflictError.Message, traceId);
+            return Conflict(new
+            {
+                title = "Conflito",
+                status = 409,
+                error = conflictError.Message,
+                traceId = traceId
+            });
+        }
+
+        _logger.LogError("Erro inesperado ao cadastrar usuário com email: {Email}. Mensagem: {Message}. TraceId: {TraceId}", (string)request.Email, erro.Message, traceId);
+        return StatusCode(500, new
+        {
+            title = "Erro Interno do Servidor",
+            status = 500,
+            error = "Ocorreu um erro interno no servidor. Tente novamente mais tarde.",
+            traceId = traceId
+        });
     }
 
     [HttpPost("login")]

@@ -33,7 +33,8 @@ public class CadastroUseCase : ICadastroUseCase
         if (!validationResult.IsValid)
         {
             _logger.LogWarning("Validação falhou para o novo usuario {Email}", request.Email);
-            throw new ValidationError(validationResult.Errors.Select(e => e.ErrorMessage).ToList());
+            var listErrors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+            return Result.Fail(new ValidationError(listErrors));
         }
         _logger.LogInformation("Validação realizada com sucesso para o novo usuario {Email}", request.Email);
 
@@ -41,7 +42,7 @@ public class CadastroUseCase : ICadastroUseCase
         if (!Enum.TryParse<UserRole>(request.Role, true, out var userRole))
         {
             _logger.LogWarning("Role inválida fornecida para o novo usuario {Email}", request.Email);
-            throw new ValidationError(new List<string> { "Role inválida" });
+            return Result.Fail(new ValidationError(new List<string> { "Role inválida" }));
         }
         _logger.LogInformation("Role verificado com sucesso para o novo usuario {Email}", request.Email);
 
@@ -50,7 +51,7 @@ public class CadastroUseCase : ICadastroUseCase
         if (usuarioExistenteResult.IsSuccess)
         {
             _logger.LogWarning("Usuario {Email} já existe no sistema", request.Email);
-            throw new ConflictError("Usuário com mesmo email já existe");
+            return Result.Fail(new ConflictError("Usuário com mesmo email já existe"));
         }
         _logger.LogInformation("Usuario {Email} não existe no sistema, prosseguindo com o cadastro", request.Email);
 

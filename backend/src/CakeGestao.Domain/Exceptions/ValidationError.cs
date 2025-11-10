@@ -1,4 +1,6 @@
-﻿public class ValidationError : Exception
+﻿using FluentResults;
+
+public class ValidationError : Error
 {
     public List<string> Errors { get; }
 

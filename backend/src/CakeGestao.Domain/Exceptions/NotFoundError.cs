@@ -1,4 +1,6 @@
-﻿public class NotFoundError : Exception
+﻿using FluentResults;
+
+public class NotFoundError : Error
 {
     public string Errors { get; }
 
