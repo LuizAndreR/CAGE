@@ -25,7 +25,7 @@ public class DeleteUsuarioUseCase : IDeleteUsuarioUseCase
         if (usuario == null)
         {
             _logger.LogWarning("Usuário com ID: {UsuarioId} não encontrado. Processo de exclusão abortado.", usuarioId);
-            throw new NotFoundError("Usuário não encontrado.");
+            return Result.Fail(new NotFoundError("Usuário não encontrado."));
         }
         _logger.LogInformation("Usuário com ID: {UsuarioId} encontrado. Prosseguindo com a exclusão.", usuarioId);
 

@@ -33,7 +33,7 @@ public class CreateReceitaUseCase : ICreateReceitaUseCase
         if (!resultValidato.IsValid)
         {
             _logger.LogInformation("A varificação da request de criação de uma nova receita de nome: {Nome} falou",  request.Nome);
-            throw new ValidationError(resultValidato.Errors.Select(e => e.ErrorMessage).ToList());
+            return Result.Fail(new ValidationError(resultValidato.Errors.Select(e => e.ErrorMessage).ToList()));
         }
         _logger.LogInformation("Request de criação de uma nova receita de nome: {Nome} verificada com sucesso", request.Nome);
 
@@ -42,7 +42,7 @@ public class CreateReceitaUseCase : ICreateReceitaUseCase
         if (receitaExistsResult.Value is true)
         {
             _logger.LogError("Erro ao verificar existência de receita de nome: {Nome}", request.Nome);
-            throw new ConflictError($"Já existe uma receita cadastrada com o nome: {request.Nome}");
+            return Result.Fail(new ConflictError($"Já existe uma receita cadastrada com o nome: {request.Nome}"));
         }
         _logger.LogInformation("Verificação de existência de receita de nome: {Nome} realizada com sucesso", request.Nome);
 

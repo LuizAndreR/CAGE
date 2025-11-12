@@ -35,7 +35,8 @@ public class LoginUseCase : ILoginUseCase
         if (!validationResult.IsValid)
         {
             _logger.LogWarning("Validação falhou para o login do usuario {Email}", request.Email);
-            throw new ValidationError(validationResult.Errors.Select(e => e.ErrorMessage).ToList());
+            var listErrors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+            return Result.Fail(new ValidationError(listErrors));
         }
         _logger.LogInformation("Validação realizada com sucesso para o login do usuario {Email}", request.Email);
 
@@ -44,7 +45,7 @@ public class LoginUseCase : ILoginUseCase
         if (usuarioResult.IsFailed)
         {
             _logger.LogWarning("Usuario {Email} não encontrado no sistema", request.Email);
-            throw new ValidationError(new List<string> { "Email ou senha inválidos" });
+            return Result.Fail(new ValidationError(new List<string> { "Email ou senha inválidos" }));
         }
         _logger.LogInformation("Usuario {Email} encontrado no sistema", request.Email);
 
@@ -53,7 +54,7 @@ public class LoginUseCase : ILoginUseCase
         if (!BCrypt.Net.BCrypt.Verify(request.Senha, usuario.SenhaHash))
         {
             _logger.LogWarning("Senha inválida para o usuario {Email}", request.Email);
-            throw new ValidationError(new List<string> { "Email ou senha inválidos" });
+            return Result.Fail(new ValidationError(new List<string> { "Email ou senha inválidos" }));
         }
         _logger.LogInformation("Senha verificada com sucesso para o usuario {Email}", request.Email);
 

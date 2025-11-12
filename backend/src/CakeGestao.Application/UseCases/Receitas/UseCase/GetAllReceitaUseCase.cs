@@ -29,7 +29,7 @@ public class GetAllReceitaUseCase : IGetAllReceitaUseCase
         if (receitasResult.IsFailed)
         {
             _logger.LogInformation("Nenhuma receita foi encontrada.");
-            throw new NotFoundError("Nenhuma receita foi encontrada no banco de dados.");
+            return Result.Fail(new NotFoundError("Nenhuma receita foi encontrada no banco de dados."));
         }
         _logger.LogInformation("Busca realizada com susseso, foi encontrado {Numero} receitas cadastrada no banco de dados.", receitasResult.Value.Count);
         

@@ -29,7 +29,7 @@ public class GetUsuarioUseCase : IGetUsuarioUseCase
         if (usuarioResult.IsFailed)
         {
             _logger.LogWarning("Usuário com ID: {Id} não encontrado no repositório", id);
-            throw new NotFoundError($"Usuário com ID: {id} não encontrado.");
+            return Result.Fail(new NotFoundError($"Usuário com ID: {id} não encontrado."));
         }
         _logger.LogInformation("Dados do usuário com ID: {Id} recuperados com sucesso do repositório", id);
 

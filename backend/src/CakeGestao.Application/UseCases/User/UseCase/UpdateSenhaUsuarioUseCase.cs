@@ -30,7 +30,7 @@ public class UpdateSenhaUsuarioUseCase : IUpdateSenhaUsuarioUseCase
         if (!validationResult.IsValid)
         {
             _logger.LogWarning("Validação falhou para update da senha do usuario {Id}", id);
-            throw new ValidationError(validationResult.Errors.Select(e => e.ErrorMessage).ToList());
+            return Result.Fail(new ValidationError(validationResult.Errors.Select(e => e.ErrorMessage).ToList()));
         }
         _logger.LogInformation("Validação realizada com sucesso para update da senha do usuario {Id}", id);
 
@@ -39,7 +39,7 @@ public class UpdateSenhaUsuarioUseCase : IUpdateSenhaUsuarioUseCase
         if (usuarioResult.IsFailed)
         {
             _logger.LogWarning("Usuario nao foi encontrado no banco de dados {Id}", id);
-            throw new NotFoundError("Usuario nao foi encontrado no banco de dados");
+            return Result.Fail(new NotFoundError("Usuario nao foi encontrado no banco de dados"));
         }
         var usuario = usuarioResult.Value;
         _logger.LogInformation("Processo de verificação realizada com susseso da existencia do usuario de id: {Id}", id);
@@ -48,7 +48,7 @@ public class UpdateSenhaUsuarioUseCase : IUpdateSenhaUsuarioUseCase
         if (!BCrypt.Net.BCrypt.Verify(request.SenhaAtual, usuario.SenhaHash))
         {
             _logger.LogInformation("Senha atual inválida para o usuario {Id}", id);
-            throw new ValidationError(new List<string> { "Senha atual inválida" });
+            return Result.Fail(new ValidationError(new List<string> { "Senha atual inválida" }));
         }
         _logger.LogInformation("Senha atual verificada com sucesso para o usuario de id: {Id}", id);
 
@@ -56,7 +56,7 @@ public class UpdateSenhaUsuarioUseCase : IUpdateSenhaUsuarioUseCase
         if (BCrypt.Net.BCrypt.Verify(request.NovaSenha, usuario.SenhaHash))
         {
             _logger.LogInformation("A nova senha é igual a senha atual para o usuario {Id}", id);
-            throw new ConflictError("A nova senha é igual ser igual a senha atual");
+            return Result.Fail(new ConflictError("A nova senha é igual ser igual a senha atual"));
         }
         _logger.LogInformation("Nova senha verificada com sucesso para o usuario de id: {Id}", id);
 

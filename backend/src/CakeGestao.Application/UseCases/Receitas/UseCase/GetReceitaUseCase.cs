@@ -28,7 +28,7 @@ public class GetReceitaUseCase : IGetReceitaUseCase
         if (resultRepository.IsFailed)
         {
             _logger.LogError("Receita de id: {Id} não encontrado no banco de dados", id);
-            throw new NotFoundError($"Receita de id: {id} não encontrado no banco de dados");
+            return Result.Fail(new NotFoundError($"Receita de id: {id} não encontrado no banco de dados"));
         }
         _logger.LogInformation("Receita de ID: {Id} encontrada com sucesso no banco de dados", id);
 

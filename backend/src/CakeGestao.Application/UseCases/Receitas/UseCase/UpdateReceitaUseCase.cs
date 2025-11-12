@@ -32,7 +32,7 @@ public class UpdateReceitaUseCase : IUpdateReceitaUseCase
         if (!validationResult.IsValid)
         {
             _logger.LogWarning("Validação falhou para a receita: {Nome}", request.Nome);
-            throw new ValidationError(validationResult.Errors.Select(e => e.ErrorMessage).ToList());
+            return Result.Fail(new ValidationError(validationResult.Errors.Select(e => e.ErrorMessage).ToList()));
         }
         _logger.LogInformation("Dados validados com sucesso para a receita: {Nome}", request.Nome);
 
@@ -41,7 +41,7 @@ public class UpdateReceitaUseCase : IUpdateReceitaUseCase
         if (existingReceitaResult.IsFailed)
         {
             _logger.LogWarning("Receita não encontrada para atualização: {Nome}", request.Nome);
-            throw new NotFoundError($"Receita com ID {id} não encontrada.");
+            return Result.Fail(new NotFoundError($"Receita com ID {id} não encontrada."));
         }
         _logger.LogInformation("Receita encontrada para atualização: {Nome}", request.Nome);
 

@@ -29,7 +29,7 @@ public class GetAllUsuarioUseCase : IGetAllUsuarioUseCase
         if (listUsuarioResult.IsFailed)
         {
             _logger.LogWarning("Nenhum usuario entrado no banco da dados");
-            throw new NotFoundError("Nenhum usuario entrado no banco da dados");
+            return Result.Fail(new NotFoundError("Nenhum usuario entrado no banco da dados"));
         }
         _logger.LogInformation("Processo realizado com sucesso na busca de usuario no banco de dados");
 
@@ -39,7 +39,7 @@ public class GetAllUsuarioUseCase : IGetAllUsuarioUseCase
         if (listUsuarioResult.Value.Count == 0)
         {
             _logger.LogWarning("Nenhum usuario comum entrado no banco da dados");
-            throw new NotFoundError("Nenhum usuario comum entrado no banco da dados");
+            return Result.Fail(new NotFoundError("Nenhum usuario comum entrado no banco da dados"));
         }
         _logger.LogInformation("Usuario com função Dono removido com sucesso da lista de usuarios");
 
