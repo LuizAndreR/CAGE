@@ -22,12 +22,12 @@ public class AuthContoller : ControllerBase
     [Authorize(Roles = "Admin, Dono")]
     public async Task<IActionResult> Cadastro([FromBody] CadastroRequest request)
     {
-        _logger.LogInformation("Recebendo requisição para cadastro de novo usuário com email: {Email}", (string)request.Email);
+        _logger.LogInformation("Recebendo requisição para cadastro de novo usuário com email: {Email}", request.Email);
         var result = await _authService.CreateUserAsync(request);
 
         if (result.IsSuccess)
         {
-            _logger.LogInformation("Usuário com email: {Email} cadastrado com sucesso. Código HTTP 201.", (string)request.Email);
+            _logger.LogInformation("Usuário com email: {Email} cadastrado com sucesso. Código HTTP 201.", request.Email);
             return Created();
         }
 
@@ -36,44 +36,41 @@ public class AuthContoller : ControllerBase
 
         if (erro is ValidationError validationError)
         {
-            _logger.LogWarning("Erro de validação ao cadastrar usuário com email: {Email}. Erros: {Errors}. TraceId: {TraceId}", (string)request.Email, string.Join(", ", validationError.Errors), traceId);
+            _logger.LogWarning("Erro de validação ao cadastrar usuário com email: {Email}. Erros: {Errors}. TraceId: {TraceId}", request.Email, string.Join(", ", validationError.Errors), traceId);
             return BadRequest(new
             {
                 title = "Erro de Validação",
                 status = 400,
-                errors = validationError.Errors,
-                traceId = traceId
+                errors = validationError.Errors
             });
         }
-        else if (erro is ConflictError conflictError)
+        if (erro is ConflictError conflictError)
         {
-            _logger.LogWarning("Conflito ao cadastrar usuário com email: {Email}. Mensagem: {Message}. TraceId: {TraceId}", (string)request.Email, conflictError.Message, traceId);
+            _logger.LogWarning("Conflito ao cadastrar usuário com email: {Email}. Mensagem: {Message}. TraceId: {TraceId}", request.Email, conflictError.Message, traceId);
             return Conflict(new
             {
                 title = "Conflito",
                 status = 409,
-                error = conflictError.Message,
-                traceId = traceId
+                error = conflictError.Message
             });
         }
 
-        _logger.LogError("Erro inesperado ao cadastrar usuário com email: {Email}. Mensagem: {Message}. TraceId: {TraceId}", (string)request.Email, erro.Message, traceId);
+        _logger.LogError("Erro inesperado ao cadastrar usuário com email: {Email}. Mensagem: {Message}. TraceId: {TraceId}", request.Email, erro.Message, traceId);
         return StatusCode(500, new
         {
             title = "Erro Interno do Servidor",
             status = 500,
-            error = "Ocorreu um erro interno no servidor. Tente novamente mais tarde.",
-            traceId = traceId
+            error = "Ocorreu um erro interno no servidor. Tente novamente mais tarde."
         });
     }
 
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
-        _logger.LogInformation("Recebendo requisição de login para o usuário com email: {Email}", (string)request.Email);
+        _logger.LogInformation("Recebendo requisição de login para o usuário com email: {Email}", request.Email);
         var tokenResponse = await _authService.Login(request);
 
-        _logger.LogInformation("Login realizado com sucesso para o usuário com email: {Email}. Código HTTP 200.", (string)request.Email);
+        _logger.LogInformation("Login realizado com sucesso para o usuário com email: {Email}. Código HTTP 200.", request.Email);
         return Ok(tokenResponse.Value);
     }
 
