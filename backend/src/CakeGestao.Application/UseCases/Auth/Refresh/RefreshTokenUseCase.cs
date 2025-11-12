@@ -34,7 +34,7 @@ public class RefreshTokenUseCase : IRefreshTokenUseCase
         if (tokenResult.IsFailed || tokenResult.Value.IsRevoked || tokenResult.Value.IsUsed || tokenResult.Value.ExpiresAt < DateTime.UtcNow)
         {
             _logger.LogWarning("Refresh token inválido ou expirado");
-            throw new ValidationError(new List<string> { "Refresh token inválido ou expirado" });
+            return Result.Fail(new ValidationError(new List<string> { "Refresh token inválido ou expirado" }));
         }
         _logger.LogInformation("Refresh token validado com sucesso");
 
@@ -50,7 +50,7 @@ public class RefreshTokenUseCase : IRefreshTokenUseCase
         if (usuarioResult.IsFailed)
         {
             _logger.LogWarning("Usuario associado ao refresh token não encontrado");
-            throw new NotFoundError("Usuario associado ao refresh token não encontrado");
+            return Result.Fail(new NotFoundError("Usuario associado ao refresh token não encontrado"));
         }
         _logger.LogInformation("Busca do usuario associado ao refresh token realizada com sucesso. Id usuario: {Id}", usuarioResult.Value.Id);
 

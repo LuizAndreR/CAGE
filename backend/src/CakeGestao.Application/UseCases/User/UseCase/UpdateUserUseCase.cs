@@ -30,7 +30,7 @@ public class UpdateUserUseCase : IUpdateUserUseCase
         if (!validationResult.IsValid)
         {
             _logger.LogWarning("Validação falhou para update do usuario {Id}", id);
-            throw new ValidationError(validationResult.Errors.Select(e => e.ErrorMessage).ToList());
+            return Result.Fail(new ValidationError(validationResult.Errors.Select(e => e.ErrorMessage).ToList()));
         }
         _logger.LogInformation("Validação realizada com sucesso para update do usuario {Id}", id);
         
@@ -39,7 +39,7 @@ public class UpdateUserUseCase : IUpdateUserUseCase
         if (usuarioResult.IsFailed)
         {
             _logger.LogWarning("Usuario nao foi encontrado no banco de dados {Id}", id);
-            throw new NotFoundError("Usuario nao foi encontrado no banco de dados");
+            return Result.Fail(new NotFoundError("Usuario nao foi encontrado no banco de dados"));
         }
         var usuario = usuarioResult.Value;
         _logger.LogInformation("Processo de verificação realizada com susseso da existencia do usuario de id: {Id}", id);

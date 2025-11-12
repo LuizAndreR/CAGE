@@ -30,7 +30,7 @@ public class UpdateFuncionarioUseCase : IUpdateFuncionarioUseCase
         if (!validationResult.IsValid)
         {
             _logger.LogWarning("Validação falhou para update da função do usuario {Id}", request.Id);
-            throw new ValidationError(validationResult.Errors.Select(e => e.ErrorMessage).ToList());
+            return Result.Fail(new ValidationError(validationResult.Errors.Select(e => e.ErrorMessage).ToList()));
         }
         _logger.LogInformation("Validação realizada com sucesso para update da função do usuario {Id}", request.Id);
 
@@ -39,7 +39,7 @@ public class UpdateFuncionarioUseCase : IUpdateFuncionarioUseCase
         if (usuarioResult.IsFailed)
         {
             _logger.LogWarning("Usuario nao foi encontrado no banco de dados {Id}", request.Id);
-            throw new NotFoundError("Usuario nao foi encontrado no banco de dados");
+            return Result.Fail(new NotFoundError("Usuario nao foi encontrado no banco de dados"));
         }
         var usuario = usuarioResult.Value;
         _logger.LogInformation("Processo de verificação realizada com susseso da existencia do usuario de id: {Id}", request.Id);
@@ -48,7 +48,7 @@ public class UpdateFuncionarioUseCase : IUpdateFuncionarioUseCase
         if (!Enum.TryParse<UserRole>(request.Role, true, out var userRole))
         {
             _logger.LogWarning("Role inválida fornecida para updade do usuario {Id}", request.Id);
-            throw new ValidationError(new List<string> { "Role inválida" });
+            return Result.Fail(new ValidationError(new List<string> { "Role inválida" }));
         }
         _logger.LogInformation("Role verificado com sucesso para updade do usuario {Id}", request.Id);
 
