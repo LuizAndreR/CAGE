@@ -11,4 +11,7 @@ public class Usuario
     public UserRole Role { get; set; }
     public DateTime DataCriacao { get; set; }
     public DateTime? UltimoLogin { get; set; }
+    
+    public int EmpresaId { get; set; }
+    public virtual required Empresa Empresa { get; set; }
 }

@@ -33,5 +33,10 @@ public class UsuarioMap : IEntityTypeConfiguration<Usuario>
 
         builder.Property(u => u.UltimoLogin)
             .IsRequired(false);
+        
+        builder.HasOne(u => u.Empresa)
+            .WithMany(e => e.Usuarios)
+            .HasForeignKey(u => u.EmpresaId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

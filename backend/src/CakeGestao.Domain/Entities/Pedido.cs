@@ -13,4 +13,7 @@ public class Pedido
     public ICollection<ItemPedido> Itens { get; set; } = new List<ItemPedido>();
 
     public virtual ICollection<TransacaoFinanceira> Transacoes { get; set; } = new List<TransacaoFinanceira>();
+
+    public int EmpresaId { get; set; }
+    public virtual required Empresa Empresa { get; set; }
 }

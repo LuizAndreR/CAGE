@@ -32,5 +32,10 @@ internal class PedidoMap : IEntityTypeConfiguration<Pedido>
         builder.Property(x => x.Status)
             .IsRequired()
             .HasMaxLength(50);
+        
+        builder.HasOne(x => x.Empresa)
+            .WithMany(x => x.Pedidos)
+            .HasForeignKey(x => x.EmpresaId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

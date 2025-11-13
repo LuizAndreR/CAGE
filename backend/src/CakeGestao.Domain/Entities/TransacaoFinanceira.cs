@@ -10,4 +10,7 @@ public class TransacaoFinanceira
 
     public int PedidoId { get; set; }
     public virtual Pedido Pedido { get; set; } = null!;
+    
+    public int EmpresaId { get; set; }
+    public virtual required Empresa Empresa { get; set; }
 }

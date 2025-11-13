@@ -10,4 +10,7 @@ public class Receita
 
     public ICollection<Ingrediente> Ingredientes { get; set; } = new List<Ingrediente>();
     public ICollection<ItemPedido> ItemPedidos { get; set; } = new List<ItemPedido>();
+    
+    public int EmpresaId { get; set; }
+    public virtual required Empresa Empresa { get; set; }
 }
