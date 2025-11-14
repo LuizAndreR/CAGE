@@ -21,7 +21,7 @@ public class AuthContoller : ApiControllerBase
 
     [HttpPost("cadastrodono/{empresaId}")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> CadastroDono([FromBody] CadastroRequest request,[FromRoute] int empresaId)
+    public async Task<IActionResult> CadastroDono([FromBody] CadastroRequest request, [FromRoute] int empresaId)
     {
         _logger.LogInformation("Recebendo requisição para cadastro do usuário dono com email: {Email}", request.Email);
         var result = await _authService.CreateUserAsync(request, empresaId);

@@ -9,7 +9,7 @@ namespace CakeGestao.API.Controllers;
 [ApiController]
 [Authorize]
 [Route("api/user/")]
-public class UserController : ControllerBase
+public class UserController : ApiControllerBase
 {
     private readonly ILogger<UserController> _logger;
     private readonly IUserService _userService;
@@ -27,8 +27,7 @@ public class UserController : ControllerBase
         _logger.LogInformation("ecebendo requisição para obter todos os usuários cadastro no banco de dados");
 
         var listUserResult = await _userService.GetAllUsuarioAsync();
-        _logger.LogInformation("{Count} Usuários obtido com sucesso. Código HTTP 200.", listUserResult.Value.Count);
-        return Ok(listUserResult.Value);
+        return HandleResult(listUserResult);
     }
 
     [HttpGet("getuser")]
@@ -48,8 +47,7 @@ public class UserController : ControllerBase
         _logger.LogInformation("Iniciando a requisição para obter o usuário com ID: {Id}", id);
         var userResult = await _userService.GetUsuarioByIdAsync(id.Value);
 
-        _logger.LogInformation("Usuário com ID: {Id} obtido com sucesso. Código HTTP 200.", id);
-        return Ok(userResult.Value);
+        return HandleResult(userResult);
     }
 
     [HttpPut("update")]
@@ -66,10 +64,9 @@ public class UserController : ControllerBase
         }
         
         _logger.LogInformation("Iniciando a requisição para update do usuário com ID: {Id}", id);
-        await _userService.UpdateUsuarioAsync(request, id.Value);
+        var userResult = await _userService.UpdateUsuarioAsync(request, id.Value);
 
-        _logger.LogInformation("Usuário com ID: {Id} atulizado com sucesso. Código HTTP 201.", id.Value);
-        return Created();
+        return HandleResult<object>(userResult);
     }
 
     [HttpPatch("updatesenha")]
@@ -86,10 +83,9 @@ public class UserController : ControllerBase
         }
         
         _logger.LogInformation("Iniciando a requisição para update da senha do usuário com ID: {Id}", id);
-        await _userService.UpdateSenhaUsuarioAsync(request, id.Value);
+        var userResult = await _userService.UpdateSenhaUsuarioAsync(request, id.Value);
 
-        _logger.LogInformation("Senha do usuário com ID: {Id} atulizada com sucesso. Código HTTP 201.", id.Value);
-        return Created();
+        return HandleResult<object>(userResult);
     }
 
     [HttpPatch("updatefuncionario")]
@@ -97,9 +93,8 @@ public class UserController : ControllerBase
     public async Task<IActionResult> UpdateFuncaoUsuario([FromBody] UpdateFuncionarioUsuarioRequest request)
     {
         _logger.LogInformation("Recebendo requisição para update da função do usuario");
-        await _userService.UpdateFuncionarioAsync(request);
-        _logger.LogInformation("Função do usuário com ID: {Id} atulizada com sucesso. Código HTTP 201.", request.Id);
-        return Created();
+        var userResult = await _userService.UpdateFuncionarioAsync(request);
+        return HandleResult<object>(userResult);
     }
 
     [HttpDelete("delete/{id}")]
@@ -108,8 +103,7 @@ public class UserController : ControllerBase
     {
         _logger.LogInformation("Recebendo requisição para deletar um usuário");
         int idValue = id;
-        await _userService.DeleteUsuarioAsync(id);
-        _logger.LogInformation("Usuário com ID: {Id} deletado com sucesso. Código HTTP 204.", idValue);
-        return NoContent();
+        var userResult = await _userService.DeleteUsuarioAsync(id);
+        return HandleResult<object>(userResult);
     }
 }
