@@ -18,4 +18,16 @@ public static class ClaimsPrincipalExtensions
 
         return Result.Fail("Token Invalido");
     }
+
+    public static Result<int> GetEmpresaId(this ClaimsPrincipal principal)
+    {
+        var empresaIdClaim = principal.FindFirst("EmpresaId");
+        if (empresaIdClaim == null)
+            return Result.Fail("Token Invalido");
+        if (int.TryParse(empresaIdClaim.Value, out var empresaId))
+        {
+            return Result.Ok(empresaId);
+        }
+        return Result.Fail("Token Invalido");
+    }
 }

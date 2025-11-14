@@ -21,7 +21,7 @@ public class AuthService : IAuthService
         _loginUseCase = loginUseCase;
     }
 
-    public async Task<Result> CreateUserAsync(CadastroRequest request) => await _cadastroUseCase.Execute(request);
+    public async Task<Result> CreateUserAsync(CadastroRequest request, int empresaId) => await _cadastroUseCase.Execute(request, empresaId);
     public async Task<Result<TokensResponce>> RefreshToken(RefreshTokenRequest request) => await _refreshTokenUseCase.Execute(request);
     public async Task<Result<TokensResponce>> Login(LoginRequest request) => await _loginUseCase.Execute(request);  
 }

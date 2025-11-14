@@ -59,7 +59,7 @@ public class LoginUseCase : ILoginUseCase
         _logger.LogInformation("Senha verificada com sucesso para o usuario {Email}", request.Email);
 
         _logger.LogInformation("Gerando tokens de acesso e refresh token para o usuario {Email}", request.Email);
-        var tokens = await _jwtTokenService.TokenService(usuario.Id, usuario.Email, usuario.Role.ToString());
+        var tokens = await _jwtTokenService.TokenService(usuario.Id, usuario.Email, usuario.Role.ToString(), usuario.EmpresaId);
         _logger.LogInformation("Tokens gerados com sucesso para o usuario {Email}", request.Email);
 
         _logger.LogInformation("Inciando o processo de atualização do ultimo login do usuario {Email}", request.Email); 

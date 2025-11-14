@@ -3,7 +3,6 @@ using CakeGestao.Application.Dtos.Responses;
 using CakeGestao.Domain.Interfaces.Repositories;
 using CakeGestao.Domain.Interfaces.Security;
 using FluentResults;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.Extensions.Logging;
 
 namespace CakeGestao.Application.UseCases.Auth.Refresh;
@@ -52,10 +51,11 @@ public class RefreshTokenUseCase : IRefreshTokenUseCase
             _logger.LogWarning("Usuario associado ao refresh token não encontrado");
             return Result.Fail(new NotFoundError("Usuario associado ao refresh token não encontrado"));
         }
+        var usuario = usuarioResult.Value;
         _logger.LogInformation("Busca do usuario associado ao refresh token realizada com sucesso. Id usuario: {Id}", usuarioResult.Value.Id);
 
         _logger.LogInformation("Gerando novos tokens de acesso e refresh token para o usuario Id: {Id}", usuarioResult.Value.Id);
-        var tokens = await _jwtTokenService.TokenService(usuarioResult.Value.Id, usuarioResult.Value.Email, usuarioResult.Value.Role.ToString());
+        var tokens = await _jwtTokenService.TokenService(usuario.Id, usuario.Email, usuario.Role.ToString(), usuario.EmpresaId);
         _logger.LogInformation("Novos tokens gerados com sucesso para o usuario Id: {Id}", usuarioResult.Value.Id);
 
         _logger.LogInformation("Mapeando RefreshTokenResponce com os novos tokens do usuario Id: {Id}", usuarioResult.Value.Id);

@@ -6,7 +6,7 @@ namespace CakeGestao.Application.Services.Interface;
 
 public interface IAuthService
 {
-    public Task<Result> CreateUserAsync(CadastroRequest request);
+    public Task<Result> CreateUserAsync(CadastroRequest request, int empresaId);
     public Task<Result<TokensResponce>> RefreshToken(RefreshTokenRequest request);
     public Task<Result<TokensResponce>> Login(LoginRequest request);
 }

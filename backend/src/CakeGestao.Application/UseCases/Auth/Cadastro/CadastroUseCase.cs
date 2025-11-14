@@ -24,7 +24,7 @@ public class CadastroUseCase : ICadastroUseCase
         _validator = validator;
     }
 
-    public async Task<Result> Execute(CadastroRequest request)
+    public async Task<Result> Execute(CadastroRequest request, int empresaId)
     {
         _logger.LogInformation("Iniciando o processo de cadastro de um novo usuario {Email}", request.Email);
 
@@ -61,6 +61,7 @@ public class CadastroUseCase : ICadastroUseCase
 
         _logger.LogInformation("Iniciando o processo de mapeamento do novo usuario {Email}", request.Email);
         var usuario = _mapper.Map<Usuario>(request);
+        usuario.EmpresaId = empresaId;
         usuario.SenhaHash = senhaHash;
         usuario.Role = userRole;
         _logger.LogInformation("Mapeamento realizado com sucesso para o novo usuario {Email}", request.Email);

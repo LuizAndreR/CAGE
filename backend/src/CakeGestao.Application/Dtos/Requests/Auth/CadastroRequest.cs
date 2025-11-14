@@ -7,3 +7,4 @@ public class CadastroRequest
     public required string Senha { get; set; }
     public required string Role { get; set; }
 }
+    
