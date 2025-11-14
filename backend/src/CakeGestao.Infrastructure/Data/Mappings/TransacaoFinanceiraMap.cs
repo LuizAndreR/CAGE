@@ -16,6 +16,10 @@ internal class TransacaoFinanceiraMap : IEntityTypeConfiguration<TransacaoFinanc
             .IsRequired()
             .HasMaxLength(50);
 
+        builder.Property(x => x.Categoria)
+            .IsRequired()
+            .HasMaxLength(50);
+
         builder.Property(x => x.Valor)
             .IsRequired()
             .HasColumnType("decimal(10,2)");
