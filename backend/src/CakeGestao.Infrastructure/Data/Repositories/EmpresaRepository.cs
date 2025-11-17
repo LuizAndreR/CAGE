@@ -17,6 +17,14 @@ public class EmpresaRepository : IEmpresaRepository
         _logger = logger;
     }
 
+    public async Task<List<Empresa>> GetAllEmpresasAsync()
+    {
+        _logger.LogInformation("Buscando todas as empresas no banco de dados");
+        var empresas = await _context.Empresas.ToListAsync();
+        _logger.LogInformation("Total de {Count} empresas encontradas no banco de dados", empresas.Count);
+        return empresas;
+    }
+    
     public async Task<Result<Empresa>> GetEmpresaByIdAsync(int empresaId)
     {
         _logger.LogInformation("Buscando empresa com ID {EmpresaId} no banco de dados", empresaId);
@@ -46,12 +54,18 @@ public class EmpresaRepository : IEmpresaRepository
         return Result.Ok();
     }
 
-    public async Task<List<Empresa>> GetAllEmpresasAsync()
+    public async Task<Result> EmpresaExistsByIdAsync(int empresaId)
     {
-        _logger.LogInformation("Buscando todas as empresas no banco de dados");
-        var empresas = await _context.Empresas.ToListAsync();
-        _logger.LogInformation("Total de {Count} empresas encontradas no banco de dados", empresas.Count);
-        return empresas;
+        _logger.LogInformation("erificando existência de empresa com id {Id} no banco de dados", empresaId);
+
+        var exists = await _context.Empresas.AnyAsync(e => e.Id == empresaId);
+        if (exists is false)
+        {
+            _logger.LogInformation("Empresa com id {Id} não existe no banco de dados", empresaId); 
+            return Result.Fail($"Empresa com id {empresaId} não existe no banco de dados");
+        }
+        _logger.LogInformation("Empresa com id {Id} já existe no banco de dados", empresaId);
+        return Result.Ok();
     }
 
     public async Task CreateEmpresaAsync(Empresa empresa)

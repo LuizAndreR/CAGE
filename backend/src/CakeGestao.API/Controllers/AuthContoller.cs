@@ -18,17 +18,17 @@ public class AuthContoller : ApiControllerBase
         _authService = authService;
         _logger = logger;
     }
-
-    [HttpPost("cadastrodono/{empresaId}")]
+    
+    [HttpPost("cadastro")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> CadastroDono([FromBody] CadastroRequest request, [FromRoute] int empresaId)
+    public async Task<IActionResult> CadastroDono([FromBody] CadastroRequest request, [FromQuery] int? empresaId)
     {
-        _logger.LogInformation("Recebendo requisição para cadastro do usuário dono com email: {Email}", request.Email);
+        _logger.LogInformation("Recebendo requisição para cadastro usuario de role Dono ou Admin com email: {Email}", request.Email);
         var result = await _authService.CreateUserAsync(request, empresaId);
         return HandleResult<object>(result);
     }
 
-    [HttpPost("cadastro")]
+    [HttpPost("cadastrofunc")]
     [Authorize(Roles = "Admin, Dono")]
     public async Task<IActionResult> Cadastro([FromBody] CadastroRequest request)
     {

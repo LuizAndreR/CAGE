@@ -45,7 +45,7 @@ namespace CakeGestao.Infrastructure.Migrations
                 table: "TransacoesFinanceiras");
 
             migrationBuilder.DropColumn(
-                name: "Emdereco",
+                name: "Endereco",
                 table: "Empresa");
 
             migrationBuilder.AlterColumn<string>(

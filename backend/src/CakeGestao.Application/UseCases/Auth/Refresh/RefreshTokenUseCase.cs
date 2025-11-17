@@ -53,7 +53,7 @@ public class RefreshTokenUseCase : IRefreshTokenUseCase
         }
         var usuario = usuarioResult.Value;
         _logger.LogInformation("Busca do usuario associado ao refresh token realizada com sucesso. Id usuario: {Id}", usuarioResult.Value.Id);
-
+        
         _logger.LogInformation("Gerando novos tokens de acesso e refresh token para o usuario Id: {Id}", usuarioResult.Value.Id);
         var tokens = await _jwtTokenService.TokenService(usuario.Id, usuario.Email, usuario.Role.ToString(), usuario.EmpresaId);
         _logger.LogInformation("Novos tokens gerados com sucesso para o usuario Id: {Id}", usuarioResult.Value.Id);
