@@ -1,0 +1,64 @@
+﻿using CakeGestao.Domain.Entities;
+using CakeGestao.Domain.Interfaces.Repositories;
+using FluentResults;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+
+namespace CakeGestao.Infrastructure.Data.Repositories;
+
+public class EmpresaRepository : IEmpresaRepository
+{
+    private readonly CageContext _context;
+    private readonly ILogger<EmpresaRepository> _logger;
+
+    public EmpresaRepository(CageContext context, ILogger<EmpresaRepository> logger)
+    {
+        _context = context;
+        _logger = logger;
+    }
+
+    public async Task<Result<Empresa>> GetEmpresaByIdAsync(int empresaId)
+    {
+        _logger.LogInformation("Buscando empresa com ID {EmpresaId} no banco de dados", empresaId);
+        var empresa = await _context.Empresas.FindAsync(empresaId);
+        if (empresa == null)
+        {
+            _logger.LogWarning("Empresa com ID {EmpresaId} não encontrada no banco de dados", empresaId);
+            return Result.Fail<Empresa>($"Empresa com ID {empresaId} não encontrada.");
+        }
+
+        _logger.LogInformation("Empresa com ID {EmpresaId} encontrada no banco de dados", empresaId);
+        return Result.Ok(empresa);
+    }
+
+    public async Task<Result> EmpresaExistsByNomeAsync(string nome)
+    {
+        _logger.LogInformation("Verificando existência de empresa com nome {Nome} no banco de dados", nome);
+
+        var exists = await _context.Empresas.AnyAsync(e => e.Nome == nome);
+        if (exists is true)
+        {
+            _logger.LogInformation("Empresa com nome {Nome} já existe no banco de dados", nome);
+            return Result.Fail($"Empresa com nome {nome} já existe.");
+        }
+
+        _logger.LogInformation("Empresa com nome {Nome} não existe no banco de dados", nome);  
+        return Result.Ok();
+    }
+
+    public async Task<List<Empresa>> GetAllEmpresasAsync()
+    {
+        _logger.LogInformation("Buscando todas as empresas no banco de dados");
+        var empresas = await _context.Empresas.ToListAsync();
+        _logger.LogInformation("Total de {Count} empresas encontradas no banco de dados", empresas.Count);
+        return empresas;
+    }
+
+    public async Task CreateEmpresaAsync(Empresa empresa)
+    {
+        _logger.LogInformation("Adicionando nova empresa {Nome} ao banco de dados", empresa.Nome);
+        await _context.Empresas.AddAsync(empresa);
+        await _context.SaveChangesAsync();
+        _logger.LogInformation("Empresa {Nome} adicionada com sucesso ao banco de dados", empresa.Nome);
+    }
+}

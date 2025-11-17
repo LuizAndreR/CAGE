@@ -1,11 +1,14 @@
+using CakeGestao.Domain.Enum;
+
 namespace CakeGestao.Domain.Entities;
 
 public class Empresa
 {
     public int Id { get; set; }
-    public required string Nome { get; set; }
+    public required string Nome { get; set; }   
+    public required string Emdereco { get; set; }
     public DateTime DataCadastro { get; set; }
-    public required string Status { get; set; }
+    public required StatusEmpresaEnum Status { get; set; }
 
     public required ICollection<Receita> Receitas { get; set; }
     public required ICollection<Pedido> Pedidos { get; set; }

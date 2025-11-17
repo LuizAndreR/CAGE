@@ -5,8 +5,14 @@ using CakeGestao.Application.Services.Service;
 using CakeGestao.Application.UseCases.Auth.Cadastro;
 using CakeGestao.Application.UseCases.Auth.Login;
 using CakeGestao.Application.UseCases.Auth.Refresh;
+using CakeGestao.Application.UseCases.Empresas.Interface;
+using CakeGestao.Application.UseCases.Empresas.UseCase;
+using CakeGestao.Application.UseCases.Financeiro.Interface;
+using CakeGestao.Application.UseCases.Financeiro.UseCase;
 using CakeGestao.Application.UseCases.Receitas.Interface;
 using CakeGestao.Application.UseCases.Receitas.UseCase;
+using CakeGestao.Application.UseCases.User.Interface;
+using CakeGestao.Application.UseCases.User.UseCase;
 using CakeGestao.Domain.Interfaces.Repositories;
 using CakeGestao.Domain.Interfaces.Security;
 using CakeGestao.Infrastructure.Data;
@@ -19,8 +25,6 @@ using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Serilog.Formatting.Json;
 using System.Text;
-using CakeGestao.Application.UseCases.User.Interface;
-using CakeGestao.Application.UseCases.User.UseCase;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -78,18 +82,26 @@ builder.Services.AddScoped<IUpdateSenhaUsuarioUseCase, UpdateSenhaUsuarioUseCase
 builder.Services.AddScoped<IUpdateFuncionarioUseCase, UpdateFuncionarioUseCase>();
 builder.Services.AddScoped<IDeleteUsuarioUseCase, DeleteUsuarioUseCase>();
 
+builder.Services.AddScoped<ICreateEmpresaUseCase, CreateEmpresaUseCase>();
+
+builder.Services.AddScoped<ICreateTransacaoUseCase, CreateTransacaoUseCase>();
+
 builder.Services.AddScoped<ICreateReceitaUseCase, CreateReceitaUseCase>();
 builder.Services.AddScoped<IGetReceitaUseCase, GetReceitaUseCase>();
 builder.Services.AddScoped<IGetAllReceitaUseCase, GetAllReceitaUseCase>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IEmpresaService, EmpresaService>();
+builder.Services.AddScoped<IFinanceiroService, FinanceiroService>();
 builder.Services.AddScoped<IReceitaService, ReceitaService>();
 
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
-builder.Services.AddScoped<ITokenRepository, TokenRepository>();        
+builder.Services.AddScoped<ITokenRepository, TokenRepository>();    
+builder.Services.AddScoped<IEmpresaRepository, EmpresaRepository>();
+builder.Services.AddScoped<IFinanceiroRepository, FinanceiroRepository>();
 builder.Services.AddScoped<IReceitaRepository, ReceitaRepository>();
 
 builder.Services.AddValidatorsFromAssembly(typeof(CreateReceitaUseCase).Assembly);
