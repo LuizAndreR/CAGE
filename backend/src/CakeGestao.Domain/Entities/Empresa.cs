@@ -6,7 +6,7 @@ public class Empresa
 {
     public int Id { get; set; }
     public required string Nome { get; set; }   
-    public required string Emdereco { get; set; }
+    public required string Endereco { get; set; }
     public DateTime DataCadastro { get; set; }
     public required StatusEmpresaEnum Status { get; set; }
 

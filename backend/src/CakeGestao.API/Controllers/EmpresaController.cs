@@ -1,19 +1,19 @@
 ﻿using CakeGestao.Application.Dtos.Requests.Empresa;
-using CakeGestao.Application.Services.Service;
+using CakeGestao.Application.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CakeGestao.API.Controllers;
 
 [ApiController]
-[Route("api/empresa")]
+[Route("api/empresa/")]
 [Authorize(Roles = "Admin")]
 public class EmpresaController : ApiControllerBase
 {
-    private readonly EmpresaService _empresaService;
+    private readonly IEmpresaService _empresaService;
     private readonly ILogger<EmpresaController> _logger;
 
-    public EmpresaController(EmpresaService empresaService, ILogger<EmpresaController> logger)
+    public EmpresaController(IEmpresaService empresaService, ILogger<EmpresaController> logger)
     {
         _empresaService = empresaService;
         _logger = logger;

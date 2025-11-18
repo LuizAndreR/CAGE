@@ -75,6 +75,7 @@ public class LoginUseCase : ILoginUseCase
         };
         _logger.LogInformation("Mapeamento do TokensResponce realizado com sucesso para o usuario {Email}", request.Email);
 
+        _logger.LogInformation("Processo de login realizado com susseso");
         return Result.Ok(tokenResponse);
     }
 }

@@ -10,10 +10,12 @@ namespace CakeGestao.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            // 1. Removemos a FK (mantém como estava)
             migrationBuilder.DropForeignKey(
                 name: "FK_Usuarios_Empresa_EmpresaId",
                 table: "Usuarios");
 
+            // 2. Alteramos o Usuario.EmpresaId (mantém como estava)
             migrationBuilder.AlterColumn<int>(
                 name: "EmpresaId",
                 table: "Usuarios",
@@ -22,16 +24,22 @@ namespace CakeGestao.Infrastructure.Migrations
                 oldClrType: typeof(int),
                 oldType: "integer");
 
+            // 3. CORREÇÃO AQUI:
+            // Em vez de usar AlterColumn, usamos SQL direto para converter.
+            // O 'USING 0' força todos os valores antigos a virarem 0, evitando erro de conversão.
+            migrationBuilder.Sql("ALTER TABLE \"Empresa\" ALTER COLUMN \"Status\" TYPE integer USING 0;");
+
+            // Opcional: Se precisar restaurar a restrição de Not Null ou Default após converter
             migrationBuilder.AlterColumn<int>(
                 name: "Status",
                 table: "Empresa",
                 type: "integer",
-                maxLength: 150,
                 nullable: false,
                 oldClrType: typeof(string),
                 oldType: "character varying(150)",
                 oldMaxLength: 150);
 
+            // 4. Adicionamos a FK de volta (mantém como estava)
             migrationBuilder.AddForeignKey(
                 name: "FK_Usuarios_Empresa_EmpresaId",
                 table: "Usuarios",

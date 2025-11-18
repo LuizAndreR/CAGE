@@ -48,14 +48,14 @@ public class CadastroUseCase : ICadastroUseCase
         }
         _logger.LogInformation("Role verificado com sucesso para o novo usuario {Email}", request.Email);
 
-        _logger.LogInformation("Iniciando o processo de varificação do id da empresa {Id}", empresaId);
+        _logger.LogInformation("Verificando se a empresaId é obrigatória para o novo usuario {Email}", request.Email);
         if (userRole != UserRole.Admin && empresaId == null)
         {
-            _logger.LogWarning("Validação do id da empresa ");
-            return Result.Fail(new ValidationError(new List<string>{"Id da empresa do usuario e invalido"}));
+            _logger.LogWarning("Id da empresa é obrigatório para o novo usuario {Email} com role {Role}", request.Email, request.Role);
+            return Result.Fail(new ValidationError(new List<string> { "Id da empresa é obrigatório para o novo usuario" }));
         }
-        _logger.LogInformation("Verificação realizado com susseso");
-        
+        _logger.LogInformation("Verificação da obrigatoriedade da empresaId realizada com sucesso para o novo usuario {Email}", request.Email);
+
         _logger.LogInformation("Verificando se existencia do usuario {Email}", request.Email);
         var usuarioExistenteResult = await _usuarioRepository.GetUsuarioByEmailAsync(request.Email);
         if (usuarioExistenteResult.IsSuccess)
