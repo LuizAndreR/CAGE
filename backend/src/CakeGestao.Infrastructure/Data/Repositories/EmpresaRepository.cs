@@ -17,12 +17,17 @@ public class EmpresaRepository : IEmpresaRepository
         _logger = logger;
     }
 
-    public async Task<List<Empresa>> GetAllEmpresasAsync()
+    public async Task<Result<List<Empresa>>> GetAllEmpresasAsync()
     {
         _logger.LogInformation("Buscando todas as empresas no banco de dados");
         var empresas = await _context.Empresas.ToListAsync();
+        if (empresas.Count is 0)
+        {
+            _logger.LogInformation("Não foi entrcontado nenhuma empresa cadastrada no banco de dados.");
+            return Result.Fail("Não foi entrcontado nenhuma empresa cadastrada no banco de dados.");
+        }
         _logger.LogInformation("Total de {Count} empresas encontradas no banco de dados", empresas.Count);
-        return empresas;
+        return Result.Ok(empresas);
     }
     
     public async Task<Result<Empresa>> GetEmpresaByIdAsync(int empresaId)
