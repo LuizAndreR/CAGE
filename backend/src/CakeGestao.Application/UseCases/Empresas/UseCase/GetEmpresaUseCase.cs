@@ -29,7 +29,7 @@ public class GetEmpresaUseCase : IGetEmpresaUseCase
         if (empresaResult.IsFailed)
         {
             _logger.LogWarning("Empresa com id: {Id} não encontrada no repositório", id);
-            return Result.Fail(new NotFoundError($"Empresa com id: {id} não encontrada."));
+            return Result.Fail(new NotFoundError($"Empresa não encontrada."));
         }
         _logger.LogInformation("Empresa com id: {Id} encontrada com sucesso no repositório", id);
 

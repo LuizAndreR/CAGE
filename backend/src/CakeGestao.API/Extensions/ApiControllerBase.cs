@@ -27,7 +27,7 @@ public abstract class ApiControllerBase : ControllerBase
             {
                 title = "Conflito",
                 status = 409,
-                error = conflictError.Message,
+                error = conflictError.Errors,
                 traceId
             });
         }
@@ -37,7 +37,7 @@ public abstract class ApiControllerBase : ControllerBase
             {
                 title = "Não Encontrado",
                 status = 404,
-                error = notFoundError.Message,
+                error = notFoundError.Errors,
                 traceId
             });
         }
