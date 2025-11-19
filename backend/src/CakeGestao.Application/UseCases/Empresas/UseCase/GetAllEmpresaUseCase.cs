@@ -24,20 +24,20 @@ public class GetAllEmpresaUseCase : IGetAllEmpresaUseCase
     {
         _logger.LogInformation("Iniciando o processo de get de tadas as empresa registado no banco de dados");
 
-        _logger.LogInformation("Iniciando o processo de busca no banco de dados");
+        _logger.LogInformation("Iniciando o processo de busca de todas as empresa cadastrada no banco de dados");
         var listEmpresaResult = await _empresaRepository.GetAllEmpresasAsync();
         if (listEmpresaResult.IsFailed)
         {
-            _logger.LogInformation("Não foi encontrado empresa no banco de dados");
-            return Result.Fail("Não foi encontrado empresa cadastrada");
+            _logger.LogInformation("Não foi encontrado empresa cadastrada no banco de dados");
+            return Result.Fail(new NotFoundError("Não foi encontrado empresa cadastrada no banco de dados "));
         }
-        _logger.LogInformation("Busca realizada com sucesso, foi encontrado {Empresa} empresas", listEmpresaResult.Value.Count);
+        _logger.LogInformation("Busca realizada com sucesso, foi encontrado {Empresa} empresas cadastradas", listEmpresaResult.Value.Count);
         
-        _logger.LogInformation("Inicinando o processo de mapeamento das entidades");
+        _logger.LogInformation("Inicinando o processo de mapeamento das entidades da lista de empreasa");
         var listEmpresa = _mapper.Map<List<EmpresaResponse>>(listEmpresaResult.Value);
-        _logger.LogInformation("Mapeamento realizado com susseso");
+        _logger.LogInformation("Mapeamento realizado com susseso da lista de empreasa");
         
-        _logger.LogInformation("Processo de GetAll realizado com sucesso");
+        _logger.LogInformation("Processo de GetAll de empresa realizado com sucesso");
         return Result.Ok(listEmpresa);
     }
 }

@@ -34,8 +34,7 @@ public class CreateEmpresaUseCase : ICreateEmpresaUseCase
         if (!validationResult.IsValid)
         {
             _logger.LogWarning("Validação falhou para o cadastro da nova empresa de nome: {Nome}", request.Nome);
-            var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
-            return Result.Fail(new ValidationError(errors));
+            return Result.Fail(new ValidationError(validationResult.Errors.Select(e => e.ErrorMessage).ToList()));
         }
         _logger.LogInformation("Dados da nova empresa validados com sucesso");
 

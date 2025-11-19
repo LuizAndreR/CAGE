@@ -48,7 +48,7 @@ public class AuthContoller : ApiControllerBase
     }
 
     [HttpPost("refresh")]
-    [Authorize]
+    [AllowAnonymous]
     public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request)
     {
         _logger.LogInformation("Recebendo requisição para refresh token.");

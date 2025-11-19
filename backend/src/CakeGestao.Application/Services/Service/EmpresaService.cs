@@ -10,13 +10,22 @@ public class EmpresaService : IEmpresaService
 {
     private readonly ICreateEmpresaUseCase _createEmpresaUseCase;
     private readonly IGetAllEmpresaUseCase _getAllEmpresaUseCase;
+    private readonly IGetEmpresaUseCase _getEmpresaUseCase;
+    private readonly IUpdateEmpresaUseCase _updateEmpresaUseCase;
+    private readonly IDeleteEmpresaUseCase _deleteEmpresaUseCase;
 
-    public EmpresaService(ICreateEmpresaUseCase createEmpresaUseCase, IGetAllEmpresaUseCase getAllEmpresaUseCase)
+    public EmpresaService(ICreateEmpresaUseCase createEmpresaUseCase, IGetAllEmpresaUseCase getAllEmpresaUseCase, IGetEmpresaUseCase getEmpresaUseCase, IUpdateEmpresaUseCase updateEmpresaUseCase, IDeleteEmpresaUseCase deleteEmpresaUseCase)
     {
         _createEmpresaUseCase = createEmpresaUseCase;
         _getAllEmpresaUseCase = getAllEmpresaUseCase;
+        _getEmpresaUseCase = getEmpresaUseCase;
+        _updateEmpresaUseCase = updateEmpresaUseCase;
+        _deleteEmpresaUseCase = deleteEmpresaUseCase;
     }
 
     public async Task<Result> CreateAsync(CreateEmpresaRequest request) => await _createEmpresaUseCase.ExecuteAsync(request);
     public async Task<Result<List<EmpresaResponse>>> GetAllAsync() => await _getAllEmpresaUseCase.ExecuteAsync();
+    public async Task<Result<EmpresaResponse>> GetByIdAsync(int id) => await _getEmpresaUseCase.ExecuteAsync(id);
+    public async Task<Result> UpdateAsync(UpdateEmpresaRequest request, int id) => await _updateEmpresaUseCase.ExecuteAsync(request, id);
+    public async Task<Result> DeleteAsync(int id) => await _deleteEmpresaUseCase.ExecuteAsync(id);
 }

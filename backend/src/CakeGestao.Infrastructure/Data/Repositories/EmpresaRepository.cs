@@ -76,8 +76,28 @@ public class EmpresaRepository : IEmpresaRepository
     public async Task CreateEmpresaAsync(Empresa empresa)
     {
         _logger.LogInformation("Adicionando nova empresa {Nome} ao banco de dados", empresa.Nome);
-        await _context.Empresas.AddAsync(empresa);
+        _context.Empresas.Add(empresa);
         await _context.SaveChangesAsync();
         _logger.LogInformation("Empresa {Nome} adicionada com sucesso ao banco de dados", empresa.Nome);
+    }
+
+    public async Task UpdateEmpresaAsync(Empresa empresa)
+    {
+        _logger.LogInformation("Iniciando atualização da empresa com ID {EmpresaId}", empresa.Id);
+
+        _context.Empresas.Update(empresa);
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation("Empresa com ID {EmpresaId} atualizada com sucesso", empresa.Id);
+    }
+
+    public async Task DeleteEmpresaAsync(Empresa empresa)
+    {
+        _logger.LogInformation("Iniciando delete da empresa com ID {EmpresaId}", empresa.Id);
+
+        _context.Empresas.Remove(empresa);
+        await _context.SaveChangesAsync();
+
+        _logger.LogInformation("Empresa com ID {EmpresaId} deletado com sucesso", empresa.Id);
     }
 }
