@@ -19,6 +19,14 @@ public class EmpresaController : ApiControllerBase
         _logger = logger;
     }
 
+    [HttpGet("GetAll")]
+    public async Task<IActionResult> GetAllEmpresas()
+    {
+        _logger.LogInformation("Recebendo solicitação de getall das empresa cadastrado no banco de dados");
+        var result = await _empresaService.GetAllAsync();
+        return HandleResult(result);
+    }
+    
     [HttpPost("create")]
     public async Task<IActionResult> CreateEmpresa([FromBody] CreateEmpresaRequest request)
     {
