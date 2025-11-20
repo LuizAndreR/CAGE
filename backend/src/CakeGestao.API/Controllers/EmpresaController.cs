@@ -55,6 +55,15 @@ public class EmpresaController : ApiControllerBase
         return HandleResult<object> (result);
     }
 
+    [HttpPut("updatestatus/{id}")]
+    public async Task<IActionResult> UpdateStatusEmpresa([FromBody] UpdateStatusEmpresaRequest request, [FromRoute] int id)
+    {
+        _logger.LogInformation("Recebendo solicitação para update no status da empresa com o id: {Id}", id);
+        var result = await _empresaService.UpdateStatusAsync(request, id);
+        _logger.LogInformation("Solicitação para update status da empresa com o id: {Id} processada com sucesso", id);
+        return HandleResult<object>(result);
+    }
+
     [HttpDelete("delete/{Id}")]
     public async Task<IActionResult> DeleteEmpresa([FromRoute] int id)
     {

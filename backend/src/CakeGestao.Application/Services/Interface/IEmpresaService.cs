@@ -11,4 +11,5 @@ public interface IEmpresaService
     public Task<Result<EmpresaResponse>> GetByIdAsync(int id);
     public Task<Result> UpdateAsync(UpdateEmpresaRequest request, int id);
     public Task<Result> DeleteAsync(int id);
+    public Task<Result> UpdateStatusAsync(UpdateStatusEmpresaRequest request, int id);
 }
