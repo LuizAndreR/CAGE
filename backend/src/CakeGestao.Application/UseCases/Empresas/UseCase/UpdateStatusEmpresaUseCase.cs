@@ -46,9 +46,17 @@ public class UpdateStatusEmpresaUseCase : IUpdateStatusEmpresaUseCase
         }
         _logger.LogInformation("{UseCaseLogPrefix} Empresa de id: {Id} encontrada com sucesso", UseCaseLogPrefix, id);
 
+        _logger.LogInformation("{UseCaseLogPrefix} Verificando se o status solicitado é o mesmo que o atual para a empresa de id: {Id}", UseCaseLogPrefix, id);
+        var status = Enum.Parse<StatusEmpresaEnum>(request.Status);
+        if (status == empresaResult.Value.Status)
+        {
+            _logger.LogWarning("{UseCaseLogPrefix} O status solicitado já é o status atual da empresa de id: {Id}. Nenhuma alteração será realizada.", UseCaseLogPrefix, id);
+            return Result.Ok();
+        }
+        _logger.LogInformation("{UseCaseLogPrefix} O status solicitado é diferente do atual. Prosseguindo com a atualização para a empresa de id: {Id}", UseCaseLogPrefix, id);
+
         _logger.LogInformation("{UseCaseLogPrefix} Iniciando mapeamento do novo status para a empresa de id: {Id}", UseCaseLogPrefix, id);
         var empresa = empresaResult.Value;
-        var status = Enum.Parse<StatusEmpresaEnum>(request.Status);
         empresa.Status = status;
         _logger.LogInformation("{UseCaseLogPrefix} Mapeamento do novo status para a empresa de id: {Id} concluído", UseCaseLogPrefix, id);
 
