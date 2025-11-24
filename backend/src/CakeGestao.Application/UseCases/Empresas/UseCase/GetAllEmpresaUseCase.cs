@@ -12,6 +12,7 @@ public class GetAllEmpresaUseCase : IGetAllEmpresaUseCase
     private readonly IEmpresaRepository _empresaRepository;
     private readonly ILogger<GetAllEmpresaUseCase> _logger;
     private readonly IMapper _mapper;
+    private const string UseCaseLogPrefix = "[Get All Empresas]";
 
     public GetAllEmpresaUseCase(IEmpresaRepository empresaRepository, ILogger<GetAllEmpresaUseCase> logger, IMapper mapper)
     {
@@ -22,22 +23,21 @@ public class GetAllEmpresaUseCase : IGetAllEmpresaUseCase
 
     public async Task<Result<List<EmpresaResponse>>> ExecuteAsync()
     {
-        _logger.LogInformation("Iniciando o processo de get de tadas as empresa registado no banco de dados");
+        _logger.LogInformation("{UseCaseLogPrefix} Iniciando processo de busca de todas as empresas", UseCaseLogPrefix);
 
-        _logger.LogInformation("Iniciando o processo de busca de todas as empresa cadastrada no banco de dados");
         var listEmpresaResult = await _empresaRepository.GetAllEmpresasAsync();
         if (listEmpresaResult.IsFailed)
         {
-            _logger.LogInformation("Não foi encontrado empresa cadastrada no banco de dados");
-            return Result.Fail(new NotFoundError("Não foi encontrado empresa cadastrada no banco de dados "));
+            _logger.LogWarning("{UseCaseLogPrefix} Falha ao buscar empresas no banco de dados", UseCaseLogPrefix);
+            return Result.Fail(listEmpresaResult.Errors);
         }
-        _logger.LogInformation("Busca realizada com sucesso, foi encontrado {Empresa} empresas cadastradas", listEmpresaResult.Value.Count);
-        
-        _logger.LogInformation("Inicinando o processo de mapeamento das entidades da lista de empreasa");
+        _logger.LogInformation("{UseCaseLogPrefix} Busca realizada com sucesso. {Count} empresas encontradas", UseCaseLogPrefix, listEmpresaResult.Value.Count);
+
+        _logger.LogInformation("{UseCaseLogPrefix} Iniciando mapeamento das entidades para EmpresaResponse", UseCaseLogPrefix);
         var listEmpresa = _mapper.Map<List<EmpresaResponse>>(listEmpresaResult.Value);
-        _logger.LogInformation("Mapeamento realizado com susseso da lista de empreasa");
-        
-        _logger.LogInformation("Processo de GetAll de empresa realizado com sucesso");
+        _logger.LogInformation("{UseCaseLogPrefix} Mapeamento concluído com sucesso", UseCaseLogPrefix);
+
+        _logger.LogInformation("{UseCaseLogPrefix} Processo finalizado com sucesso", UseCaseLogPrefix);
         return Result.Ok(listEmpresa);
     }
 }

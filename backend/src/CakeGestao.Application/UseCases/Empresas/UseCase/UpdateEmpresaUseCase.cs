@@ -16,6 +16,7 @@ public class UpdateEmpresaUseCase : IUpdateEmpresaUseCase
     private readonly IValidator<UpdateEmpresaRequest> _validator;
     private readonly IMapper _mapper;
     private readonly ILogger<UpdateEmpresaUseCase> _logger;
+    private const string UseCaseLogPrefix = "[Update Empresa]";
 
     public UpdateEmpresaUseCase(IEmpresaRepository empresaRepository, IValidator<UpdateEmpresaRequest> validator, IMapper mapper, ILogger<UpdateEmpresaUseCase> logger)
     {
@@ -27,46 +28,48 @@ public class UpdateEmpresaUseCase : IUpdateEmpresaUseCase
 
     public async Task<Result> ExecuteAsync(UpdateEmpresaRequest request, int id)
     {
-        _logger.LogInformation("Iniciando processo de update da empresa de id: {Id}", id);
+        _logger.LogInformation("{UseCaseLogPrefix} Iniciando processo para a empresa de id: {Id}", UseCaseLogPrefix, id);
 
-        _logger.LogInformation("Iniciando processo de verificação dos dados fonecidos do update da empresa de id: {Id}", id);
+        _logger.LogInformation("{UseCaseLogPrefix} Validando dados para a empresa de id: {Id}", UseCaseLogPrefix, id);
         var validationResult = _validator.Validate(request);
         if (!validationResult.IsValid)
         {
-            _logger.LogInformation("Validação falhou para o update da empresa de Id: {Id}", id);
-            return Result.Fail(new ValidationError(validationResult.Errors.Select(e => e.ErrorMessage).ToList()));
+            var errors = validationResult.Errors.Select(e => e.ErrorMessage);
+            _logger.LogWarning("{UseCaseLogPrefix} Validação falhou para a empresa de id: {Id}. Erros: {Errors}", UseCaseLogPrefix, id, errors);
+            return Result.Fail(errors);
         }
-        _logger.LogInformation("Validação realizado com susseso dos dados fonecido do updade da empresa de id: {Id}", id);
+        _logger.LogInformation("{UseCaseLogPrefix} Validação para a empresa de id: {Id} realizada com sucesso", UseCaseLogPrefix, id);
 
-        _logger.LogInformation("Iniciando o processo de verificação de existencia da empresa de id: {Id}", id);
+        _logger.LogInformation("{UseCaseLogPrefix} Buscando a empresa de id: {Id} no banco de dados", UseCaseLogPrefix, id);
         var empresaResult = await _empresaRepository.GetEmpresaByIdAsync(id);
         if (empresaResult.IsFailed)
         {
-            _logger.LogInformation("Não encontra no banco de dados a empresa de id: {Id}", id);
-            return Result.Fail(new NotFoundError("Empresa não encontrado no banco de dados"));
+            _logger.LogWarning("{UseCaseLogPrefix} Empresa de id: {Id} não encontrada no banco de dados", UseCaseLogPrefix, id);
+            return Result.Fail(empresaResult.Errors);
         }
-        _logger.LogInformation("Verificação realizado com sussesso, empresa de id: {Id} encontrado", id);
+        _logger.LogInformation("{UseCaseLogPrefix} Empresa de id: {Id} encontrada com sucesso", UseCaseLogPrefix, id);
 
-        _logger.LogInformation("Iniciando processo de verificação de altereações no update da empresa de id: {Id}", id);
+        _logger.LogInformation("{UseCaseLogPrefix} Verificando se houve alterações nos dados da empresa de id: {Id}", UseCaseLogPrefix, id);
         var empresa = empresaResult.Value;
         var status = Enum.Parse<StatusEmpresaEnum>(request.Status);
         if (empresa.Nome == request.Nome && empresa.Endereco == request.Endereco && empresa.Status == status)
         {
-            _logger.LogInformation("Nenhuma alteração encontrado no update da empresa de id: {Id}", id);
+            _logger.LogWarning("{UseCaseLogPrefix} Nenhuma alteração foi detectada para a empresa de id: {Id}. A atualização não será realizada.", UseCaseLogPrefix, id);
             return Result.Ok();
         }
-        _logger.LogInformation("Verificação de alteração no update da empresa de id: {Id} realizada com susseso", id);
+        _logger.LogInformation("{UseCaseLogPrefix} Alterações detectadas. Prosseguindo com a atualização para a empresa de id: {Id}", UseCaseLogPrefix, id);
 
-        _logger.LogInformation("Iniciando o processo de mapeamento da entidade resquest para update da empresa de id: {Id}", id);
+        _logger.LogInformation("{UseCaseLogPrefix} Iniciando mapeamento dos novos dados para a empresa de id: {Id}", UseCaseLogPrefix, id);
         empresa.Nome = request.Nome;
         empresa.Endereco = request.Endereco;
         empresa.Status = status;
-        _logger.LogInformation("Mapeamento realizado com susseso da entidade resquest para update da empresa de id: {Id}", id);
+        _logger.LogInformation("{UseCaseLogPrefix} Mapeamento dos novos dados para a empresa de id: {Id} concluído", UseCaseLogPrefix, id);
 
-        _logger.LogInformation("Iniciando o processo de update da empresa de id {Id} no banco de dados", id);
+        _logger.LogInformation("{UseCaseLogPrefix} Iniciando persistência da atualização para a empresa de id: {Id}", UseCaseLogPrefix, id);
         await _empresaRepository.UpdateEmpresaAsync(empresa);
+        _logger.LogInformation("{UseCaseLogPrefix} Persistência da atualização para a empresa de id: {Id} concluída com sucesso", UseCaseLogPrefix, id);
 
-        _logger.LogInformation("Processo de update relizado com susseso");
+        _logger.LogInformation("{UseCaseLogPrefix} Processo para a empresa de id: {Id} finalizado com sucesso", UseCaseLogPrefix, id);
         return Result.Ok();
     }
 }

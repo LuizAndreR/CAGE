@@ -16,6 +16,7 @@ public class CreateEmpresaUseCase : ICreateEmpresaUseCase
     private readonly ILogger<CreateEmpresaUseCase> _logger;
     private readonly IMapper _mapper;
     private readonly IValidator<CreateEmpresaRequest> _validator;
+    private const string UseCaseLogPrefix = "[Create Empresa]";
 
     public CreateEmpresaUseCase(IEmpresaRepository empresaRepository, ILogger<CreateEmpresaUseCase> logger, IMapper mapper, IValidator<CreateEmpresaRequest> validator)
     {
@@ -27,35 +28,38 @@ public class CreateEmpresaUseCase : ICreateEmpresaUseCase
 
     public async Task<Result> ExecuteAsync(CreateEmpresaRequest request)
     {
-        _logger.LogInformation("Iniciando o processo de cadastro de uma noma emprasa de nome: {Nome}", request.Nome);
+        _logger.LogInformation("{UseCaseLogPrefix} Iniciando processo para a empresa de nome: {Nome}", UseCaseLogPrefix, request.Nome);
 
-        _logger.LogInformation("Validando os dados da nova empresa");
+        _logger.LogInformation("{UseCaseLogPrefix} Validando dados para a empresa de nome: {Nome}", UseCaseLogPrefix, request.Nome);
         var validationResult = _validator.Validate(request);
         if (!validationResult.IsValid)
         {
-            _logger.LogWarning("Validação falhou para o cadastro da nova empresa de nome: {Nome}", request.Nome);
-            return Result.Fail(new ValidationError(validationResult.Errors.Select(e => e.ErrorMessage).ToList()));
+            var errors = validationResult.Errors.Select(e => e.ErrorMessage);
+            _logger.LogWarning("{UseCaseLogPrefix} Validação falhou para a empresa de nome: {Nome}. Erros: {Errors}", UseCaseLogPrefix, request.Nome, errors);
+            return Result.Fail(errors);
         }
-        _logger.LogInformation("Dados da nova empresa validados com sucesso");
+        _logger.LogInformation("{UseCaseLogPrefix} Validação para a empresa de nome: {Nome} realizada com sucesso", UseCaseLogPrefix, request.Nome);
 
-        _logger.LogInformation("Verificando se já existe uma empresa cadastrada com o nome: {Nome}", request.Nome);
-        var existingEmpresa = await _empresaRepository.EmpresaExistsByNomeAsync(request.Nome);
-        if (existingEmpresa.IsFailed)
+        _logger.LogInformation("{UseCaseLogPrefix} Verificando se já existe uma empresa com o nome: {Nome}", UseCaseLogPrefix, request.Nome);
+        var existingEmpresaResult = await _empresaRepository.EmpresaExistsByNomeAsync(request.Nome);
+        if (existingEmpresaResult.IsFailed)
         {
-            _logger.LogWarning("Já existe uma empresa cadastrada com o nome: {Nome}", request.Nome);
-            return Result.Fail(new ConflictError("Já existe uma empresa cadastrada com o mesmo nome"));
+            _logger.LogWarning("{UseCaseLogPrefix} Já existe uma empresa cadastrada com o nome: {Nome}", UseCaseLogPrefix, request.Nome);
+            return Result.Fail(existingEmpresaResult.Errors);
         }
-        _logger.LogInformation("Nenhuma empresa existente com o nome: {Nome} foi encontrada", request.Nome);
+        _logger.LogInformation("{UseCaseLogPrefix} Nenhuma empresa encontrada com o nome: {Nome}. Prosseguindo com o cadastro.", UseCaseLogPrefix, request.Nome);
 
-        _logger.LogInformation("Mapeando os dados da nova empresa para a entidade Empresa");
+        _logger.LogInformation("{UseCaseLogPrefix} Iniciando mapeamento da requisição para a entidade Empresa", UseCaseLogPrefix);
         var empresaEntity = _mapper.Map<Empresa>(request);
         empresaEntity.DataCadastro = DateTime.UtcNow;
         empresaEntity.Status = StatusEmpresaEnum.Pendente;
-        _logger.LogInformation("Mapeamento realizado com sucesso");
+        _logger.LogInformation("{UseCaseLogPrefix} Mapeamento concluído com sucesso", UseCaseLogPrefix);
 
-        _logger.LogInformation("Cadastrando a nova empresa no repositório");
+        _logger.LogInformation("{UseCaseLogPrefix} Iniciando persistência da nova empresa no banco de dados", UseCaseLogPrefix);
         await _empresaRepository.CreateEmpresaAsync(empresaEntity);
-        _logger.LogInformation("Empresa cadastrada com sucesso com o ID: {Id}", empresaEntity.Id);
+        _logger.LogInformation("{UseCaseLogPrefix} Persistência da nova empresa de id: {Id} concluída com sucesso", UseCaseLogPrefix, empresaEntity.Id);
+
+        _logger.LogInformation("{UseCaseLogPrefix} Processo para a empresa de nome: {Nome} finalizado com sucesso", UseCaseLogPrefix, request.Nome);
         return Result.Ok();
     }
 }
