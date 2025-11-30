@@ -13,13 +13,15 @@ namespace CakeGestao.Application.UseCases.Financeiro.UseCase;
 public class CreateTransacaoUseCase : ICreateTransacaoUseCase
 {
     private readonly IFinanceiroRepository _financeiroRepository;
+    private readonly IEmpresaRepository _empresaRepository; 
     private readonly ILogger<CreateTransacaoUseCase> _logger;
     private readonly IMapper _mapper;
     private readonly IValidator<CreateTransacaoRequest> _validator;
 
-    public CreateTransacaoUseCase(IFinanceiroRepository financeiroRepository, ILogger<CreateTransacaoUseCase> logger, IMapper mapper, IValidator<CreateTransacaoRequest> validator)
+    public CreateTransacaoUseCase(IFinanceiroRepository financeiroRepository, IEmpresaRepository empresaRepository, ILogger<CreateTransacaoUseCase> logger, IMapper mapper, IValidator<CreateTransacaoRequest> validator)
     {
         _financeiroRepository = financeiroRepository;
+        _empresaRepository = empresaRepository;
         _logger = logger;
         _mapper = mapper;
         _validator = validator;
@@ -54,12 +56,23 @@ public class CreateTransacaoUseCase : ICreateTransacaoUseCase
             return Result.Fail(new ValidationError(new List<string> { $"Categoria inválida: {request.Categoria}" }));
         }
         _logger.LogInformation("Categoria validada com sucesso para nova transação financeira do tipo {Tipo} com valor {Valor}", request.Tipo, request.Valor);
-
+        
+        _logger.LogInformation("");
+        var empresaResult = await _empresaRepository.GetEmpresaByIdAsync(empresaId);
+        if (empresaResult.IsFailed)
+        {
+            _logger.LogInformation("");
+            return Result.Fail(new NotFoundError("Empresa não encontrada"));
+        }
+        _logger.LogInformation("");
+        
         //Add varrificaçao de pedidoId se existe e EmpreaId se existe
 
         _logger.LogInformation("Mapeando dados da requisição para entidade de transação financeira do tipo {Tipo} com valor {Valor}", request.Tipo, request.Valor);
         var transacaoEntity = _mapper.Map<TransacaoFinanceira>(request);
         transacaoEntity.PedidoId = pedidoId ?? 0;
+        transacaoEntity.Categoria = categoria;
+        transacaoEntity.Tipo = tipoTransacao;
         transacaoEntity.EmpresaId = empresaId;
         _logger.LogInformation("Mapeamento concluído com sucesso para transação financeira do tipo {Tipo} com valor {Valor}", request.Tipo, request.Valor);
 
