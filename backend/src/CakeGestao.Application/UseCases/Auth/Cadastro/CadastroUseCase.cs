@@ -15,16 +15,18 @@ public class CadastroUseCase : ICadastroUseCase
     private readonly ILogger<CadastroUseCase> _logger;
     private readonly IMapper _mapper;
     private readonly IValidator<CadastroRequest> _validator;
+    private readonly IEmpresaRepository _empresaRepository;
 
-    public CadastroUseCase(IUsuarioRepository usuarioRepository, ILogger<CadastroUseCase> logger, IMapper mapper, IValidator<CadastroRequest> validator)
+    public CadastroUseCase(IUsuarioRepository usuarioRepository, ILogger<CadastroUseCase> logger, IMapper mapper, IValidator<CadastroRequest> validator, IEmpresaRepository empresaRepository)
     {
         _usuarioRepository = usuarioRepository;
         _logger = logger;
         _mapper = mapper;
         _validator = validator;
+        _empresaRepository = empresaRepository;
     }
 
-    public async Task<Result> Execute(CadastroRequest request, int empresaId)
+    public async Task<Result> Execute(CadastroRequest request, int? empresaId)
     {
         _logger.LogInformation("Iniciando o processo de cadastro de um novo usuario {Email}", request.Email);
 
@@ -46,24 +48,47 @@ public class CadastroUseCase : ICadastroUseCase
         }
         _logger.LogInformation("Role verificado com sucesso para o novo usuario {Email}", request.Email);
 
+        _logger.LogInformation("Verificando se a empresaId é obrigatória para o novo usuario {Email}", request.Email);
+        if (userRole != UserRole.Admin && empresaId == null)
+        {
+            _logger.LogWarning("Id da empresa é obrigatório para o novo usuario {Email} com role {Role}", request.Email, request.Role);
+            return Result.Fail(new ValidationError(new List<string> { "Id da empresa é obrigatório para o novo usuario" }));
+        }
+        _logger.LogInformation("Verificação da obrigatoriedade da empresaId realizada com sucesso para o novo usuario {Email}", request.Email);
+
         _logger.LogInformation("Verificando se existencia do usuario {Email}", request.Email);
         var usuarioExistenteResult = await _usuarioRepository.GetUsuarioByEmailAsync(request.Email);
         if (usuarioExistenteResult.IsSuccess)
         {
             _logger.LogWarning("Usuario {Email} já existe no sistema", request.Email);
             return Result.Fail(new ConflictError("Usuário com mesmo email já existe"));
-        }
+        } 
         _logger.LogInformation("Usuario {Email} não existe no sistema, prosseguindo com o cadastro", request.Email);
 
+        if (empresaId != null)
+        {
+            _logger.LogInformation("Iniciando o processo de verificação da existencia da empresa com id: {Id}", empresaId);
+            var existEmpresa = await _empresaRepository.EmpresaExistsByIdAsync(empresaId.Value);
+            if (existEmpresa.IsFailed)
+            {
+                _logger.LogInformation("A empresa de id {Id} não foi encontrado no banco de dados", empresaId);
+                return Result.Fail(new ConflictError("Empresa não encontrada no banco de dados"));
+            }
+            _logger.LogInformation("A empresa de id {Id} foi encontrado no banco de dados", empresaId); 
+        }
+        
         _logger.LogInformation("Criptografando a senha do usuario {Email}", request.Email);
         var senhaHash = BCrypt.Net.BCrypt.HashPassword(request.Senha);
         _logger.LogInformation("Criptografia da senha realizada com sucesso para o usuario {Email}", request.Email);
 
         _logger.LogInformation("Iniciando o processo de mapeamento do novo usuario {Email}", request.Email);
         var usuario = _mapper.Map<Usuario>(request);
-        usuario.EmpresaId = empresaId;
         usuario.SenhaHash = senhaHash;
         usuario.Role = userRole;
+        if (userRole != UserRole.Admin)
+        {
+            usuario.EmpresaId = empresaId;
+        }
         _logger.LogInformation("Mapeamento realizado com sucesso para o novo usuario {Email}", request.Email);
 
         await _usuarioRepository.CreateUserAsync(usuario);

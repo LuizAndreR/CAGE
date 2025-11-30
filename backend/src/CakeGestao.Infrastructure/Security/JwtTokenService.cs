@@ -24,7 +24,7 @@ public class JwtTokenService : IJwtTokenService
         _tokenRepository = tokenRepository;
     }
 
-    public async Task<(string accessToken, string refreshToken)> TokenService(int usuarioId, string email, string role, int empresaId)
+    public async Task<(string accessToken, string refreshToken)> TokenService(int usuarioId, string email, string role, int? empresaId)
     {
         _logger.LogInformation("Iniciando o processo de geração de tokens para o usuário {Id}", usuarioId);
 
@@ -36,7 +36,7 @@ public class JwtTokenService : IJwtTokenService
         return (accessToken, refreshToken);
     }
 
-    private string GenerateToken(int usuarioId, string email, string role, int empresaId)
+    private string GenerateToken(int usuarioId, string email, string role, int? empresaId)
     {
         _logger.LogInformation("Gerando token JWT para o usuário {Id}", usuarioId);
 
@@ -48,10 +48,14 @@ public class JwtTokenService : IJwtTokenService
         {
             new Claim(ClaimTypes.NameIdentifier, usuarioId.ToString()),
             new Claim(ClaimTypes.Email, email),
-            new Claim(ClaimTypes.Role, role),
-            new Claim("EmpresaId", empresaId.ToString())
+            new Claim(ClaimTypes.Role, role)
         };
 
+        if (role != "Admin")
+        {
+            claims.Add(new Claim("EmpresaId", empresaId.ToString()!)); 
+        }
+        
         var token = new JwtSecurityToken(
            issuer: _configuration["Jwt:Issuer"],
            audience: _configuration["Jwt:Audience"],

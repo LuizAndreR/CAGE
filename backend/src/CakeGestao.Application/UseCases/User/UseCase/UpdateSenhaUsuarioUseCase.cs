@@ -1,6 +1,5 @@
 ﻿using CakeGestao.Application.Dtos.Requests.Usuario;
 using CakeGestao.Application.UseCases.User.Interface;
-using CakeGestao.Domain.Entities;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
 using FluentValidation;
@@ -29,8 +28,9 @@ public class UpdateSenhaUsuarioUseCase : IUpdateSenhaUsuarioUseCase
         var validationResult = _validator.Validate(request);
         if (!validationResult.IsValid)
         {
-            _logger.LogWarning("Validação falhou para update da senha do usuario {Id}", id);
-            return Result.Fail(new ValidationError(validationResult.Errors.Select(e => e.ErrorMessage).ToList()));
+            var errors = validationResult.Errors.Select(e => e.ErrorMessage);
+            _logger.LogWarning("Validação falhou para update da senha do usuario {Id}, Erros: {Errors}", id, errors);
+            return Result.Fail(errors);
         }
         _logger.LogInformation("Validação realizada com sucesso para update da senha do usuario {Id}", id);
 

@@ -3,6 +3,7 @@ using System;
 using CakeGestao.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CakeGestao.Infrastructure.Migrations
 {
     [DbContext(typeof(CageContext))]
-    partial class CageContextModelSnapshot : ModelSnapshot
+    [Migration("20251117192100_AlteracaoTabelaEmpresa")]
+    partial class AlteracaoTabelaEmpresa
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -45,9 +48,10 @@ namespace CakeGestao.Infrastructure.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("character varying(150)");
 
-                    b.Property<int>("Status")
+                    b.Property<string>("Status")
+                        .IsRequired()
                         .HasMaxLength(150)
-                        .HasColumnType("integer");
+                        .HasColumnType("character varying(150)");
 
                     b.HasKey("Id");
 
@@ -332,7 +336,7 @@ namespace CakeGestao.Infrastructure.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("character varying(150)");
 
-                    b.Property<int?>("EmpresaId")
+                    b.Property<int>("EmpresaId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Nome")
@@ -464,7 +468,8 @@ namespace CakeGestao.Infrastructure.Migrations
                     b.HasOne("CakeGestao.Domain.Entities.Empresa", "Empresa")
                         .WithMany("Usuarios")
                         .HasForeignKey("EmpresaId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Empresa");
                 });
