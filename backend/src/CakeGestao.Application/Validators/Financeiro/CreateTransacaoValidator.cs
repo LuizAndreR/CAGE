@@ -1,19 +1,34 @@
 ﻿using CakeGestao.Application.Dtos.Requests.Transacao;
+using CakeGestao.Domain.Enum;
+using CakeGestao.Domain.Interfaces.Repositories;
 using FluentValidation;
 
 namespace CakeGestao.Application.Validators.Financeiro;
 
 public class CreateTransacaoValidator : AbstractValidator<CreateTransacaoRequest>
 {
-    public CreateTransacaoValidator()
+    private readonly IEmpresaRepository _empresaRepository;
+
+    public CreateTransacaoValidator(IEmpresaRepository empresaRepository)
     {
+        _empresaRepository = empresaRepository;
+
+        RuleFor(x => x.EmpresaId)
+            .GreaterThan(0).WithMessage("ID da empresa inválido.")
+            .MustAsync(async (id, cancellation) =>
+            {
+                var result = await _empresaRepository.GetEmpresaByIdAsync(id);
+                return result.IsSuccess;
+            })
+            .WithMessage("Empresa não encontrada ou assinatura inativa.");
+
         RuleFor(x => x.Tipo)
-            .NotEmpty().WithMessage("O tipo da transação é obrigatório.")
-            .MaximumLength(50).WithMessage("O tipo da transação não pode exceder 50 caracteres.");
+            .IsEnumName(typeof(TipoTransacaoEnum), caseSensitive: false)
+            .WithMessage($"Tipo de transação inválido. Valores aceitos: {string.Join(", ", Enum.GetNames(typeof(TipoTransacaoEnum)))}");
 
         RuleFor(x => x.Categoria)
-            .NotEmpty().WithMessage("A Categoria da transação é obrigatório.")
-            .MaximumLength(50).WithMessage("A Categoria da transação não pode exceder 50 caracteres.");
+            .IsEnumName(typeof(CategoriasEnum), caseSensitive: false)
+            .WithMessage("Categoria inválida.");
 
         RuleFor(x => x.Valor)
             .GreaterThan(0).WithMessage("O valor da transação deve ser maior que zero.");

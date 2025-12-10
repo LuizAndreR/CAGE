@@ -14,5 +14,5 @@ public class FinanceiroService : IFinanceiroService
         _createTransacaoUseCase = createTransacaoUseCase;
     }
 
-    public async Task<Result> CreateTransacaoAsync(CreateTransacaoRequest request, int empresaId, int? pedidoId) =>  await _createTransacaoUseCase.ExecuteAsync(request, empresaId, pedidoId);
+    public async Task<Result> CreateTransacaoAsync(CreateTransacaoRequest request, int? pedidoId) =>  await _createTransacaoUseCase.ExecuteAsync(request, pedidoId);
 }

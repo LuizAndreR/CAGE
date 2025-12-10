@@ -26,7 +26,8 @@ public class FinanceiroController : ApiControllerBase
         var empresaId = User.GetEmpresaId();
         _logger.LogInformation("Recebendo requisição para create uma nao transação de valor {Valor} de tipo {Tipo} da empresa {EmpresaId}", request.Valor, request.Tipo, empresaId.Value);
         
-        var transacaoResult = await _financeiroService.CreateTransacaoAsync(request, empresaId.Value, pedidoId);
+        request.EmpresaId = empresaId.Value;
+        var transacaoResult = await _financeiroService.CreateTransacaoAsync(request, pedidoId);
         return HandleResult<object>(transacaoResult);
     }
 }
