@@ -31,12 +31,12 @@ public class CreateEmpresaUseCase : ICreateEmpresaUseCase
         _logger.LogInformation("{UseCaseLogPrefix} Iniciando processo para a empresa de nome: {Nome}", UseCaseLogPrefix, request.Nome);
 
         _logger.LogInformation("{UseCaseLogPrefix} Validando dados para a empresa de nome: {Nome}", UseCaseLogPrefix, request.Nome);
-        var validationResult = _validator.Validate(request);
+        var validationResult = await _validator.ValidateAsync(request);
         if (!validationResult.IsValid)
         {
-            var errors = validationResult.Errors.Select(e => e.ErrorMessage);
+            var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
             _logger.LogWarning("{UseCaseLogPrefix} Validação falhou para a empresa de nome: {Nome}. Erros: {Errors}", UseCaseLogPrefix, request.Nome, errors);
-            return Result.Fail(errors);
+            return Result.Fail(new ValidationError(errors));
         }
         _logger.LogInformation("{UseCaseLogPrefix} Validação para a empresa de nome: {Nome} realizada com sucesso", UseCaseLogPrefix, request.Nome);
 
