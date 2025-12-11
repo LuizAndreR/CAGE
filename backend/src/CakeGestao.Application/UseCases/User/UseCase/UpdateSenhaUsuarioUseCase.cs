@@ -3,6 +3,7 @@ using CakeGestao.Application.UseCases.User.Interface;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
 using FluentValidation;
+using FluentValidation.Results;
 using Microsoft.Extensions.Logging;
 
 namespace CakeGestao.Application.UseCases.User.UseCase;
@@ -12,6 +13,7 @@ public class UpdateSenhaUsuarioUseCase : IUpdateSenhaUsuarioUseCase
     private readonly IUsuarioRepository _repositoryUser;
     private readonly ILogger<UpdateSenhaUsuarioUseCase> _logger;
     private readonly IValidator<UpdateSenhaUsuarioRequest> _validator;
+    private const string UseCaseLogPrefix = "[Update Senha Usuario]" ;
 
     public UpdateSenhaUsuarioUseCase(IUsuarioRepository repositoryUser, ILogger<UpdateSenhaUsuarioUseCase> logger, IValidator<UpdateSenhaUsuarioRequest> validator)
     {
@@ -20,52 +22,55 @@ public class UpdateSenhaUsuarioUseCase : IUpdateSenhaUsuarioUseCase
         _validator = validator;
     }
 
-    public async Task<Result> ExecuteAsync(UpdateSenhaUsuarioRequest request, int id)
+    public async Task<Result> ExecuteAsync(UpdateSenhaUsuarioRequest request)
     {
-        _logger.LogInformation("Iniciando o processo de UpdateSenhaUsuarioUseCase com o usuario de Id {Id}", id);
+        _logger.LogInformation("{UseCaseLogPrefix} Iniciando processo de atualização de senha. UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
 
-        _logger.LogInformation("Iniciando o processo de verificação da request de update da senha do usuario de id: {Id}", id);
-        var validationResult = _validator.Validate(request);
+        _logger.LogInformation("{UseCaseLogPrefix} Validando requisição para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
+        ValidationResult validationResult = _validator.Validate(request);
         if (!validationResult.IsValid)
         {
-            var errors = validationResult.Errors.Select(e => e.ErrorMessage);
-            _logger.LogWarning("Validação falhou para update da senha do usuario {Id}, Erros: {Errors}", id, errors);
-            return Result.Fail(errors);
+            var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+            _logger.LogWarning("{UseCaseLogPrefix} Validação falhou para UsuarioId: {UsuarioId}. Erros: {Errors}", UseCaseLogPrefix, request.Id, errors);
+            return Result.Fail(new ValidationError(errors));
         }
-        _logger.LogInformation("Validação realizada com sucesso para update da senha do usuario {Id}", id);
+        _logger.LogInformation("{UseCaseLogPrefix} Validação concluída com sucesso para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
 
-        _logger.LogInformation("Iniciando o processo de verificação da existencia do usuario de id: {Id}", id);
-        var usuarioResult = await _repositoryUser.GetByIdAsync(id);
+        _logger.LogInformation("{UseCaseLogPrefix} Buscando usuário no repositório. UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
+        var usuarioResult = await _repositoryUser.GetByIdAsync(request.Id);
         if (usuarioResult.IsFailed)
         {
-            _logger.LogWarning("Usuario nao foi encontrado no banco de dados {Id}", id);
+            _logger.LogWarning("{UseCaseLogPrefix} Usuário não encontrado. UsuarioId: {UsuarioId}. Erros: {@Errors}", UseCaseLogPrefix, request.Id, usuarioResult.Errors);
             return Result.Fail(new NotFoundError("Usuario nao foi encontrado no banco de dados"));
         }
         var usuario = usuarioResult.Value;
-        _logger.LogInformation("Processo de verificação realizada com susseso da existencia do usuario de id: {Id}", id);
+        _logger.LogInformation("{UseCaseLogPrefix} Usuário encontrado. UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
 
-        _logger.LogInformation("Iniciando o processo de verificação da senha atual do usuario de id: {Id}", id);
+        _logger.LogInformation("{UseCaseLogPrefix} Verificando senha atual para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
         if (!BCrypt.Net.BCrypt.Verify(request.SenhaAtual, usuario.SenhaHash))
         {
-            _logger.LogInformation("Senha atual inválida para o usuario {Id}", id);
+            _logger.LogWarning("{UseCaseLogPrefix} Senha atual inválida para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
             return Result.Fail(new ValidationError(new List<string> { "Senha atual inválida" }));
         }
-        _logger.LogInformation("Senha atual verificada com sucesso para o usuario de id: {Id}", id);
+        _logger.LogInformation("{UseCaseLogPrefix} Senha atual verificada com sucesso para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
 
-        _logger.LogInformation("Iniciando o processo de verificação da nova senha do usuario de id: {Id}", id);
+        _logger.LogInformation("{UseCaseLogPrefix} Verificando se nova senha é diferente da atual para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
         if (BCrypt.Net.BCrypt.Verify(request.NovaSenha, usuario.SenhaHash))
         {
-            _logger.LogInformation("A nova senha é igual a senha atual para o usuario {Id}", id);
-            return Result.Fail(new ConflictError("A nova senha é igual ser igual a senha atual"));
+            _logger.LogWarning("{UseCaseLogPrefix} Nova senha igual à atual para UsuarioId: {UsuarioId}. Operação cancelada.", UseCaseLogPrefix, request.Id);
+            return Result.Fail(new ConflictError("A nova senha não pode ser igual à senha atual"));
         }
-        _logger.LogInformation("Nova senha verificada com sucesso para o usuario de id: {Id}", id);
+        _logger.LogInformation("{UseCaseLogPrefix} Nova senha validada como diferente da atual para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
 
-        _logger.LogInformation("Iniciando o processo de atualização da senha do usuario de id: {Id}", id);
+        _logger.LogInformation("{UseCaseLogPrefix} Iniciando atualização da senha em memória para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
         usuario.SenhaHash = BCrypt.Net.BCrypt.HashPassword(request.NovaSenha);
-        await _repositoryUser.UpdateUsuarioAsync(usuario);
-        _logger.LogInformation("Processo de atualização da senha realizado com susseso do usuario {Id}", id);
+        _logger.LogInformation("{UseCaseLogPrefix} Atualização da senha em memória concluída para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
 
-        _logger.LogInformation("Senha do usuario {Id} atualizada com sucesso", id);
+        _logger.LogInformation("{UseCaseLogPrefix} Iniciando persistência da nova senha para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
+        await _repositoryUser.UpdateUsuarioAsync(usuario);
+        _logger.LogInformation("{UseCaseLogPrefix} Persistência da nova senha concluída com sucesso para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
+
+        _logger.LogInformation("{UseCaseLogPrefix} Processo de atualização de senha finalizado com sucesso para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
         return Result.Ok();
     }
 }

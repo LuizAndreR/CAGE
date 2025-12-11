@@ -1,9 +1,12 @@
-﻿using CakeGestao.Application.Dtos.Requests.Usuario;
+﻿using System.Linq;
+using AutoMapper;
+using CakeGestao.Application.Dtos.Requests.Usuario;
 using CakeGestao.Application.UseCases.User.Interface;
 using CakeGestao.Domain.Enun;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
 using FluentValidation;
+using FluentValidation.Results;
 using Microsoft.Extensions.Logging;
 
 namespace CakeGestao.Application.UseCases.User.UseCase;
@@ -13,64 +16,58 @@ public class UpdateFuncionarioUseCase : IUpdateFuncionarioUseCase
     private readonly ILogger<UpdateFuncionarioUseCase> _logger;   
     private readonly IUsuarioRepository _repositoryUser;
     private readonly IValidator<UpdateFuncionarioUsuarioRequest> _validator;
+    private readonly IMapper _mapper;
+    private const string UseCaseLogPrefix = "[Update Funcionario]";
 
-    public UpdateFuncionarioUseCase(ILogger<UpdateFuncionarioUseCase> logger, IUsuarioRepository repositoryUser, IValidator<UpdateFuncionarioUsuarioRequest> validator)
+    public UpdateFuncionarioUseCase(ILogger<UpdateFuncionarioUseCase> logger, IUsuarioRepository repositoryUser, IValidator<UpdateFuncionarioUsuarioRequest> validator, IMapper mapper)
     {
         _logger = logger;
         _repositoryUser = repositoryUser;
         _validator = validator;
+        _mapper = mapper;
     }
 
     public async Task<Result> ExecuteAsync(UpdateFuncionarioUsuarioRequest request)
     {
-        _logger.LogInformation("Iniciando o processo de UpdateUsuarioFuncao do usuario com id: {Id}", request.Id);
+        _logger.LogInformation("{UseCaseLogPrefix} Iniciando processo de atualização de funcionário. UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
 
-        _logger.LogInformation("Iniciando o processo de verificação da request de update da função do usuario de id: {Id}", request.Id);
+        _logger.LogInformation("{UseCaseLogPrefix} Validando requisição para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
         var validationResult = _validator.Validate(request);
         if (!validationResult.IsValid)
         {
-            _logger.LogWarning("Validação falhou para update da função do usuario {Id}", request.Id);
-            return Result.Fail(new ValidationError(validationResult.Errors.Select(e => e.ErrorMessage).ToList()));
+            var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+            _logger.LogWarning("{UseCaseLogPrefix} Validação falhou para UsuarioId: {UsuarioId}. Erros: {Errors}", UseCaseLogPrefix, request.Id, errors);
+            return Result.Fail(new ValidationError(errors));
         }
-        _logger.LogInformation("Validação realizada com sucesso para update da função do usuario {Id}", request.Id);
+        _logger.LogInformation("{UseCaseLogPrefix} Validação concluída com sucesso para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
 
-        _logger.LogInformation("Iniciando o processo de verificação da existencia do usuario de id: {Id}", request.Id);
+        _logger.LogInformation("{UseCaseLogPrefix} Buscando usuário no repositório. UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
         var usuarioResult = await _repositoryUser.GetByIdAsync(request.Id);
         if (usuarioResult.IsFailed)
         {
-            _logger.LogWarning("Usuario nao foi encontrado no banco de dados {Id}", request.Id);
+            _logger.LogWarning("{UseCaseLogPrefix} Usuário não encontrado. UsuarioId: {UsuarioId}. Erros: {@Errors}", UseCaseLogPrefix, request.Id, usuarioResult.Errors);
             return Result.Fail(new NotFoundError("Usuario nao foi encontrado no banco de dados"));
         }
         var usuario = usuarioResult.Value;
-        _logger.LogInformation("Processo de verificação realizada com susseso da existencia do usuario de id: {Id}", request.Id);
+        _logger.LogInformation("{UseCaseLogPrefix} Usuário encontrado. UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
 
-        _logger.LogInformation("Iniciando o processo de verificação da role do updade do usuario {Id}", request.Id);
-        if (!Enum.TryParse<UserRole>(request.Role, true, out var userRole))
+        _logger.LogInformation("{UseCaseLogPrefix} Verificando se há alterações para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
+        if (usuario.Nome == request.Nome && usuario.Role.ToString().Equals(request.Role, StringComparison.OrdinalIgnoreCase))
         {
-            _logger.LogWarning("Role inválida fornecida para updade do usuario {Id}", request.Id);
-            return Result.Fail(new ValidationError(new List<string> { "Role inválida" }));
-        }
-        _logger.LogInformation("Role verificado com sucesso para updade do usuario {Id}", request.Id);
-
-        _logger.LogInformation("Iniciando o processo de verificação das alterações");
-        if (usuario.Nome == request.Nome && usuario.Role.ToString() == request.Role)
-        {
-            _logger.LogInformation("As alterações ja foram realizado anteriomente com usuario {Id}", request.Id);
+            _logger.LogWarning("{UseCaseLogPrefix} Nenhuma alteração detectada para UsuarioId: {UsuarioId}. Operação cancelada.", UseCaseLogPrefix, request.Id);
             return Result.Ok();
         }
-        _logger.LogInformation("Processo de verificação das alterações relizado com sucesso com usuario {Id}", request.Id);
+        _logger.LogInformation("{UseCaseLogPrefix} Alterações detectadas para UsuarioId: {UsuarioId}. Prosseguindo.", UseCaseLogPrefix, request.Id);
 
-        _logger.LogInformation("Iniciando o processo de atulização da função do usuario  {Id}", request.Id);
-        usuario.Nome = request.Nome;
-        usuario.Role = Enum.Parse<UserRole>(request.Role);
-        _logger.LogInformation("Processo de atulização realizado com susseso da função do usuario {Id}", request.Id);
+        _logger.LogInformation("{UseCaseLogPrefix} Iniciando mapeamento das alterações para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
+        usuario = _mapper.Map(request, usuario);
+        _logger.LogInformation("{UseCaseLogPrefix} Mapeamento concluído para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
 
-        _logger.LogInformation("Iniciando o processo de atualização da função do usuario de id: {Id}", request.Id);
+        _logger.LogInformation("{UseCaseLogPrefix} Iniciando persistência das alterações para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
         await _repositoryUser.UpdateUsuarioAsync(usuario);
-        _logger.LogInformation("Processo de atualização da função realizado com susseso do usuario {Id}", request.Id);
+        _logger.LogInformation("{UseCaseLogPrefix} Persistência concluída com sucesso para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
 
-        _logger.LogInformation("UpdateUsuarioFuncaoUseCase finalizado com sucesso para o usuario de id: {Id}", request.Id);
+        _logger.LogInformation("{UseCaseLogPrefix} Processo de atualização finalizado com sucesso para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
         return Result.Ok();
-
     }
 }

@@ -9,6 +9,7 @@ public class DeleteUsuarioUseCase : IDeleteUsuarioUseCase
 {
     private readonly IUsuarioRepository _usuarioRepository;
     private readonly ILogger<DeleteUsuarioUseCase> _logger;
+    private const string UseCaseLogPrefix = "[Delete Usuario]";
 
     public DeleteUsuarioUseCase(IUsuarioRepository usuarioRepository, ILogger<DeleteUsuarioUseCase> logger)
     {
@@ -18,22 +19,22 @@ public class DeleteUsuarioUseCase : IDeleteUsuarioUseCase
 
     public async Task<Result> ExecuteAsync(int usuarioId)
     {
-        _logger.LogInformation("Iniciando o processo de exclusão do usuário com ID: {UsuarioId}", usuarioId);
-        
-        _logger.LogInformation("Verificando a existência do usuário com ID: {UsuarioId}", usuarioId);
-        var usuario = await _usuarioRepository.GetByIdAsync(usuarioId);
-        if (usuario == null)
+        _logger.LogInformation("{UseCaseLogPrefix} Iniciando processo de exclusão. UsuarioId: {UsuarioId}", UseCaseLogPrefix, usuarioId);
+
+        _logger.LogInformation("{UseCaseLogPrefix} Buscando usuário no repositório. UsuarioId: {UsuarioId}", UseCaseLogPrefix, usuarioId);
+        var usuarioResult = await _usuarioRepository.GetByIdAsync(usuarioId);
+        if (usuarioResult.IsFailed)
         {
-            _logger.LogWarning("Usuário com ID: {UsuarioId} não encontrado. Processo de exclusão abortado.", usuarioId);
+            _logger.LogWarning("{UseCaseLogPrefix} Usuário não encontrado. UsuarioId: {UsuarioId}", UseCaseLogPrefix, usuarioId);
             return Result.Fail(new NotFoundError("Usuário não encontrado."));
         }
-        _logger.LogInformation("Usuário com ID: {UsuarioId} encontrado. Prosseguindo com a exclusão.", usuarioId);
+        _logger.LogInformation("{UseCaseLogPrefix} Usuário encontrado. UsuarioId: {UsuarioId}", UseCaseLogPrefix, usuarioId);
 
-        _logger.LogInformation("Excluindo o usuário com ID: {UsuarioId}", usuarioId);
-        await _usuarioRepository.DeleteAsync(usuario.Value);
-        _logger.LogInformation("Usuário com ID: {UsuarioId} excluído com sucesso.", usuarioId);
-        
-        _logger.LogInformation("Processo de exclusão do usuário com ID: {UsuarioId} concluído com sucesso.", usuarioId);
+        _logger.LogInformation("{UseCaseLogPrefix} Iniciando exclusão do usuário. UsuarioId: {UsuarioId}", UseCaseLogPrefix, usuarioId);
+        await _usuarioRepository.DeleteAsync(usuarioResult.Value);
+        _logger.LogInformation("{UseCaseLogPrefix} Exclusão concluída com sucesso. UsuarioId: {UsuarioId}", UseCaseLogPrefix, usuarioId);
+
+        _logger.LogInformation("{UseCaseLogPrefix} Processo de exclusão finalizado. UsuarioId: {UsuarioId}", UseCaseLogPrefix, usuarioId);
         return Result.Ok();
     }
 }

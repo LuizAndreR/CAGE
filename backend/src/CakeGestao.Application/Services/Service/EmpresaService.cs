@@ -28,7 +28,7 @@ public class EmpresaService : IEmpresaService
     public async Task<Result> CreateAsync(CreateEmpresaRequest request) => await _createEmpresaUseCase.ExecuteAsync(request);
     public async Task<Result<List<EmpresaResponse>>> GetAllAsync() => await _getAllEmpresaUseCase.ExecuteAsync();
     public async Task<Result<EmpresaResponse>> GetByIdAsync(int id) => await _getEmpresaUseCase.ExecuteAsync(id);
-    public async Task<Result> UpdateAsync(UpdateEmpresaRequest request, int id) => await _updateEmpresaUseCase.ExecuteAsync(request, id);
+    public async Task<Result> UpdateAsync(UpdateEmpresaRequest request) => await _updateEmpresaUseCase.ExecuteAsync(request);
     public async Task<Result> DeleteAsync(int id) => await _deleteEmpresaUseCase.ExecuteAsync(id);
     public async Task<Result> UpdateStatusAsync(UpdateStatusEmpresaRequest request, int id) => await _updateStatusEmpresaUseCase.ExecuteAsync(request, id);
 }

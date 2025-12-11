@@ -64,7 +64,8 @@ public class UserController : ApiControllerBase
         }
         
         _logger.LogInformation("Iniciando a requisição para update do usuário com ID: {Id}", id);
-        var userResult = await _userService.UpdateUsuarioAsync(request, id.Value);
+        request.Id = id.Value;  
+        var userResult = await _userService.UpdateUsuarioAsync(request);
 
         return HandleResult<object>(userResult);
     }
@@ -83,7 +84,8 @@ public class UserController : ApiControllerBase
         }
         
         _logger.LogInformation("Iniciando a requisição para update da senha do usuário com ID: {Id}", id);
-        var userResult = await _userService.UpdateSenhaUsuarioAsync(request, id.Value);
+        request.Id = id.Value;  
+        var userResult = await _userService.UpdateSenhaUsuarioAsync(request);
 
         return HandleResult<object>(userResult);
     }

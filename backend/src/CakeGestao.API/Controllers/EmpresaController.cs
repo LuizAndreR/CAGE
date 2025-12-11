@@ -50,7 +50,8 @@ public class EmpresaController : ApiControllerBase
     public async Task<IActionResult> UpdateEmpresa([FromBody] UpdateEmpresaRequest request, [FromRoute] int id)
     {
         _logger.LogInformation("Recebendo solicitação para update da empresa com o id: {Id}", id);
-        var result = await _empresaService.UpdateAsync(request, id);
+        request.Id = id;
+        var result = await _empresaService.UpdateAsync(request);
         _logger.LogInformation("Solicitação para update da empresa com o id: {Id} processada com sucesso", id);
         return HandleResult<object> (result);
     }

@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using CakeGestao.Application.Dtos.Requests.Empresa;
 using CakeGestao.Application.UseCases.Empresas.Interface;
-using CakeGestao.Domain.Entities;
 using CakeGestao.Domain.Enum;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
@@ -26,50 +25,50 @@ public class UpdateEmpresaUseCase : IUpdateEmpresaUseCase
         _logger = logger;
     }
 
-    public async Task<Result> ExecuteAsync(UpdateEmpresaRequest request, int id)
+    public async Task<Result> ExecuteAsync(UpdateEmpresaRequest request)
     {
-        _logger.LogInformation("{UseCaseLogPrefix} Iniciando processo para a empresa de id: {Id}", UseCaseLogPrefix, id);
+        _logger.LogInformation("{UseCaseLogPrefix} Iniciando processo para a empresa de id: {Id}", UseCaseLogPrefix, request.Id);
 
-        _logger.LogInformation("{UseCaseLogPrefix} Validando dados para a empresa de id: {Id}", UseCaseLogPrefix, id);
+        _logger.LogInformation("{UseCaseLogPrefix} Validando dados para a empresa de id: {Id}", UseCaseLogPrefix, request.Id);
         var validationResult = _validator.Validate(request);
         if (!validationResult.IsValid)
         {
-            var errors = validationResult.Errors.Select(e => e.ErrorMessage);
-            _logger.LogWarning("{UseCaseLogPrefix} Validação falhou para a empresa de id: {Id}. Erros: {Errors}", UseCaseLogPrefix, id, errors);
-            return Result.Fail(errors);
+            var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+            _logger.LogWarning("{UseCaseLogPrefix} Validação falhou para a empresa de id: {Id}. Erros: {Errors}", UseCaseLogPrefix, request.Id, errors);
+            return Result.Fail(new ValidationError(errors));
         }
-        _logger.LogInformation("{UseCaseLogPrefix} Validação para a empresa de id: {Id} realizada com sucesso", UseCaseLogPrefix, id);
+        _logger.LogInformation("{UseCaseLogPrefix} Validação para a empresa de id: {Id} realizada com sucesso", UseCaseLogPrefix, request.Id);
 
-        _logger.LogInformation("{UseCaseLogPrefix} Buscando a empresa de id: {Id} no banco de dados", UseCaseLogPrefix, id);
-        var empresaResult = await _empresaRepository.GetEmpresaByIdAsync(id);
+        _logger.LogInformation("{UseCaseLogPrefix} Buscando a empresa de id: {Id} no banco de dados", UseCaseLogPrefix, request.Id);
+        var empresaResult = await _empresaRepository.GetEmpresaByIdAsync(request.Id);
         if (empresaResult.IsFailed)
         {
-            _logger.LogWarning("{UseCaseLogPrefix} Empresa de id: {Id} não encontrada no banco de dados", UseCaseLogPrefix, id);
-            return Result.Fail(empresaResult.Errors);
+            _logger.LogWarning("{UseCaseLogPrefix} Empresa de id: {Id} não encontrada no banco de dados", UseCaseLogPrefix, request.Id);
+            return Result.Fail(new NotFoundError("Empresa não encontrada no banco de dados"));
         }
-        _logger.LogInformation("{UseCaseLogPrefix} Empresa de id: {Id} encontrada com sucesso", UseCaseLogPrefix, id);
+        _logger.LogInformation("{UseCaseLogPrefix} Empresa de id: {Id} encontrada com sucesso", UseCaseLogPrefix, request.Id);
 
-        _logger.LogInformation("{UseCaseLogPrefix} Verificando se houve alterações nos dados da empresa de id: {Id}", UseCaseLogPrefix, id);
+        _logger.LogInformation("{UseCaseLogPrefix} Verificando se houve alterações nos dados da empresa de id: {Id}", UseCaseLogPrefix, request.Id);
         var empresa = empresaResult.Value;
         var status = Enum.Parse<StatusEmpresaEnum>(request.Status);
         if (empresa.Nome == request.Nome && empresa.Endereco == request.Endereco && empresa.Status == status)
         {
-            _logger.LogWarning("{UseCaseLogPrefix} Nenhuma alteração foi detectada para a empresa de id: {Id}. A atualização não será realizada.", UseCaseLogPrefix, id);
+            _logger.LogWarning("{UseCaseLogPrefix} Nenhuma alteração foi detectada para a empresa de id: {Id}. A atualização não será realizada.", UseCaseLogPrefix, request.Id);
             return Result.Ok();
         }
-        _logger.LogInformation("{UseCaseLogPrefix} Alterações detectadas. Prosseguindo com a atualização para a empresa de id: {Id}", UseCaseLogPrefix, id);
+        _logger.LogInformation("{UseCaseLogPrefix} Alterações detectadas. Prosseguindo com a atualização para a empresa de id: {Id}", UseCaseLogPrefix, request.Id);
 
-        _logger.LogInformation("{UseCaseLogPrefix} Iniciando mapeamento dos novos dados para a empresa de id: {Id}", UseCaseLogPrefix, id);
+        _logger.LogInformation("{UseCaseLogPrefix} Iniciando mapeamento dos novos dados para a empresa de id: {Id}", UseCaseLogPrefix, request.Id);
         empresa.Nome = request.Nome;
         empresa.Endereco = request.Endereco;
         empresa.Status = status;
-        _logger.LogInformation("{UseCaseLogPrefix} Mapeamento dos novos dados para a empresa de id: {Id} concluído", UseCaseLogPrefix, id);
+        _logger.LogInformation("{UseCaseLogPrefix} Mapeamento dos novos dados para a empresa de id: {Id} concluído", UseCaseLogPrefix, request.Id);
 
-        _logger.LogInformation("{UseCaseLogPrefix} Iniciando persistência da atualização para a empresa de id: {Id}", UseCaseLogPrefix, id);
+        _logger.LogInformation("{UseCaseLogPrefix} Iniciando persistência da atualização para a empresa de id: {Id}", UseCaseLogPrefix, request.Id);
         await _empresaRepository.UpdateEmpresaAsync(empresa);
-        _logger.LogInformation("{UseCaseLogPrefix} Persistência da atualização para a empresa de id: {Id} concluída com sucesso", UseCaseLogPrefix, id);
+        _logger.LogInformation("{UseCaseLogPrefix} Persistência da atualização para a empresa de id: {Id} concluída com sucesso", UseCaseLogPrefix, request.Id);
 
-        _logger.LogInformation("{UseCaseLogPrefix} Processo para a empresa de id: {Id} finalizado com sucesso", UseCaseLogPrefix, id);
+        _logger.LogInformation("{UseCaseLogPrefix} Processo para a empresa de id: {Id} finalizado com sucesso", UseCaseLogPrefix, request.Id);
         return Result.Ok();
     }
 }

@@ -9,7 +9,7 @@ public interface IEmpresaService
     public Task<Result<List<EmpresaResponse>>> GetAllAsync();
     public Task<Result> CreateAsync(CreateEmpresaRequest request);
     public Task<Result<EmpresaResponse>> GetByIdAsync(int id);
-    public Task<Result> UpdateAsync(UpdateEmpresaRequest request, int id);
+    public Task<Result> UpdateAsync(UpdateEmpresaRequest request);
     public Task<Result> DeleteAsync(int id);
     public Task<Result> UpdateStatusAsync(UpdateStatusEmpresaRequest request, int id);
 }

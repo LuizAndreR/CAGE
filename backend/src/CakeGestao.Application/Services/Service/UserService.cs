@@ -27,8 +27,8 @@ public class UserService : IUserService
     
     public async Task<Result<List<UsuarioResponse>>> GetAllUsuarioAsync() => await _getAllUserUseCase.Execute();
     public async Task<Result<UsuarioResponse>> GetUsuarioByIdAsync(int id) => await _getUsuarioUseCase.Execute(id);
-    public async Task<Result> UpdateUsuarioAsync(UpdateUsuarioRequest request, int id) => await _updateUserUseCase.ExecuteAsync(request, id);
-    public async Task<Result> UpdateSenhaUsuarioAsync(UpdateSenhaUsuarioRequest request, int id) => await _updateSenhaUsuarioUseCase.ExecuteAsync(request, id);
+    public async Task<Result> UpdateUsuarioAsync(UpdateUsuarioRequest request) => await _updateUserUseCase.ExecuteAsync(request);
+    public async Task<Result> UpdateSenhaUsuarioAsync(UpdateSenhaUsuarioRequest request) => await _updateSenhaUsuarioUseCase.ExecuteAsync(request);
     public async Task<Result> UpdateFuncionarioAsync(UpdateFuncionarioUsuarioRequest request) => await _updateUsuarioFuncaoUseCase.ExecuteAsync(request);
     public async Task<Result> DeleteUsuarioAsync(int usuarioId) => await _deleteUsuarioUseCase.ExecuteAsync(usuarioId); 
 }

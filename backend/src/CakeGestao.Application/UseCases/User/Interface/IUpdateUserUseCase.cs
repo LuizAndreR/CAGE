@@ -5,5 +5,5 @@ namespace CakeGestao.Application.UseCases.User.Interface;
 
 public interface IUpdateUserUseCase
 {
-    public Task<Result> ExecuteAsync(UpdateUsuarioRequest request, int id);
+    public Task<Result> ExecuteAsync(UpdateUsuarioRequest request);
 }

@@ -5,5 +5,5 @@ namespace CakeGestao.Application.UseCases.Empresas.Interface;
 
 public interface IUpdateEmpresaUseCase
 {
-    public Task<Result> ExecuteAsync(UpdateEmpresaRequest request, int id);
+    public Task<Result> ExecuteAsync(UpdateEmpresaRequest request);
 }
