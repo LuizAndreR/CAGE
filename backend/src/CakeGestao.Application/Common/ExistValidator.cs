@@ -1,0 +1,35 @@
+﻿using CakeGestao.Domain.Interfaces.Repositories;
+using FluentValidation;
+
+namespace CakeGestao.Application.Common;
+
+internal static class ExistValidator
+{
+    public static IRuleBuilderOptions<T, int> DeveExistirEmpresa<T>(
+        this IRuleBuilder<T, int> ruleBuilder, IEmpresaRepository repo)
+    {
+        return ruleBuilder
+            .GreaterThan(0).WithMessage("O ID da Empresa é inválido.")
+            .MustAsync(async (id, cancellation) =>
+            {
+                var result = await repo.EmpresaExistsByIdAsync(id);
+                return result.IsSuccess;
+            })
+            .WithMessage("A Empresa informada não foi encontrada.");
+    }
+
+    /*
+    public static IRuleBuilderOptions<T, int> DeveExistirPedido<T>(
+            this IRuleBuilder<T, int> ruleBuilder,
+            IPedidoRepository repo)
+    {
+        return ruleBuilder
+            .GreaterThan(0).WithMessage("O ID do Pedido é inválido.")
+            .MustAsync(async (id, cancellation) =>
+            {
+                return await repo.ExistsAsync(id);
+            })
+            .WithMessage("O Pedido informado não foi encontrado.");
+    }
+    */
+}

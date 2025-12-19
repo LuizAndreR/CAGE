@@ -15,7 +15,6 @@ public class TransecaoProfile : Profile
             .ForMember(dest => dest.Categoria, opt => opt.MapFrom(src =>
                 Enum.Parse<CategoriasEnum>(src.Categoria, true)))
             //.ForMember(dest => dest.PedidoId, opt => opt.MapFrom(src => src.PedidoId ?? 0));
-            .ForMember(dest => dest.EmpresaId, opt => opt.Ignore())
             .ForMember(dest => dest.PedidoId, opt => opt.Ignore());
     }
 }

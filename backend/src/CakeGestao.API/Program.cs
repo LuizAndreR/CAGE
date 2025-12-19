@@ -7,6 +7,8 @@ using CakeGestao.Application.UseCases.Auth.Login;
 using CakeGestao.Application.UseCases.Auth.Refresh;
 using CakeGestao.Application.UseCases.Empresas.Interface;
 using CakeGestao.Application.UseCases.Empresas.UseCase;
+using CakeGestao.Application.UseCases.Estoque.Interface;
+using CakeGestao.Application.UseCases.Estoque.UseCase;
 using CakeGestao.Application.UseCases.Financeiro.Interface;
 using CakeGestao.Application.UseCases.Financeiro.UseCase;
 using CakeGestao.Application.UseCases.Receitas.Interface;
@@ -89,6 +91,8 @@ builder.Services.AddScoped<IUpdateEmpresaUseCase, UpdateEmpresaUseCase>();
 builder.Services.AddScoped<IDeleteEmpresaUseCase, DeleteEmpresaUseCase>();
 builder.Services.AddScoped<IUpdateStatusEmpresaUseCase, UpdateStatusEmpresaUseCase>();
 
+builder.Services.AddScoped<ICreateEstoqueUseCase, CreateEstoqueUseCase>();
+
 builder.Services.AddScoped<ICreateTransacaoUseCase, CreateTransacaoUseCase>();
 
 builder.Services.AddScoped<ICreateReceitaUseCase, CreateReceitaUseCase>();
@@ -98,6 +102,7 @@ builder.Services.AddScoped<IGetAllReceitaUseCase, GetAllReceitaUseCase>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IEmpresaService, EmpresaService>();
+builder.Services.AddScoped<IEstoqueService, EstoqueService>();
 builder.Services.AddScoped<IFinanceiroService, FinanceiroService>();
 builder.Services.AddScoped<IReceitaService, ReceitaService>();
 
@@ -106,6 +111,7 @@ builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<ITokenRepository, TokenRepository>();    
 builder.Services.AddScoped<IEmpresaRepository, EmpresaRepository>();
+builder.Services.AddScoped<IEstoqueRepository, EstoqueRepository>();
 builder.Services.AddScoped<IFinanceiroRepository, FinanceiroRepository>();
 builder.Services.AddScoped<IReceitaRepository, ReceitaRepository>();
 

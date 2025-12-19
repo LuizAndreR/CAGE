@@ -7,7 +7,7 @@ public class ItemEstoque
     public decimal QuantidadeAtual { get; set; }
     public required string UnidadeMedida { get; set; }
 
-    public ICollection<Ingrediente> Ingredientes { get; set; } = new List<Ingrediente>();
+    public virtual ICollection<Ingrediente> Ingredientes { get; set; } = new List<Ingrediente>();
 
     public int EmpresaId { get; set; }
     public virtual required Empresa Empresa{ get; set; }
