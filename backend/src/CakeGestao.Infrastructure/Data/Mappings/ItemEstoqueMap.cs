@@ -25,6 +25,11 @@ internal class ItemEstoqueMap : IEntityTypeConfiguration<ItemEstoque>
             .IsRequired()
             .HasMaxLength(5);
         
+        builder.Property(x => x.ValorMedia)
+            .IsRequired()
+            .HasColumnType("decimal(10,2)")
+            .HasDefaultValue(0);
+
         builder.HasOne(x => x.Empresa)
             .WithMany(x => x.ItemEstoques)
             .HasForeignKey(x => x.EmpresaId)
