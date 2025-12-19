@@ -23,7 +23,7 @@ internal class ItemEstoqueMap : IEntityTypeConfiguration<ItemEstoque>
 
         builder.Property(x => x.UnidadeMedida)
             .IsRequired()
-            .HasMaxLength(50);
+            .HasMaxLength(5);
         
         builder.HasOne(x => x.Empresa)
             .WithMany(x => x.ItemEstoques)

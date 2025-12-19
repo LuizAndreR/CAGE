@@ -1,4 +1,5 @@
-﻿using CakeGestao.Application.Dtos.Requests.Transacao;
+﻿using CakeGestao.Application.Common;
+using CakeGestao.Application.Dtos.Requests.Transacao;
 using CakeGestao.Domain.Enum;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentValidation;
@@ -7,20 +8,11 @@ namespace CakeGestao.Application.Validators.Financeiro;
 
 public class CreateTransacaoValidator : AbstractValidator<CreateTransacaoRequest>
 {
-    private readonly IEmpresaRepository _empresaRepository;
-
-    public CreateTransacaoValidator(IEmpresaRepository empresaRepository)
+    public CreateTransacaoValidator(IEmpresaRepository empresaRepo)
     {
-        _empresaRepository = empresaRepository;
-
         RuleFor(x => x.EmpresaId)
             .GreaterThan(0).WithMessage("ID da empresa inválido.")
-            .MustAsync(async (id, cancellation) =>
-            {
-                var result = await _empresaRepository.GetEmpresaByIdAsync(id);
-                return result.IsSuccess;
-            })
-            .WithMessage("Empresa não encontrada ou assinatura inativa.");
+            .DeveExistirEmpresa(empresaRepo);
 
         RuleFor(x => x.Tipo)
             .IsEnumName(typeof(TipoTransacaoEnum), caseSensitive: false)
