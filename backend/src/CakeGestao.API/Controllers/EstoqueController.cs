@@ -1,5 +1,6 @@
 ﻿using CakeGestao.API.Extensions;
 using CakeGestao.Application.Dtos.Requests.Estoque;
+using CakeGestao.Application.Dtos.Responses;
 using CakeGestao.Application.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +21,19 @@ public class EstoqueController : ApiControllerBase
         _logger = logger;
     }
 
+    [HttpGet("getall")]
+    public async Task<IActionResult> GetAllEstoqueAsync()
+    {
+        _logger.LogInformation("");
+        var empresaId = User.GetEmpresaId();
+        if (empresaId.IsFailed)
+        {
+            _logger.LogWarning("Token de autorização inválido ou não contém EmpresaId.");
+            return Unauthorized("Token inválido.");
+        }
+        var listItemEstoqueResult = await _estoqueService.GetAllItemEstoque(empresaId.Value);
+        return HandleResult(listItemEstoqueResult);
+    }
     
     [HttpPost("create")]
     public async Task<IActionResult> CreateEstoque([FromBody]CreateEstoqueRequest request)

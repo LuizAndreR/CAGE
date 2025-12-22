@@ -30,6 +30,19 @@ public class EstoqueRepository : IEstoqueRepository
         return Result.Ok(itemEstoque);
     }
 
+    public async Task<Result<List<ItemEstoque>>> GetAllItemEstoqueByEmpresaIdAsync(int empresaId)
+    {
+        _logger.LogInformation("Buscando todo os itens do estoque da empresa de id: {Id}", empresaId);
+        var listItemEstoque = await _context.ItensEstoque.AsNoTracking().Where(i => i.EmpresaId == empresaId).ToListAsync();
+        if (listItemEstoque == null)
+        {
+            _logger.LogInformation("Nenhum item encontrado cadastrado no banco de dados da empresa de id: {Id}", empresaId);
+            return Result.Fail<List<ItemEstoque>>("ItemEstoque não encontrado.");
+        }
+        _logger.LogInformation("Encontrado o total de {Total} itens cadastrados no banco de dados da empresa de id: {Id}", listItemEstoque.Count, empresaId);
+        return Result.Ok(listItemEstoque);
+    }
+    
     public async Task<Result> ExistItemByNome(string nome)
     {
         _logger.LogInformation("Verificando existência de ItemEstoque com nome: {Nome}", nome);
