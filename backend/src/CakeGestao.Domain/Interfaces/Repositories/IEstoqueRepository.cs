@@ -8,4 +8,5 @@ public interface IEstoqueRepository
     public Task<Result> ExistItemByNome(string nome);
     public Task CreateItemEstoqueAsync(ItemEstoque itemEstoque);
     public Task UpdateItemEstoqueAsync(ItemEstoque itemEstoque);
+    public Task<Result<ItemEstoque>> GetItemEstoqueByIdAsync(int id);
 }

@@ -17,6 +17,19 @@ public class EstoqueRepository : IEstoqueRepository
         _logger = logger;
     }
 
+    public async Task<Result<ItemEstoque>> GetItemEstoqueByIdAsync(int id)
+    {
+        _logger.LogInformation("Buscando ItemEstoque com ID: {Id}", id);
+        var itemEstoque = await _context.ItensEstoque.FindAsync(id);
+        if (itemEstoque == null)
+        {
+            _logger.LogWarning("ItemEstoque com ID: {Id} não encontrado.", id);
+            return Result.Fail<ItemEstoque>("ItemEstoque não encontrado.");
+        }
+        _logger.LogInformation("ItemEstoque com ID: {Id} encontrado com sucesso.", id);
+        return Result.Ok(itemEstoque);
+    }
+
     public async Task<Result> ExistItemByNome(string nome)
     {
         _logger.LogInformation("Verificando existência de ItemEstoque com nome: {Nome}", nome);

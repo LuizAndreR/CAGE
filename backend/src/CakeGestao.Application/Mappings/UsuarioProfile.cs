@@ -10,9 +10,7 @@ public class UsuarioProfile : Profile
 {
     public UsuarioProfile()
     {
-        CreateMap<Usuario, CadastroRequest>()
-            .ReverseMap();
-        CreateMap<Usuario, UsuarioResponse>()
-            .ReverseMap();
+        CreateMap<CadastroRequest, Usuario>();
+        CreateMap<Usuario, UsuarioResponse>();
     }
 }

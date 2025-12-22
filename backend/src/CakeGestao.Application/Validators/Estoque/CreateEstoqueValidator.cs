@@ -1,5 +1,6 @@
 ﻿using CakeGestao.Application.Common;
 using CakeGestao.Application.Dtos.Requests.Estoque;
+using CakeGestao.Domain.Enum;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentValidation;
 
@@ -10,6 +11,7 @@ public class CreateEstoqueValidator : AbstractValidator<CreateEstoqueRequest>
     public CreateEstoqueValidator(IEmpresaRepository empresaRepo)
     {
         RuleFor(x => x.EmpresaId)
+            .GreaterThan(0).WithMessage("ID da empresa inválido.")
             .DeveExistirEmpresa(empresaRepo);
 
         RuleFor(x => x.Nome)
@@ -20,7 +22,6 @@ public class CreateEstoqueValidator : AbstractValidator<CreateEstoqueRequest>
             .GreaterThanOrEqualTo(0).WithMessage("A quantidade atual não pode ser negativa.");
 
         RuleFor(x => x.UnidadeMedida)
-            .NotEmpty().WithMessage("A unidade de medida é obrigatória.")
-            .MaximumLength(3).WithMessage("A unidade de medida deve ter no máximo 3 caracteres.");
+            .IsEnumName(typeof(UnidadeMedidaEnum), caseSensitive: false).WithMessage("Tipo de unidade de medida inválida.");
     }
 }

@@ -9,9 +9,7 @@ public class ReceitaProfile : Profile
 {
     public ReceitaProfile()
     {
-        CreateMap<CreateReceitaRequest, Receita>()
-            .ReverseMap();
-        CreateMap<Receita, ReceitaResponse>()
-            .ReverseMap();
+        CreateMap<CreateReceitaRequest, Receita>();
+        CreateMap<Receita, ReceitaResponse>();
     }
 }

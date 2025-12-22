@@ -15,12 +15,10 @@ public class CreateTransacaoValidator : AbstractValidator<CreateTransacaoRequest
             .DeveExistirEmpresa(empresaRepo);
 
         RuleFor(x => x.Tipo)
-            .IsEnumName(typeof(TipoTransacaoEnum), caseSensitive: false)
-            .WithMessage($"Tipo de transação inválido. Valores aceitos: {string.Join(", ", Enum.GetNames(typeof(TipoTransacaoEnum)))}");
+            .IsEnumName(typeof(TipoTransacaoEnum), caseSensitive: false).WithMessage($"Tipo de transação inválido. Valores aceitos: {string.Join(", ", Enum.GetNames(typeof(TipoTransacaoEnum)))}");
 
         RuleFor(x => x.Categoria)
-            .IsEnumName(typeof(CategoriasEnum), caseSensitive: false)
-            .WithMessage("Categoria inválida.");
+            .IsEnumName(typeof(CategoriasEnum), caseSensitive: false).WithMessage("Categoria inválida.");
 
         RuleFor(x => x.Valor)
             .GreaterThan(0).WithMessage("O valor da transação deve ser maior que zero.");

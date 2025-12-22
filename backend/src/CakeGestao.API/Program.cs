@@ -92,6 +92,7 @@ builder.Services.AddScoped<IDeleteEmpresaUseCase, DeleteEmpresaUseCase>();
 builder.Services.AddScoped<IUpdateStatusEmpresaUseCase, UpdateStatusEmpresaUseCase>();
 
 builder.Services.AddScoped<ICreateEstoqueUseCase, CreateEstoqueUseCase>();
+builder.Services.AddScoped<IAddQuantidadeEstoqueUseCase, AddQuantidadeEstoqueUseCase>();
 
 builder.Services.AddScoped<ICreateTransacaoUseCase, CreateTransacaoUseCase>();
 

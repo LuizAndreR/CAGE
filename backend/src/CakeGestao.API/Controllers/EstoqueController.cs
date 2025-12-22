@@ -37,4 +37,22 @@ public class EstoqueController : ApiControllerBase
         var result = await _estoqueService.CreateEstoqueAsync(request);
         return HandleResult<object>(result);
     }
+
+    [HttpPut("add-quantidade/{EstoqueId}")]
+    public async Task<IActionResult> AddQuantidadeEstoque([FromRoute]int EstoqueId, [FromBody] AddQuantidadeEstoqueRequest request)
+    {
+        _logger.LogInformation("Iniciando processo de adição de quantidade ao estoque. EstoqueId: {EstoqueId}, QuantidadeAdicionar: {QuantidadeAdicionar}, Valor: {Valor}", EstoqueId, request.QuantidadeAdicionar, request.Valor);
+
+        var empresaId = User.GetEmpresaId();
+        if (empresaId.IsFailed)
+        {
+            _logger.LogWarning("Token de autorização inválido ou não contém EmpresaId.");
+            return Unauthorized("Token inválido.");
+        }
+        request.EmpresaId = empresaId.Value;
+
+        request.EstoqueId = EstoqueId;
+        var result = await _estoqueService.AddQuantidadeEstoqueAsync(request);
+        return HandleResult<object>(result);
+    }
 }
