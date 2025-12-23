@@ -94,6 +94,9 @@ builder.Services.AddScoped<IUpdateStatusEmpresaUseCase, UpdateStatusEmpresaUseCa
 builder.Services.AddScoped<ICreateEstoqueUseCase, CreateEstoqueUseCase>();
 builder.Services.AddScoped<IAddQuantidadeEstoqueUseCase, AddQuantidadeEstoqueUseCase>();
 builder.Services.AddScoped<IGetAllItemEstoqueUseCase, GetAllItemEstoqueUseCase>();
+builder.Services.AddScoped<IGetItemEstoqueUseCase, GetItemEstoqueUseCase>();
+builder.Services.AddScoped<IDeleteItemEstoqueUseCase, DeleteItemEstoqueUseCase>();
+builder.Services.AddScoped<IUpdateItemEstoqueUseCase, UpdateItemEstoqueUseCase>();
 
 builder.Services.AddScoped<ICreateTransacaoUseCase, CreateTransacaoUseCase>();
 

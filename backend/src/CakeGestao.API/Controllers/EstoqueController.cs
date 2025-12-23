@@ -1,6 +1,5 @@
 ﻿using CakeGestao.API.Extensions;
 using CakeGestao.Application.Dtos.Requests.Estoque;
-using CakeGestao.Application.Dtos.Responses;
 using CakeGestao.Application.Services.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -31,10 +30,29 @@ public class EstoqueController : ApiControllerBase
             _logger.LogWarning("Token de autorização inválido ou não contém EmpresaId.");
             return Unauthorized("Token inválido.");
         }
-        var listItemEstoqueResult = await _estoqueService.GetAllItemEstoque(empresaId.Value);
+        var listItemEstoqueResult = await _estoqueService.GetAllItemEstoque(new ItemEstoqueRequest { EmpresaId = empresaId.Value});
         return HandleResult(listItemEstoqueResult);
     }
-    
+
+    [HttpGet("get/{id}")]
+    public async Task<IActionResult> GetEstoqueByIdAsync([FromRoute]int id)
+    {
+        _logger.LogInformation("Iniciando processo de obtenção de item de estoque por ID: {Id}", id);
+        var empresaId = User.GetEmpresaId();
+        if (empresaId.IsFailed)
+        {
+            _logger.LogWarning("Token de autorização inválido ou não contém EmpresaId.");
+            return Unauthorized("Token inválido.");
+        }
+
+        var itemEstoqueResult = await _estoqueService.GetItemEstoqueById(new ItemEstoqueRequest
+        {
+            EmpresaId = empresaId.Value,
+            ItemId = id
+        });
+        return HandleResult(itemEstoqueResult);
+    }
+
     [HttpPost("create")]
     public async Task<IActionResult> CreateEstoque([FromBody]CreateEstoqueRequest request)
     {
@@ -49,6 +67,22 @@ public class EstoqueController : ApiControllerBase
 
         _logger.LogInformation("Recebendo requisição para criação de novo item de estoque. EmpresaId: {EmpresaId}, Nome: {Nome}", request.EmpresaId, request.Nome);
         var result = await _estoqueService.CreateEstoqueAsync(request);
+        return HandleResult<object>(result);
+    }
+
+    [HttpPatch("update/{id}")]
+    public async Task<IActionResult> UpdateEstoque([FromRoute]int id, [FromBody] UpdateItemEstoqueRequest request)
+    {
+        _logger.LogInformation("Iniciando processo de atualização de item de estoque. ItemId: {ItemId}, NovoNome: {NovoNome}", id, request.Nome);
+        var empresaId = User.GetEmpresaId();
+        if (empresaId.IsFailed)
+        {
+            _logger.LogWarning("Token de autorização inválido ou não contém EmpresaId.");
+            return Unauthorized("Token inválido.");
+        }
+        request.EmpresaId = empresaId.Value;
+        request.ItemId = id;
+        var result = await _estoqueService.UpdateItemEstoqueAsync(request);
         return HandleResult<object>(result);
     }
 
@@ -67,6 +101,20 @@ public class EstoqueController : ApiControllerBase
 
         request.EstoqueId = EstoqueId;
         var result = await _estoqueService.AddQuantidadeEstoqueAsync(request);
+        return HandleResult<object>(result);
+    }
+
+    [HttpDelete("delete/{id}")]
+    public async Task<IActionResult> DeleteItemEstoque([FromRoute] int id)
+    {
+        _logger.LogInformation("Iniciando processo de deleção de item de estoque. ItemId: {ItemId}", id);
+        var empresaId = User.GetEmpresaId();
+        if (empresaId.IsFailed)
+        {
+            _logger.LogWarning("Token de autorização inválido ou não contém EmpresaId.");
+            return Unauthorized("Token inválido.");
+        }
+        var result = await _estoqueService.DeleteItemEstoqueAsync(new ItemEstoqueRequest { EmpresaId = empresaId.Value , ItemId = id});
         return HandleResult<object>(result);
     }
 }

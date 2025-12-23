@@ -16,5 +16,8 @@ public class EstoqueProfile : Profile
             .ForMember(dest => dest.ValorMedia, opt => opt.MapFrom(src => src.Valor));
 
         CreateMap<ItemEstoque, ItemEstoqueResponse>();
+        CreateMap<UpdateItemEstoqueRequest, ItemEstoque>()
+            .ForMember(dest => dest.UnidadeMedida, opt => opt.MapFrom(src =>
+                Enum.Parse<UnidadeMedidaEnum>(src.UnidadeMedida, true)));
     }
 }

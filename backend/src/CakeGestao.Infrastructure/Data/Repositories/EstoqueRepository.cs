@@ -43,10 +43,12 @@ public class EstoqueRepository : IEstoqueRepository
         return Result.Ok(listItemEstoque);
     }
     
-    public async Task<Result> ExistItemByNome(string nome)
+    public async Task<Result> ExistItemByNome(string nome, int empresaId)
     {
         _logger.LogInformation("Verificando existência de ItemEstoque com nome: {Nome}", nome);
-        var exists = await _context.ItensEstoque.AnyAsync(e => e.Nome == nome);
+
+        var nomeNormalizado = nome.Trim().ToLower();
+        var exists = await _context.ItensEstoque.AnyAsync(e => e.Nome.ToLower() == nomeNormalizado && e.EmpresaId == empresaId);
 
         if (exists)
         {
@@ -69,6 +71,13 @@ public class EstoqueRepository : IEstoqueRepository
     {
         _logger.LogInformation("Atualizando ItemEstoque com ID: {Id}", itemEstoque.Id);
         _context.ItensEstoque.Update(itemEstoque);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task DeleteItemEstoqueAsync(ItemEstoque itemEstoque)
+    {
+        _logger.LogInformation("Deletando ItemEstoque com ID: {Id}", itemEstoque.Id);
+        _context.ItensEstoque.Remove(itemEstoque);
         await _context.SaveChangesAsync();
     }
 }

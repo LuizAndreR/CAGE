@@ -4,7 +4,7 @@ using FluentResults;
 
 namespace CakeGestao.Application.UseCases.Estoque.Interface;
 
-public interface IGetAllItemEstoqueUseCase
+public interface IGetItemEstoqueUseCase
 {
-    public Task<Result<List<ItemEstoqueResponse>>> ExecuteAsync(ItemEstoqueRequest request);
+    public Task<Result<ItemEstoqueResponse>> ExecuteAsync(ItemEstoqueRequest request);
 }

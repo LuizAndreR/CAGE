@@ -41,7 +41,7 @@ public class CreateEstoqueUseCase : ICreateEstoqueUseCase
         _logger.LogInformation("{UseCaseLogPrefix} Validação concluída com sucesso. EmpresaId: {EmpresaId}, Nome: {Nome}", UseCaseLogPrefix, request.EmpresaId, request.Nome);
 
         _logger.LogInformation("{UseCaseLogPrefix} Verificando existência de item de estoque com o mesmo nome. EmpresaId: {EmpresaId}, Nome: {Nome}", UseCaseLogPrefix, request.EmpresaId, request.Nome);
-        var existingItemResult = await _estoqueRepository.ExistItemByNome(request.Nome);
+        var existingItemResult = await _estoqueRepository.ExistItemByNome(request.Nome, request.EmpresaId);
         if(existingItemResult.IsSuccess)
         {
             _logger.LogWarning("{UseCaseLogPrefix} Já existe um item de estoque com o nome fornecido. EmpresaId: {EmpresaId}, Nome: {Nome}", UseCaseLogPrefix, request.EmpresaId, request.Nome);
