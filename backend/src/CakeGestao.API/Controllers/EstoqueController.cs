@@ -104,6 +104,22 @@ public class EstoqueController : ApiControllerBase
         return HandleResult<object>(result);
     }
 
+    [HttpPut("remove-quantidade/{ItemId}")]
+    public async Task<IActionResult> RemoveQuantidadeEstoque([FromRoute]int ItemId, [FromBody] RemoveQuantidadeEstoqueRequest request)
+    {
+        _logger.LogInformation("Iniciando processo de remoção de quantidade do estoque. EstoqueId: {EstoqueId}, QuantidadeRemover: {QuantidadeRemover}", ItemId, request.QuantidadeARemover);
+        var empresaId = User.GetEmpresaId();
+        if (empresaId.IsFailed)
+        {
+            _logger.LogWarning("Token de autorização inválido ou não contém EmpresaId.");
+            return Unauthorized("Token inválido.");
+        }
+        request.EmpresaId = empresaId.Value;
+        request.ItemId = ItemId;
+        var result = await _estoqueService.RemoverQuantidadeEstoqueAsync(request);
+        return HandleResult<object>(result);
+    }
+
     [HttpDelete("delete/{id}")]
     public async Task<IActionResult> DeleteItemEstoque([FromRoute] int id)
     {

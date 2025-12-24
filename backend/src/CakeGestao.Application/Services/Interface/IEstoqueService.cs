@@ -12,4 +12,5 @@ public interface IEstoqueService
     public Task<Result<ItemEstoqueResponse>> GetItemEstoqueById(ItemEstoqueRequest request);
     public Task<Result> DeleteItemEstoqueAsync(ItemEstoqueRequest request);
     public Task<Result> UpdateItemEstoqueAsync(UpdateItemEstoqueRequest request);
+    public Task<Result> RemoverQuantidadeEstoqueAsync(RemoveQuantidadeEstoqueRequest request);
 }
