@@ -42,7 +42,20 @@ public class EstoqueRepository : IEstoqueRepository
         _logger.LogInformation("Encontrado o total de {Total} itens cadastrados no banco de dados da empresa de id: {Id}", listItemEstoque.Count, empresaId);
         return Result.Ok(listItemEstoque);
     }
-    
+
+    public async Task<Result<List<ItemEstoque>>> GetAlertaEstoqueByEmpresaIdAsync(int empresaId, int QuantidadeMinima)
+    {
+        _logger.LogInformation("Buscando itens do estoque com alerta para a empresa de id: {Id}", empresaId);
+        var alertaEstoque = await _context.ItensEstoque.AsNoTracking().Where(i => i.EmpresaId == empresaId && i.QuantidadeAtual <= QuantidadeMinima).ToListAsync();
+        if (alertaEstoque == null)
+        {
+            _logger.LogInformation("Nenhum item com alerta de estoque encontrado para a empresa de id: {Id}", empresaId);
+            return Result.Fail<List<ItemEstoque>>("Nenhum item com alerta de estoque encontrado.");
+        }
+        return Result.Ok(alertaEstoque);
+    }
+
+
     public async Task<Result> ExistItemByNome(string nome, int empresaId)
     {
         _logger.LogInformation("Verificando existência de ItemEstoque com nome: {Nome}", nome);

@@ -53,6 +53,24 @@ public class EstoqueController : ApiControllerBase
         return HandleResult(itemEstoqueResult);
     }
 
+    [HttpGet("alert")]
+    public async Task<IActionResult> GetEstoqueAlertAsync()
+    {
+        _logger.LogInformation("Iniciando processo de obtenção de alertas de estoque.");
+        var empresaId = User.GetEmpresaId();
+        if (empresaId.IsFailed)
+        {
+            _logger.LogWarning("Token de autorização inválido ou não contém EmpresaId.");
+            return Unauthorized("Token inválido.");
+        }
+
+        var alertEstoqueResult = await _estoqueService.GetAlertaEstoqueAsync(new ItemEstoqueRequest
+        {
+            EmpresaId = empresaId.Value
+        });
+        return HandleResult(alertEstoqueResult);
+    }
+
     [HttpPost("create")]
     public async Task<IActionResult> CreateEstoque([FromBody]CreateEstoqueRequest request)
     {

@@ -10,6 +10,7 @@ public interface IEstoqueService
     public Task<Result> AddQuantidadeEstoqueAsync(AddQuantidadeEstoqueRequest request);
     public Task<Result<List<ItemEstoqueResponse>>> GetAllItemEstoque(ItemEstoqueRequest request);
     public Task<Result<ItemEstoqueResponse>> GetItemEstoqueById(ItemEstoqueRequest request);
+    public Task<Result<List<ItemEstoqueResponse>>> GetAlertaEstoqueAsync(ItemEstoqueRequest request);
     public Task<Result> DeleteItemEstoqueAsync(ItemEstoqueRequest request);
     public Task<Result> UpdateItemEstoqueAsync(UpdateItemEstoqueRequest request);
     public Task<Result> RemoverQuantidadeEstoqueAsync(RemoveQuantidadeEstoqueRequest request);

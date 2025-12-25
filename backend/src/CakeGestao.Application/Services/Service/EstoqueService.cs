@@ -15,8 +15,9 @@ public class EstoqueService : IEstoqueService
     private readonly IDeleteItemEstoqueUseCase _deleteItemEstoqueUseCase;
     private readonly IUpdateItemEstoqueUseCase _updateItemEstoqueUseCase;
     private readonly IRemoverQuantidadeEstoqueUseCase _removerQuantidadeEstoqueUseCase;
+    private readonly IGetAlertaEstoqueUseCase _getAlertaEstoqueUseCase;
 
-    public EstoqueService(ICreateEstoqueUseCase createEmpresaUseCase, IAddQuantidadeEstoqueUseCase addQuantidadeEstoqueUseCase, IGetAllItemEstoqueUseCase getAllItemEstoqueUseCase, IGetItemEstoqueUseCase getItemEstoqueUseCase, IDeleteItemEstoqueUseCase deleteItemEstoqueUseCase, IUpdateItemEstoqueUseCase updateItemEstoqueUseCase, IRemoverQuantidadeEstoqueUseCase removerQuantidadeEstoqueUseCase)
+    public EstoqueService(ICreateEstoqueUseCase createEmpresaUseCase, IAddQuantidadeEstoqueUseCase addQuantidadeEstoqueUseCase, IGetAllItemEstoqueUseCase getAllItemEstoqueUseCase, IGetItemEstoqueUseCase getItemEstoqueUseCase, IDeleteItemEstoqueUseCase deleteItemEstoqueUseCase, IUpdateItemEstoqueUseCase updateItemEstoqueUseCase, IRemoverQuantidadeEstoqueUseCase removerQuantidadeEstoqueUseCase, IGetAlertaEstoqueUseCase getAlertaEstoqueUseCase)
     {
         _createEmpresaUseCase = createEmpresaUseCase;
         _addQuantidadeEstoqueUseCase = addQuantidadeEstoqueUseCase;
@@ -25,12 +26,14 @@ public class EstoqueService : IEstoqueService
         _deleteItemEstoqueUseCase = deleteItemEstoqueUseCase;
         _updateItemEstoqueUseCase = updateItemEstoqueUseCase;
         _removerQuantidadeEstoqueUseCase = removerQuantidadeEstoqueUseCase;
+        _getAlertaEstoqueUseCase = getAlertaEstoqueUseCase;
     }
 
     public async Task<Result> CreateEstoqueAsync(CreateEstoqueRequest request) => await _createEmpresaUseCase.ExecuteAsync(request);
     public async Task<Result> AddQuantidadeEstoqueAsync(AddQuantidadeEstoqueRequest request) => await _addQuantidadeEstoqueUseCase.ExecuteAsync(request);
     public async Task<Result<List<ItemEstoqueResponse>>> GetAllItemEstoque(ItemEstoqueRequest request) => await _getAllItemEstoqueUseCase.ExecuteAsync(request);
     public async Task<Result<ItemEstoqueResponse>> GetItemEstoqueById(ItemEstoqueRequest request) => await _getItemEstoqueUseCase.ExecuteAsync(request);
+    public async Task<Result<List<ItemEstoqueResponse>>> GetAlertaEstoqueAsync(ItemEstoqueRequest request) => await _getAlertaEstoqueUseCase.ExecuteAsync(request);
     public async Task<Result> DeleteItemEstoqueAsync(ItemEstoqueRequest request) => await _deleteItemEstoqueUseCase.ExecuteAsync(request);
     public async Task<Result> UpdateItemEstoqueAsync(UpdateItemEstoqueRequest request) => await _updateItemEstoqueUseCase.ExecuteAsync(request);
     public async Task<Result> RemoverQuantidadeEstoqueAsync(RemoveQuantidadeEstoqueRequest request) => await _removerQuantidadeEstoqueUseCase.ExecuteAsync(request);
