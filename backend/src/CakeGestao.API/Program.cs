@@ -7,8 +7,7 @@ using CakeGestao.Application.UseCases.Auth.Login;
 using CakeGestao.Application.UseCases.Auth.Refresh;
 using CakeGestao.Application.UseCases.Empresas.Interface;
 using CakeGestao.Application.UseCases.Empresas.UseCase;
-using CakeGestao.Application.UseCases.Estoque.Interface;
-using CakeGestao.Application.UseCases.Estoque.UseCase;
+using CakeGestao.Application.UseCases.Estoque.AddQuantidade;
 using CakeGestao.Application.UseCases.Financeiro.Interface;
 using CakeGestao.Application.UseCases.Financeiro.UseCase;
 using CakeGestao.Application.UseCases.Receitas.Interface;
@@ -73,6 +72,8 @@ builder.Services.AddAutoMapper(_ => {}, typeof(ReceitaProfile).Assembly);
 
 builder.Services.AddControllers();
 
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<AddQuantidadeEstoqueHandler>());
+
 builder.Services.AddScoped<ICadastroUseCase, CadastroUseCase>();   
 builder.Services.AddScoped<ILoginUseCase, LoginUseCase>();
 builder.Services.AddScoped<IRefreshTokenUseCase, RefreshTokenUseCase>();
@@ -89,16 +90,7 @@ builder.Services.AddScoped<IGetAllEmpresaUseCase, GetAllEmpresaUseCase>();
 builder.Services.AddScoped<IGetEmpresaUseCase, GetEmpresaUseCase>();
 builder.Services.AddScoped<IUpdateEmpresaUseCase, UpdateEmpresaUseCase>();
 builder.Services.AddScoped<IDeleteEmpresaUseCase, DeleteEmpresaUseCase>();
-builder.Services.AddScoped<IUpdateStatusEmpresaUseCase, UpdateStatusEmpresaUseCase>();
-
-builder.Services.AddScoped<ICreateEstoqueUseCase, CreateEstoqueUseCase>();
-builder.Services.AddScoped<IAddQuantidadeEstoqueUseCase, AddQuantidadeEstoqueUseCase>();
-builder.Services.AddScoped<IGetAllItemEstoqueUseCase, GetAllItemEstoqueUseCase>();
-builder.Services.AddScoped<IGetItemEstoqueUseCase, GetItemEstoqueUseCase>();
-builder.Services.AddScoped<IGetAlertaEstoqueUseCase, GetAlertaEstoqueUseCase>();
-builder.Services.AddScoped<IDeleteItemEstoqueUseCase, DeleteItemEstoqueUseCase>();
-builder.Services.AddScoped<IUpdateItemEstoqueUseCase, UpdateItemEstoqueUseCase>();
-builder.Services.AddScoped<IRemoverQuantidadeEstoqueUseCase, RemoverQuantidadeEstoqueUseCase>();    
+builder.Services.AddScoped<IUpdateStatusEmpresaUseCase, UpdateStatusEmpresaUseCase>();   
 
 builder.Services.AddScoped<ICreateTransacaoUseCase, CreateTransacaoUseCase>();
 
@@ -109,7 +101,6 @@ builder.Services.AddScoped<IGetAllReceitaUseCase, GetAllReceitaUseCase>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IEmpresaService, EmpresaService>();
-builder.Services.AddScoped<IEstoqueService, EstoqueService>();
 builder.Services.AddScoped<IFinanceiroService, FinanceiroService>();
 builder.Services.AddScoped<IReceitaService, ReceitaService>();
 

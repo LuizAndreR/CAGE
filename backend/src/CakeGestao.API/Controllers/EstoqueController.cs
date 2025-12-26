@@ -1,6 +1,13 @@
 ﻿using CakeGestao.API.Extensions;
-using CakeGestao.Application.Dtos.Requests.Estoque;
-using CakeGestao.Application.Services.Interface;
+using CakeGestao.Application.UseCases.Estoque.AddQuantidade;
+using CakeGestao.Application.UseCases.Estoque.Alerta;
+using CakeGestao.Application.UseCases.Estoque.Create;
+using CakeGestao.Application.UseCases.Estoque.Delete;
+using CakeGestao.Application.UseCases.Estoque.GetAll;
+using CakeGestao.Application.UseCases.Estoque.GetItem;
+using CakeGestao.Application.UseCases.Estoque.RemoverQuantidade;
+using CakeGestao.Application.UseCases.Estoque.Update;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,11 +19,11 @@ namespace CakeGestao.API.Controllers;
 public class EstoqueController : ApiControllerBase
 {
     private readonly ILogger<EstoqueController> _logger;
-    private readonly IEstoqueService _estoqueService;
+    private readonly IMediator _mediator;
 
-    public EstoqueController(IEstoqueService estoqueService, ILogger<EstoqueController> logger)
+    public EstoqueController(IMediator mediator, ILogger<EstoqueController> logger)
     {
-        _estoqueService = estoqueService;
+        _mediator = mediator;
         _logger = logger;
     }
 
@@ -30,7 +37,7 @@ public class EstoqueController : ApiControllerBase
             _logger.LogWarning("Token de autorização inválido ou não contém EmpresaId.");
             return Unauthorized("Token inválido.");
         }
-        var listItemEstoqueResult = await _estoqueService.GetAllItemEstoque(new ItemEstoqueRequest { EmpresaId = empresaId.Value});
+        var listItemEstoqueResult = await _mediator.Send(new GetAllItemEstoqueQuery { EmpresaId = empresaId.Value});
         return HandleResult(listItemEstoqueResult);
     }
 
@@ -45,11 +52,7 @@ public class EstoqueController : ApiControllerBase
             return Unauthorized("Token inválido.");
         }
 
-        var itemEstoqueResult = await _estoqueService.GetItemEstoqueById(new ItemEstoqueRequest
-        {
-            EmpresaId = empresaId.Value,
-            ItemId = id
-        });
+        var itemEstoqueResult = await _mediator.Send(new GetItemEstoqueQuery { EmpresaId = empresaId.Value, ItemId = id });
         return HandleResult(itemEstoqueResult);
     }
 
@@ -64,15 +67,12 @@ public class EstoqueController : ApiControllerBase
             return Unauthorized("Token inválido.");
         }
 
-        var alertEstoqueResult = await _estoqueService.GetAlertaEstoqueAsync(new ItemEstoqueRequest
-        {
-            EmpresaId = empresaId.Value
-        });
+        var alertEstoqueResult = await _mediator.Send(new GetAlertaEstoqueQuery { EmpresaId = empresaId.Value });
         return HandleResult(alertEstoqueResult);
     }
 
     [HttpPost("create")]
-    public async Task<IActionResult> CreateEstoque([FromBody]CreateEstoqueRequest request)
+    public async Task<IActionResult> CreateEstoque([FromBody]CreateEstoqueCommand request)
     {
         _logger.LogInformation("Iniciando processo de criação de novo item de estoque.");
         var empresaId = User.GetEmpresaId();
@@ -84,12 +84,12 @@ public class EstoqueController : ApiControllerBase
         request.EmpresaId = empresaId.Value;
 
         _logger.LogInformation("Recebendo requisição para criação de novo item de estoque. EmpresaId: {EmpresaId}, Nome: {Nome}", request.EmpresaId, request.Nome);
-        var result = await _estoqueService.CreateEstoqueAsync(request);
+        var result = await _mediator.Send(request);
         return HandleResult<object>(result);
     }
 
     [HttpPatch("update/{id}")]
-    public async Task<IActionResult> UpdateEstoque([FromRoute]int id, [FromBody] UpdateItemEstoqueRequest request)
+    public async Task<IActionResult> UpdateEstoque([FromRoute]int id, [FromBody] UpdateItemEstoqueCommand request)
     {
         _logger.LogInformation("Iniciando processo de atualização de item de estoque. ItemId: {ItemId}, NovoNome: {NovoNome}", id, request.Nome);
         var empresaId = User.GetEmpresaId();
@@ -100,14 +100,14 @@ public class EstoqueController : ApiControllerBase
         }
         request.EmpresaId = empresaId.Value;
         request.ItemId = id;
-        var result = await _estoqueService.UpdateItemEstoqueAsync(request);
+        var result = await _mediator.Send(request);
         return HandleResult<object>(result);
     }
 
-    [HttpPut("add-quantidade/{EstoqueId}")]
-    public async Task<IActionResult> AddQuantidadeEstoque([FromRoute]int EstoqueId, [FromBody] AddQuantidadeEstoqueRequest request)
+    [HttpPut("add-quantidade/{itemId}")]
+    public async Task<IActionResult> AddQuantidadeEstoque([FromRoute]int itemId, [FromBody] AddQuantidadeEstoqueCommand request)
     {
-        _logger.LogInformation("Iniciando processo de adição de quantidade ao estoque. EstoqueId: {EstoqueId}, QuantidadeAdicionar: {QuantidadeAdicionar}, Valor: {Valor}", EstoqueId, request.QuantidadeAdicionar, request.Valor);
+        _logger.LogInformation("Iniciando processo de adição de quantidade ao estoque. EstoqueId: {EstoqueId}, QuantidadeAdicionar: {QuantidadeAdicionar}, Valor: {Valor}", itemId, request.QuantidadeAdicionar, request.Valor);
 
         var empresaId = User.GetEmpresaId();
         if (empresaId.IsFailed)
@@ -117,13 +117,13 @@ public class EstoqueController : ApiControllerBase
         }
         request.EmpresaId = empresaId.Value;
 
-        request.EstoqueId = EstoqueId;
-        var result = await _estoqueService.AddQuantidadeEstoqueAsync(request);
+        request.ItemId = itemId;
+        var result = await _mediator.Send(request);
         return HandleResult<object>(result);
     }
 
     [HttpPut("remove-quantidade/{ItemId}")]
-    public async Task<IActionResult> RemoveQuantidadeEstoque([FromRoute]int ItemId, [FromBody] RemoveQuantidadeEstoqueRequest request)
+    public async Task<IActionResult> RemoveQuantidadeEstoque([FromRoute]int ItemId, [FromBody] RemoveQuantidadeEstoqueCommand request)
     {
         _logger.LogInformation("Iniciando processo de remoção de quantidade do estoque. EstoqueId: {EstoqueId}, QuantidadeRemover: {QuantidadeRemover}", ItemId, request.QuantidadeARemover);
         var empresaId = User.GetEmpresaId();
@@ -134,7 +134,7 @@ public class EstoqueController : ApiControllerBase
         }
         request.EmpresaId = empresaId.Value;
         request.ItemId = ItemId;
-        var result = await _estoqueService.RemoverQuantidadeEstoqueAsync(request);
+        var result = await _mediator.Send(request);
         return HandleResult<object>(result);
     }
 
@@ -148,7 +148,7 @@ public class EstoqueController : ApiControllerBase
             _logger.LogWarning("Token de autorização inválido ou não contém EmpresaId.");
             return Unauthorized("Token inválido.");
         }
-        var result = await _estoqueService.DeleteItemEstoqueAsync(new ItemEstoqueRequest { EmpresaId = empresaId.Value , ItemId = id});
+        var result = await  _mediator.Send(new DeleteItemEstoqueCommand { EmpresaId = empresaId.Value , ItemId = id});
         return HandleResult<object>(result);
     }
 }

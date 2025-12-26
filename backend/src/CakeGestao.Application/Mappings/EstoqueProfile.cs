@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using CakeGestao.Application.Dtos.Requests.Estoque;
-using CakeGestao.Application.Dtos.Responses;
+using CakeGestao.Application.UseCases.Estoque.Common;
+using CakeGestao.Application.UseCases.Estoque.Update;
 using CakeGestao.Domain.Entities;
 using CakeGestao.Domain.Enum;
 
@@ -10,13 +10,8 @@ public class EstoqueProfile : Profile
 {
     public EstoqueProfile()
     {
-        CreateMap<CreateEstoqueRequest, ItemEstoque>()
-            .ForMember(dest => dest.UnidadeMedida, opt => opt.MapFrom(src =>
-                Enum.Parse<UnidadeMedidaEnum>(src.UnidadeMedida, true)))
-            .ForMember(dest => dest.ValorMedia, opt => opt.MapFrom(src => src.Valor));
-
         CreateMap<ItemEstoque, ItemEstoqueResponse>();
-        CreateMap<UpdateItemEstoqueRequest, ItemEstoque>()
+        CreateMap<UpdateItemEstoqueCommand, ItemEstoque>()
             .ForMember(dest => dest.UnidadeMedida, opt => opt.MapFrom(src =>
                 Enum.Parse<UnidadeMedidaEnum>(src.UnidadeMedida, true)));
     }
