@@ -1,11 +1,14 @@
 using CakeGestao.API.Middlewares;
+using CakeGestao.Application.Features.Empresas.Delete;
+using CakeGestao.Application.Features.Empresas.Get;
+using CakeGestao.Application.Features.Empresas.GetAll;
+using CakeGestao.Application.Features.Empresas.UpdateStatus;
 using CakeGestao.Application.Mappings;
 using CakeGestao.Application.Services.Interface;
 using CakeGestao.Application.Services.Service;
 using CakeGestao.Application.UseCases.Auth.Cadastro;
 using CakeGestao.Application.UseCases.Auth.Login;
 using CakeGestao.Application.UseCases.Auth.Refresh;
-using CakeGestao.Application.UseCases.Empresas.Interface;
 using CakeGestao.Application.UseCases.Empresas.UseCase;
 using CakeGestao.Application.UseCases.Estoque.AddQuantidade;
 using CakeGestao.Application.UseCases.Financeiro.Interface;
@@ -83,14 +86,7 @@ builder.Services.AddScoped<IGetAllUsuarioUseCase, GetAllUsuarioUseCase>();
 builder.Services.AddScoped<IUpdateUserUseCase, UpdateUserUseCase>();
 builder.Services.AddScoped<IUpdateSenhaUsuarioUseCase, UpdateSenhaUsuarioUseCase>();
 builder.Services.AddScoped<IUpdateFuncionarioUseCase, UpdateFuncionarioUseCase>();
-builder.Services.AddScoped<IDeleteUsuarioUseCase, DeleteUsuarioUseCase>();
-
-builder.Services.AddScoped<ICreateEmpresaUseCase, CreateEmpresaUseCase>();
-builder.Services.AddScoped<IGetAllEmpresaUseCase, GetAllEmpresaUseCase>();
-builder.Services.AddScoped<IGetEmpresaUseCase, GetEmpresaUseCase>();
-builder.Services.AddScoped<IUpdateEmpresaUseCase, UpdateEmpresaUseCase>();
-builder.Services.AddScoped<IDeleteEmpresaUseCase, DeleteEmpresaUseCase>();
-builder.Services.AddScoped<IUpdateStatusEmpresaUseCase, UpdateStatusEmpresaUseCase>();   
+builder.Services.AddScoped<IDeleteUsuarioUseCase, DeleteUsuarioUseCase>(); 
 
 builder.Services.AddScoped<ICreateTransacaoUseCase, CreateTransacaoUseCase>();
 
@@ -100,7 +96,6 @@ builder.Services.AddScoped<IGetAllReceitaUseCase, GetAllReceitaUseCase>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IEmpresaService, EmpresaService>();
 builder.Services.AddScoped<IFinanceiroService, FinanceiroService>();
 builder.Services.AddScoped<IReceitaService, ReceitaService>();
 

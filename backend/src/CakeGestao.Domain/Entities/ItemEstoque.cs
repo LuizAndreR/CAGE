@@ -26,14 +26,21 @@ public class ItemEstoque
         EmpresaId = empresaId;
     }
 
+    public bool AtualizarDadosCadastrais(string nome, decimal quantidadeAtual, UnidadeMedidaEnum unidade)
+    {
+        if (this.Nome == nome && this.UnidadeMedida == unidade)
+        {
+            return false;
+        }
+
+        this.Nome = nome;
+        this.QuantidadeAtual = quantidadeAtual;
+        this.UnidadeMedida = unidade;
+        return true;
+    }
+
     public void AdicionarQuantidade (decimal quantidadeEntrada, decimal valorUnitarioEntrada)
     {
-        if (quantidadeEntrada <= 0)
-            throw new ArgumentException("A quantidade a adicionar deve ser maior que zero.", nameof(quantidadeEntrada));
-
-        if (valorUnitarioEntrada < 0)
-            throw new ArgumentException("O valor unitário não pode ser negativo.", nameof(valorUnitarioEntrada));
-
         decimal valorTotalAtualNoEstoque = this.QuantidadeAtual * this.ValorMedia;
         decimal valorTotalDaEntrada = quantidadeEntrada * valorUnitarioEntrada;
 

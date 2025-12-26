@@ -1,24 +1,24 @@
 ﻿using AutoMapper;
 using CakeGestao.Application.Dtos.Requests.Empresa;
-using CakeGestao.Application.UseCases.Empresas.Interface;
 using CakeGestao.Domain.Entities;
 using CakeGestao.Domain.Enum;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
 using FluentValidation;
+using MediatR;
 using Microsoft.Extensions.Logging;
 
 namespace CakeGestao.Application.UseCases.Empresas.UseCase;
 
-public class CreateEmpresaUseCase : ICreateEmpresaUseCase
+public class CreateEmpresaHandler : IRequestHandler<CreateEmpresaCommand, Result>
 {
     private readonly IEmpresaRepository _empresaRepository;
-    private readonly ILogger<CreateEmpresaUseCase> _logger;
+    private readonly ILogger<CreateEmpresaHandler> _logger;
     private readonly IMapper _mapper;
-    private readonly IValidator<CreateEmpresaRequest> _validator;
+    private readonly IValidator<CreateEmpresaCommand> _validator;
     private const string UseCaseLogPrefix = "[Create Empresa]";
 
-    public CreateEmpresaUseCase(IEmpresaRepository empresaRepository, ILogger<CreateEmpresaUseCase> logger, IMapper mapper, IValidator<CreateEmpresaRequest> validator)
+    public CreateEmpresaHandler(IEmpresaRepository empresaRepository, ILogger<CreateEmpresaHandler> logger, IMapper mapper, IValidator<CreateEmpresaCommand> validator)
     {
         _empresaRepository = empresaRepository;
         _logger = logger;
@@ -26,7 +26,7 @@ public class CreateEmpresaUseCase : ICreateEmpresaUseCase
         _validator = validator;
     }
 
-    public async Task<Result> ExecuteAsync(CreateEmpresaRequest request)
+    public async Task<Result> Handle(CreateEmpresaCommand request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("{UseCaseLogPrefix} Iniciando processo para a empresa de nome: {Nome}", UseCaseLogPrefix, request.Nome);
 
@@ -50,9 +50,8 @@ public class CreateEmpresaUseCase : ICreateEmpresaUseCase
         _logger.LogInformation("{UseCaseLogPrefix} Nenhuma empresa encontrada com o nome: {Nome}. Prosseguindo com o cadastro.", UseCaseLogPrefix, request.Nome);
 
         _logger.LogInformation("{UseCaseLogPrefix} Iniciando mapeamento da requisição para a entidade Empresa", UseCaseLogPrefix);
-        var empresaEntity = _mapper.Map<Empresa>(request);
-        empresaEntity.DataCadastro = DateTime.UtcNow;
-        empresaEntity.Status = StatusEmpresaEnum.Pendente;
+        StatusEmpresaEnum status = StatusEmpresaEnum.Ativa;
+        Empresa empresaEntity = new Empresa(request.Nome, request.Endereco, status);
         _logger.LogInformation("{UseCaseLogPrefix} Mapeamento concluído com sucesso", UseCaseLogPrefix);
 
         _logger.LogInformation("{UseCaseLogPrefix} Iniciando persistência da nova empresa no banco de dados", UseCaseLogPrefix);

@@ -1,27 +1,27 @@
 using AutoMapper;
-using CakeGestao.Application.Dtos.Responses;
-using CakeGestao.Application.UseCases.Empresas.Interface;
+using CakeGestao.Application.Features.Empresas.Common;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
+using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace CakeGestao.Application.UseCases.Empresas.UseCase;
+namespace CakeGestao.Application.Features.Empresas.GetAll;
 
-public class GetAllEmpresaUseCase : IGetAllEmpresaUseCase
+public class GetAllEmpresaHandler : IRequestHandler<GetAllEmpresaQuery, Result<List<EmpresaResponse>>>
 {
     private readonly IEmpresaRepository _empresaRepository;
-    private readonly ILogger<GetAllEmpresaUseCase> _logger;
+    private readonly ILogger<GetAllEmpresaHandler> _logger;
     private readonly IMapper _mapper;
     private const string UseCaseLogPrefix = "[Get All Empresas]";
 
-    public GetAllEmpresaUseCase(IEmpresaRepository empresaRepository, ILogger<GetAllEmpresaUseCase> logger, IMapper mapper)
+    public GetAllEmpresaHandler(IEmpresaRepository empresaRepository, ILogger<GetAllEmpresaHandler> logger, IMapper mapper)
     {
         _empresaRepository = empresaRepository;
         _logger = logger;
         _mapper = mapper;
     }
 
-    public async Task<Result<List<EmpresaResponse>>> ExecuteAsync()
+    public async Task<Result<List<EmpresaResponse>>> Handle(GetAllEmpresaQuery request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("{UseCaseLogPrefix} Iniciando processo de busca de todas as empresas", UseCaseLogPrefix);
 

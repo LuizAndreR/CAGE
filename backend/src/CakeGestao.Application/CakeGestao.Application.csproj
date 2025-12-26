@@ -19,9 +19,4 @@
     <ProjectReference Include="..\CakeGestao.Infrastructure\CakeGestao.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Dtos\Requests\Estoque\" />
-    <Folder Include="Validators\Estoque\" />
-  </ItemGroup>
-
 </Project>

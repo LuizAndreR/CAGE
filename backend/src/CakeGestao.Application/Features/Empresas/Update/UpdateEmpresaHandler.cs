@@ -1,31 +1,28 @@
-﻿using AutoMapper;
-using CakeGestao.Application.Dtos.Requests.Empresa;
-using CakeGestao.Application.UseCases.Empresas.Interface;
+﻿using CakeGestao.Application.Dtos.Requests.Empresa;
 using CakeGestao.Domain.Enum;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
 using FluentValidation;
+using MediatR;
 using Microsoft.Extensions.Logging;
 
 namespace CakeGestao.Application.UseCases.Empresas.UseCase;
 
-public class UpdateEmpresaUseCase : IUpdateEmpresaUseCase
+public class UpdateEmpresaHandler : IRequestHandler<UpdateEmpresaCommand, Result>
 {
     private readonly IEmpresaRepository _empresaRepository;
-    private readonly IValidator<UpdateEmpresaRequest> _validator;
-    private readonly IMapper _mapper;
-    private readonly ILogger<UpdateEmpresaUseCase> _logger;
+    private readonly IValidator<UpdateEmpresaCommand> _validator;
+    private readonly ILogger<UpdateEmpresaHandler> _logger;
     private const string UseCaseLogPrefix = "[Update Empresa]";
 
-    public UpdateEmpresaUseCase(IEmpresaRepository empresaRepository, IValidator<UpdateEmpresaRequest> validator, IMapper mapper, ILogger<UpdateEmpresaUseCase> logger)
+    public UpdateEmpresaHandler(IEmpresaRepository empresaRepository, IValidator<UpdateEmpresaCommand> validator, ILogger<UpdateEmpresaHandler> logger)
     {
         _empresaRepository = empresaRepository;
         _validator = validator;
-        _mapper = mapper;
         _logger = logger;
     }
 
-    public async Task<Result> ExecuteAsync(UpdateEmpresaRequest request)
+    public async Task<Result> Handle(UpdateEmpresaCommand request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("{UseCaseLogPrefix} Iniciando processo para a empresa de id: {Id}", UseCaseLogPrefix, request.Id);
 
@@ -46,23 +43,13 @@ public class UpdateEmpresaUseCase : IUpdateEmpresaUseCase
             _logger.LogWarning("{UseCaseLogPrefix} Empresa de id: {Id} não encontrada no banco de dados", UseCaseLogPrefix, request.Id);
             return Result.Fail(new NotFoundError("Empresa não encontrada no banco de dados"));
         }
+        var empresa = empresaResult.Value;
         _logger.LogInformation("{UseCaseLogPrefix} Empresa de id: {Id} encontrada com sucesso", UseCaseLogPrefix, request.Id);
 
-        _logger.LogInformation("{UseCaseLogPrefix} Verificando se houve alterações nos dados da empresa de id: {Id}", UseCaseLogPrefix, request.Id);
-        var empresa = empresaResult.Value;
+        _logger.LogInformation("{UseCaseLogPrefix} Atualizando dados cadastrais da empresa de id: {Id}", UseCaseLogPrefix, request.Id);
         var status = Enum.Parse<StatusEmpresaEnum>(request.Status);
-        if (empresa.Nome == request.Nome && empresa.Endereco == request.Endereco && empresa.Status == status)
-        {
-            _logger.LogWarning("{UseCaseLogPrefix} Nenhuma alteração foi detectada para a empresa de id: {Id}. A atualização não será realizada.", UseCaseLogPrefix, request.Id);
-            return Result.Ok();
-        }
-        _logger.LogInformation("{UseCaseLogPrefix} Alterações detectadas. Prosseguindo com a atualização para a empresa de id: {Id}", UseCaseLogPrefix, request.Id);
-
-        _logger.LogInformation("{UseCaseLogPrefix} Iniciando mapeamento dos novos dados para a empresa de id: {Id}", UseCaseLogPrefix, request.Id);
-        empresa.Nome = request.Nome;
-        empresa.Endereco = request.Endereco;
-        empresa.Status = status;
-        _logger.LogInformation("{UseCaseLogPrefix} Mapeamento dos novos dados para a empresa de id: {Id} concluído", UseCaseLogPrefix, request.Id);
+        empresa.AtualizarDadosCadastrais(request.Nome, request.Endereco, status);
+        _logger.LogInformation("{UseCaseLogPrefix} Dados cadastrais da empresa de id: {Id} atualizados com sucesso", UseCaseLogPrefix, request.Id);
 
         _logger.LogInformation("{UseCaseLogPrefix} Iniciando persistência da atualização para a empresa de id: {Id}", UseCaseLogPrefix, request.Id);
         await _empresaRepository.UpdateEmpresaAsync(empresa);

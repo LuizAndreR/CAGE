@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CakeGestao.Domain.Enum;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
 using FluentValidation;
@@ -47,17 +48,16 @@ public class UpdateItemEstoqueHandler : IRequestHandler<UpdateItemEstoqueCommand
         var itemEstoque = itemEstoqueResult.Value;  
         _logger.LogInformation("{LogPrefix} Item de estoque encontrado para atualização. ItemId: {ItemId}", UseCaseLogPrefix, request.ItemId);
 
-        _logger.LogInformation("{LogPrefix} Verificando se há alterações nos valores do item de estoque...", UseCaseLogPrefix);
-        if (itemEstoque.QuantidadeAtual == request.QuantidadeAtual && itemEstoque.Nome == request.Nome && itemEstoque.UnidadeMedida.ToString().Equals(request.UnidadeMedida, StringComparison.OrdinalIgnoreCase))
+        _logger.LogInformation("{LogPrefix} Atualizando dados cadastrais do item de estoque...", UseCaseLogPrefix);
+        var unidadeMedidaAlterada = Enum.Parse<UnidadeMedidaEnum>(request.UnidadeMedida);
+        bool houveMudanca = itemEstoque.AtualizarDadosCadastrais(request.Nome, request.QuantidadeAtual, unidadeMedidaAlterada);
+        if (!houveMudanca)
         {
-            _logger.LogInformation("{LogPrefix} Nenhuma alteração detectada nos valores do item de estoque. ItemId: {ItemId}", UseCaseLogPrefix, request.ItemId);
+            _logger.LogInformation("{LogPrefix} Nenhuma alteração detectada nos dados cadastrais do item de estoque. ItemId: {ItemId}", UseCaseLogPrefix, request.ItemId);
+            _logger.LogInformation("{LogPrefix} Execução do caso de uso concluída com sucesso.", UseCaseLogPrefix);
             return Result.Ok();
         }
-        _logger.LogInformation("{LogPrefix} Alterações detectadas nos valores do item de estoque. ItemId: {ItemId}", UseCaseLogPrefix, request.ItemId);
-
-        _logger.LogInformation("{LogPrefix} Atualizando item de estoque com novos valores...", UseCaseLogPrefix);
-        _mapper.Map(request, itemEstoque);
-        _logger.LogInformation("{LogPrefix} Item de estoque atualizado em memória. ItemId: {ItemId}", UseCaseLogPrefix, request.ItemId);
+        _logger.LogInformation("{LogPrefix} Dados cadastrais do item de estoque atualizados. ItemId: {ItemId}", UseCaseLogPrefix, request.ItemId);
 
         _logger.LogInformation("{LogPrefix} Persistindo alterações no repositório...", UseCaseLogPrefix);
         await _estoqueRepository.UpdateItemEstoqueAsync(itemEstoque);

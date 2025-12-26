@@ -1,8 +1,10 @@
-﻿using System.Text.Json.Serialization;
+﻿using FluentResults;
+using MediatR;
+using System.Text.Json.Serialization;
 
 namespace CakeGestao.Application.Dtos.Requests.Empresa;
 
-public class UpdateEmpresaRequest
+public class UpdateEmpresaCommand : IRequest<Result>
 {
     [JsonIgnore]
     public int Id { get; set; }

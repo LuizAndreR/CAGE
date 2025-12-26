@@ -1,9 +1,9 @@
 ﻿using CakeGestao.Application.Dtos.Requests.Empresa;
 using FluentValidation;
 
-namespace CakeGestao.Application.Validators.Empresa;
+namespace CakeGestao.Application.Features.Empresas.Create;
 
-public class CreateEmpresaValidator : AbstractValidator<CreateEmpresaRequest>
+public class CreateEmpresaValidator : AbstractValidator<CreateEmpresaCommand>
 {
     public CreateEmpresaValidator()
     {

@@ -2,9 +2,9 @@
 using CakeGestao.Domain.Enum;
 using FluentValidation;
 
-namespace CakeGestao.Application.Validators.Empresa;
+namespace CakeGestao.Application.Features.Empresas.Update;
 
-public class UpdateEmpresaValidator : AbstractValidator<UpdateEmpresaRequest>
+public class UpdateEmpresaValidator : AbstractValidator<UpdateEmpresaCommand>
 {
     public UpdateEmpresaValidator()
     {

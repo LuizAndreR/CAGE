@@ -1,4 +1,4 @@
-namespace CakeGestao.Application.Dtos.Responses;
+namespace CakeGestao.Application.Features.Empresas.Common;
 
 public class EmpresaResponse
 {
