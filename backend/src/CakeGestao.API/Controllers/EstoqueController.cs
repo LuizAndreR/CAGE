@@ -1,12 +1,12 @@
 ﻿using CakeGestao.API.Extensions;
-using CakeGestao.Application.UseCases.Estoque.AddQuantidade;
+using CakeGestao.Application.Features.Estoque.Command.AddQuantidade;
+using CakeGestao.Application.Features.Estoque.Command.RemoverQuantidade;
+using CakeGestao.Application.Features.Estoque.Command.Update;
 using CakeGestao.Application.UseCases.Estoque.Alerta;
 using CakeGestao.Application.UseCases.Estoque.Create;
 using CakeGestao.Application.UseCases.Estoque.Delete;
 using CakeGestao.Application.UseCases.Estoque.GetAll;
 using CakeGestao.Application.UseCases.Estoque.GetItem;
-using CakeGestao.Application.UseCases.Estoque.RemoverQuantidade;
-using CakeGestao.Application.UseCases.Estoque.Update;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

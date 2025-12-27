@@ -1,8 +1,9 @@
 ﻿using CakeGestao.Application.Dtos.Requests.Empresa;
+using CakeGestao.Application.Features.Empresas.Command.Update;
+using CakeGestao.Application.Features.Empresas.Command.UpdateStatus;
 using CakeGestao.Application.Features.Empresas.Delete;
 using CakeGestao.Application.Features.Empresas.Get;
 using CakeGestao.Application.Features.Empresas.GetAll;
-using CakeGestao.Application.Features.Empresas.UpdateStatus;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
