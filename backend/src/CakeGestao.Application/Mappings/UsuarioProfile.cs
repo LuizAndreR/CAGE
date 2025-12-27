@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using CakeGestao.Application.Dtos.Requests.Auth;
 using CakeGestao.Application.Dtos.Responses;
+using CakeGestao.Application.Features.Auth.Cadastro;
 using CakeGestao.Domain.Entities;
 using CakeGestao.Infrastructure.Data.Repositories;
 
@@ -10,7 +10,7 @@ public class UsuarioProfile : Profile
 {
     public UsuarioProfile()
     {
-        CreateMap<CadastroRequest, Usuario>();
+        CreateMap<CadastroCommand, Usuario>();
         CreateMap<Usuario, UsuarioResponse>();
     }
 }

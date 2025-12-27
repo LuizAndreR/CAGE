@@ -77,10 +77,6 @@ builder.Services.AddControllers();
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<AddQuantidadeEstoqueHandler>());
 
-builder.Services.AddScoped<ICadastroUseCase, CadastroUseCase>();   
-builder.Services.AddScoped<ILoginUseCase, LoginUseCase>();
-builder.Services.AddScoped<IRefreshTokenUseCase, RefreshTokenUseCase>();
-
 builder.Services.AddScoped<IGetUsuarioUseCase, GetUsuarioUseCase>();
 builder.Services.AddScoped<IGetAllUsuarioUseCase, GetAllUsuarioUseCase>();
 builder.Services.AddScoped<IUpdateUserUseCase, UpdateUserUseCase>();
@@ -94,7 +90,6 @@ builder.Services.AddScoped<ICreateReceitaUseCase, CreateReceitaUseCase>();
 builder.Services.AddScoped<IGetReceitaUseCase, GetReceitaUseCase>();
 builder.Services.AddScoped<IGetAllReceitaUseCase, GetAllReceitaUseCase>();
 
-builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IFinanceiroService, FinanceiroService>();
 builder.Services.AddScoped<IReceitaService, ReceitaService>();

@@ -1,6 +1,6 @@
-﻿namespace CakeGestao.Application.Dtos.Responses;
+﻿namespace CakeGestao.Application.Features.Auth.Common;
 
-public class TokensResponce
+public class TokensResponse
 {
     public required string AccessToken { get; set; }
     public required string RefreshToken { get; set; }

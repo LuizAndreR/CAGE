@@ -1,9 +1,8 @@
-﻿using CakeGestao.Application.Dtos.Requests.Auth;
-using FluentValidation;
+﻿using FluentValidation;
 
-namespace CakeGestao.Application.Validators.Auth;
+namespace CakeGestao.Application.Features.Auth.Login;
 
-public class LoginUserValidator : AbstractValidator<LoginRequest>
+public class LoginUserValidator : AbstractValidator<LoginCommand>
 {
     public LoginUserValidator()
     {
