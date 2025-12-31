@@ -26,36 +26,30 @@ public class ItemEstoque
         EmpresaId = empresaId;
     }
 
-    public bool AtualizarDadosCadastrais(string nome, decimal quantidadeAtual, UnidadeMedidaEnum unidade)
+    public void AtualizarDadosCadastrais(string nome, decimal quantidadeAtual, UnidadeMedidaEnum unidade)
     {
-        if (this.Nome == nome && this.UnidadeMedida == unidade)
-        {
-            return false;
-        }
-
-        this.Nome = nome;
-        this.QuantidadeAtual = quantidadeAtual;
-        this.UnidadeMedida = unidade;
-        return true;
+        Nome = nome;
+        QuantidadeAtual = quantidadeAtual;
+        UnidadeMedida = unidade;
     }
 
     public void AdicionarQuantidade (decimal quantidadeEntrada, decimal valorUnitarioEntrada)
     {
-        decimal valorTotalAtualNoEstoque = this.QuantidadeAtual * this.ValorMedia;
+        decimal valorTotalAtualNoEstoque = QuantidadeAtual * ValorMedia;
         decimal valorTotalDaEntrada = quantidadeEntrada * valorUnitarioEntrada;
 
-        decimal novaQuantidadeTotal = this.QuantidadeAtual + quantidadeEntrada;
+        decimal novaQuantidadeTotal = QuantidadeAtual + quantidadeEntrada;
 
         if (novaQuantidadeTotal > 0)
         {
-            this.ValorMedia = (valorTotalAtualNoEstoque + valorTotalDaEntrada) / novaQuantidadeTotal;
+            ValorMedia = (valorTotalAtualNoEstoque + valorTotalDaEntrada) / novaQuantidadeTotal;
         }
 
-        this.QuantidadeAtual = novaQuantidadeTotal;
+        QuantidadeAtual = novaQuantidadeTotal;
     }
 
     public void RemoverQuantidade(decimal quantidadeRemover)
     {
-        this.QuantidadeAtual -= quantidadeRemover;
+        QuantidadeAtual -= quantidadeRemover;
     }
 }

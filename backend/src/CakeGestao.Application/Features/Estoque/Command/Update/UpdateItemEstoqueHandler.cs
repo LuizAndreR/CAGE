@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using CakeGestao.Domain.Enum;
+﻿using CakeGestao.Domain.Enum;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
 using FluentValidation;
@@ -13,15 +12,13 @@ public class UpdateItemEstoqueHandler : IRequestHandler<UpdateItemEstoqueCommand
     private readonly IEstoqueRepository _estoqueRepository;
     private readonly IValidator<UpdateItemEstoqueCommand> _validator;
     private readonly ILogger<UpdateItemEstoqueHandler> _logger;
-    private readonly IMapper _mapper;
     private const string UseCaseLogPrefix = "[Update Item Estoque]";
 
-    public UpdateItemEstoqueHandler(IEstoqueRepository estoqueRepository, IValidator<UpdateItemEstoqueCommand> validator, ILogger<UpdateItemEstoqueHandler> logger, IMapper mapper)
+    public UpdateItemEstoqueHandler(IEstoqueRepository estoqueRepository, IValidator<UpdateItemEstoqueCommand> validator, ILogger<UpdateItemEstoqueHandler> logger)
     {
         _estoqueRepository = estoqueRepository;
         _validator = validator;
         _logger = logger;
-        _mapper = mapper;
     }
 
     public async Task<Result> Handle(UpdateItemEstoqueCommand request, CancellationToken cancellationToken)
@@ -50,13 +47,7 @@ public class UpdateItemEstoqueHandler : IRequestHandler<UpdateItemEstoqueCommand
 
         _logger.LogInformation("{LogPrefix} Atualizando dados cadastrais do item de estoque...", UseCaseLogPrefix);
         var unidadeMedidaAlterada = Enum.Parse<UnidadeMedidaEnum>(request.UnidadeMedida);
-        bool houveMudanca = itemEstoque.AtualizarDadosCadastrais(request.Nome, request.QuantidadeAtual, unidadeMedidaAlterada);
-        if (!houveMudanca)
-        {
-            _logger.LogInformation("{LogPrefix} Nenhuma alteração detectada nos dados cadastrais do item de estoque. ItemId: {ItemId}", UseCaseLogPrefix, request.ItemId);
-            _logger.LogInformation("{LogPrefix} Execução do caso de uso concluída com sucesso.", UseCaseLogPrefix);
-            return Result.Ok();
-        }
+        itemEstoque.AtualizarDadosCadastrais(request.Nome, request.QuantidadeAtual, unidadeMedidaAlterada);
         _logger.LogInformation("{LogPrefix} Dados cadastrais do item de estoque atualizados. ItemId: {ItemId}", UseCaseLogPrefix, request.ItemId);
 
         _logger.LogInformation("{LogPrefix} Persistindo alterações no repositório...", UseCaseLogPrefix);
