@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using CakeGestao.Domain.Entities;
+﻿using CakeGestao.Domain.Entities;
 using CakeGestao.Domain.Enum;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
@@ -8,7 +7,7 @@ using FluentValidation.Results;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace CakeGestao.Application.UseCases.Estoque.Create;
+namespace CakeGestao.Application.Features.Estoque.Command.Create;
 
 public class CreateEstoqueHandler : IRequestHandler<CreateEstoqueCommand, Result>
 {

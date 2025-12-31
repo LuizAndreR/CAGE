@@ -3,7 +3,7 @@ using CakeGestao.Domain.Enum;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentValidation;
 
-namespace CakeGestao.Application.UseCases.Estoque.Create;
+namespace CakeGestao.Application.Features.Estoque.Command.Create;
 
 public class CreateEstoqueValidator : AbstractValidator<CreateEstoqueCommand>
 {

@@ -1,25 +1,21 @@
-﻿using System.Linq;
-using AutoMapper;
-using CakeGestao.Application.Dtos.Requests.Usuario;
-using CakeGestao.Application.UseCases.User.Interface;
-using CakeGestao.Domain.Enun;
+﻿using AutoMapper;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
 using FluentValidation;
-using FluentValidation.Results;
+using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace CakeGestao.Application.UseCases.User.UseCase;
+namespace CakeGestao.Application.Features.User.Command.UpdateFuncionario;
 
-public class UpdateFuncionarioUseCase : IUpdateFuncionarioUseCase
+public class UpdateFuncionarioHandler : IRequestHandler<UpdateFuncionarioCommand, Result>
 {
-    private readonly ILogger<UpdateFuncionarioUseCase> _logger;   
+    private readonly ILogger<UpdateFuncionarioHandler> _logger;   
     private readonly IUsuarioRepository _repositoryUser;
-    private readonly IValidator<UpdateFuncionarioUsuarioRequest> _validator;
+    private readonly IValidator<UpdateFuncionarioCommand> _validator;
     private readonly IMapper _mapper;
     private const string UseCaseLogPrefix = "[Update Funcionario]";
 
-    public UpdateFuncionarioUseCase(ILogger<UpdateFuncionarioUseCase> logger, IUsuarioRepository repositoryUser, IValidator<UpdateFuncionarioUsuarioRequest> validator, IMapper mapper)
+    public UpdateFuncionarioHandler(ILogger<UpdateFuncionarioHandler> logger, IUsuarioRepository repositoryUser, IValidator<UpdateFuncionarioCommand> validator, IMapper mapper)
     {
         _logger = logger;
         _repositoryUser = repositoryUser;
@@ -27,7 +23,7 @@ public class UpdateFuncionarioUseCase : IUpdateFuncionarioUseCase
         _mapper = mapper;
     }
 
-    public async Task<Result> ExecuteAsync(UpdateFuncionarioUsuarioRequest request)
+    public async Task<Result> Handle(UpdateFuncionarioCommand request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("{UseCaseLogPrefix} Iniciando processo de atualização de funcionário. UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
 

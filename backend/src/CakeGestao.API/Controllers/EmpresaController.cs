@@ -2,8 +2,8 @@
 using CakeGestao.Application.Features.Empresas.Command.Update;
 using CakeGestao.Application.Features.Empresas.Command.UpdateStatus;
 using CakeGestao.Application.Features.Empresas.Delete;
-using CakeGestao.Application.Features.Empresas.Get;
-using CakeGestao.Application.Features.Empresas.GetAll;
+using CakeGestao.Application.Features.Empresas.Query.Get;
+using CakeGestao.Application.Features.Empresas.Query.GetAll;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -28,7 +28,7 @@ public class EmpresaController : ApiControllerBase
     public async Task<IActionResult> GetAllEmpresas()
     {
         _logger.LogInformation("Recebendo solicitação de getall das empresa cadastrado no banco de dados");
-        var result = await _mediator.Send(new GetAllEmpresaQuery { });
+        var result = await _mediator.Send(new GetAllEmpresaQuery());
         _logger.LogInformation("Solicitação de getall das empresa cadastrado no banco de dados processada com sucesso");
         return HandleResult(result);
     }

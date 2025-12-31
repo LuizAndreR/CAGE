@@ -1,8 +1,8 @@
-﻿using FluentResults;
+﻿using System.Text.Json.Serialization;
+using FluentResults;
 using MediatR;
-using System.Text.Json.Serialization;
 
-namespace CakeGestao.Application.UseCases.Estoque.Create;
+namespace CakeGestao.Application.Features.Estoque.Command.Create;
 
 public class CreateEstoqueCommand : IRequest<Result>
 {

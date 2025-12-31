@@ -1,12 +1,12 @@
 ﻿using CakeGestao.API.Extensions;
 using CakeGestao.Application.Features.Estoque.Command.AddQuantidade;
+using CakeGestao.Application.Features.Estoque.Command.Create;
+using CakeGestao.Application.Features.Estoque.Command.Delete;
 using CakeGestao.Application.Features.Estoque.Command.RemoverQuantidade;
 using CakeGestao.Application.Features.Estoque.Command.Update;
-using CakeGestao.Application.UseCases.Estoque.Alerta;
-using CakeGestao.Application.UseCases.Estoque.Create;
-using CakeGestao.Application.UseCases.Estoque.Delete;
-using CakeGestao.Application.UseCases.Estoque.GetAll;
-using CakeGestao.Application.UseCases.Estoque.GetItem;
+using CakeGestao.Application.Features.Estoque.Query.Alerta;
+using CakeGestao.Application.Features.Estoque.Query.GetAll;
+using CakeGestao.Application.Features.Estoque.Query.GetItem;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -122,10 +122,10 @@ public class EstoqueController : ApiControllerBase
         return HandleResult<object>(result);
     }
 
-    [HttpPut("remove-quantidade/{ItemId}")]
-    public async Task<IActionResult> RemoveQuantidadeEstoque([FromRoute]int ItemId, [FromBody] RemoveQuantidadeEstoqueCommand request)
+    [HttpPut("remove-quantidade/{itemId}")]
+    public async Task<IActionResult> RemoveQuantidadeEstoque([FromRoute]int itemId, [FromBody] RemoveQuantidadeEstoqueCommand request)
     {
-        _logger.LogInformation("Iniciando processo de remoção de quantidade do estoque. EstoqueId: {EstoqueId}, QuantidadeRemover: {QuantidadeRemover}", ItemId, request.QuantidadeARemover);
+        _logger.LogInformation("Iniciando processo de remoção de quantidade do estoque. EstoqueId: {EstoqueId}, QuantidadeRemover: {QuantidadeRemover}", itemId, request.QuantidadeARemover);
         var empresaId = User.GetEmpresaId();
         if (empresaId.IsFailed)
         {
@@ -133,7 +133,7 @@ public class EstoqueController : ApiControllerBase
             return Unauthorized("Token inválido.");
         }
         request.EmpresaId = empresaId.Value;
-        request.ItemId = ItemId;
+        request.ItemId = itemId;
         var result = await _mediator.Send(request);
         return HandleResult<object>(result);
     }

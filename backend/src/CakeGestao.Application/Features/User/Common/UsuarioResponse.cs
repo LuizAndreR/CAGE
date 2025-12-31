@@ -1,4 +1,4 @@
-﻿namespace CakeGestao.Application.Dtos.Responses;
+﻿namespace CakeGestao.Application.Features.User.Common;
 
 public class UsuarioResponse
 {

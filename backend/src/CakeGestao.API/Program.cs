@@ -1,22 +1,12 @@
 using CakeGestao.API.Middlewares;
-using CakeGestao.Application.Features.Empresas.Delete;
-using CakeGestao.Application.Features.Empresas.Get;
-using CakeGestao.Application.Features.Empresas.GetAll;
-using CakeGestao.Application.Features.Empresas.UpdateStatus;
 using CakeGestao.Application.Features.Estoque.Command.AddQuantidade;
 using CakeGestao.Application.Mappings;
 using CakeGestao.Application.Services.Interface;
 using CakeGestao.Application.Services.Service;
-using CakeGestao.Application.UseCases.Auth.Cadastro;
-using CakeGestao.Application.UseCases.Auth.Login;
-using CakeGestao.Application.UseCases.Auth.Refresh;
-using CakeGestao.Application.UseCases.Empresas.UseCase;
 using CakeGestao.Application.UseCases.Financeiro.Interface;
 using CakeGestao.Application.UseCases.Financeiro.UseCase;
 using CakeGestao.Application.UseCases.Receitas.Interface;
 using CakeGestao.Application.UseCases.Receitas.UseCase;
-using CakeGestao.Application.UseCases.User.Interface;
-using CakeGestao.Application.UseCases.User.UseCase;
 using CakeGestao.Domain.Interfaces.Repositories;
 using CakeGestao.Domain.Interfaces.Security;
 using CakeGestao.Infrastructure.Data;
@@ -77,20 +67,12 @@ builder.Services.AddControllers();
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<AddQuantidadeEstoqueHandler>());
 
-builder.Services.AddScoped<IGetUsuarioUseCase, GetUsuarioUseCase>();
-builder.Services.AddScoped<IGetAllUsuarioUseCase, GetAllUsuarioUseCase>();
-builder.Services.AddScoped<IUpdateUserUseCase, UpdateUserUseCase>();
-builder.Services.AddScoped<IUpdateSenhaUsuarioUseCase, UpdateSenhaUsuarioUseCase>();
-builder.Services.AddScoped<IUpdateFuncionarioUseCase, UpdateFuncionarioUseCase>();
-builder.Services.AddScoped<IDeleteUsuarioUseCase, DeleteUsuarioUseCase>(); 
-
 builder.Services.AddScoped<ICreateTransacaoUseCase, CreateTransacaoUseCase>();
 
 builder.Services.AddScoped<ICreateReceitaUseCase, CreateReceitaUseCase>();
 builder.Services.AddScoped<IGetReceitaUseCase, GetReceitaUseCase>();
 builder.Services.AddScoped<IGetAllReceitaUseCase, GetAllReceitaUseCase>();
 
-builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IFinanceiroService, FinanceiroService>();
 builder.Services.AddScoped<IReceitaService, ReceitaService>();
 

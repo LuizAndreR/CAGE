@@ -6,7 +6,7 @@ using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace CakeGestao.Application.UseCases.Estoque.Alerta;
+namespace CakeGestao.Application.Features.Estoque.Query.Alerta;
 
 public class GetAlertaEstoqueHandler : IRequestHandler<GetAlertaEstoqueQuery, Result<List<ItemEstoqueResponse>>>
 {

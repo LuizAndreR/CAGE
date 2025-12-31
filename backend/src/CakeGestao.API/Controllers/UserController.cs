@@ -1,6 +1,11 @@
 ﻿using CakeGestao.API.Extensions;
-using CakeGestao.Application.Dtos.Requests.Usuario;
-using CakeGestao.Application.Services.Interface;
+using CakeGestao.Application.Features.User.Command.Delete;
+using CakeGestao.Application.Features.User.Command.UpdateFuncionario;
+using CakeGestao.Application.Features.User.Command.UpdateSenhaUsuario;
+using CakeGestao.Application.Features.User.Command.UpdateUser;
+using CakeGestao.Application.Features.User.Query.Get;
+using CakeGestao.Application.Features.User.Query.GetAll;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,12 +17,12 @@ namespace CakeGestao.API.Controllers;
 public class UserController : ApiControllerBase
 {
     private readonly ILogger<UserController> _logger;
-    private readonly IUserService _userService;
+    private readonly IMediator _mediator;
     
-    public UserController(ILogger<UserController> logger, IUserService userService)
+    public UserController(ILogger<UserController> logger, IMediator mediator)
     {
         _logger = logger;
-        _userService = userService;
+        _mediator = mediator;
     }
 
     [HttpGet("getall")]
@@ -26,7 +31,7 @@ public class UserController : ApiControllerBase
     {
         _logger.LogInformation("ecebendo requisição para obter todos os usuários cadastro no banco de dados");
 
-        var listUserResult = await _userService.GetAllUsuarioAsync();
+        var listUserResult = await _mediator.Send(new GetAllUsuarioQuery());
         return HandleResult(listUserResult);
     }
 
@@ -45,13 +50,13 @@ public class UserController : ApiControllerBase
         }
         
         _logger.LogInformation("Iniciando a requisição para obter o usuário com ID: {Id}", id);
-        var userResult = await _userService.GetUsuarioByIdAsync(id.Value);
+        var userResult = await _mediator.Send(new GetUsuarioQuery{Id = id.Value});
 
         return HandleResult(userResult);
     }
 
     [HttpPut("update")]
-    public async Task<IActionResult> UpdateUsuario([FromBody]UpdateUsuarioRequest request)
+    public async Task<IActionResult> UpdateUsuario([FromBody]UpdateUsuarioCommand request)
     {
         _logger.LogInformation("Recebendo requisição para update de usuario");
         
@@ -64,14 +69,14 @@ public class UserController : ApiControllerBase
         }
         
         _logger.LogInformation("Iniciando a requisição para update do usuário com ID: {Id}", id);
-        request.Id = id.Value;  
-        var userResult = await _userService.UpdateUsuarioAsync(request);
+        request.Id = id.Value;
+        var userResult = await _mediator.Send(request);
 
         return HandleResult<object>(userResult);
     }
 
     [HttpPatch("updatesenha")]
-    public async Task<IActionResult> UpdateSenhaUsuario([FromBody]UpdateSenhaUsuarioRequest request)
+    public async Task<IActionResult> UpdateSenhaUsuario([FromBody]UpdateSenhaUsuarioCommand request)
     {
         _logger.LogInformation("Recebendo requisição para update da senha do usuario");
         
@@ -85,17 +90,17 @@ public class UserController : ApiControllerBase
         
         _logger.LogInformation("Iniciando a requisição para update da senha do usuário com ID: {Id}", id);
         request.Id = id.Value;  
-        var userResult = await _userService.UpdateSenhaUsuarioAsync(request);
+        var userResult = await _mediator.Send(request);
 
         return HandleResult<object>(userResult);
     }
 
     [HttpPatch("updatefuncionario")]
     [Authorize(Roles = "Admin, Dono")]
-    public async Task<IActionResult> UpdateFuncaoUsuario([FromBody] UpdateFuncionarioUsuarioRequest request)
+    public async Task<IActionResult> UpdateFuncaoUsuario([FromBody] UpdateFuncionarioCommand request)
     {
         _logger.LogInformation("Recebendo requisição para update da função do usuario");
-        var userResult = await _userService.UpdateFuncionarioAsync(request);
+        var userResult = await _mediator.Send(request);
         return HandleResult<object>(userResult);
     }
 
@@ -105,7 +110,7 @@ public class UserController : ApiControllerBase
     {
         _logger.LogInformation("Recebendo requisição para deletar um usuário");
         int idValue = id;
-        var userResult = await _userService.DeleteUsuarioAsync(id);
+        var userResult = await _mediator.Send(new DeleteUsuarioCommand{Id=idValue});
         return HandleResult<object>(userResult);
     }
 }

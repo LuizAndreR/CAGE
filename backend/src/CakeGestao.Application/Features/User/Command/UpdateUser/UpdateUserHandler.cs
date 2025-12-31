@@ -1,22 +1,20 @@
-using System.Linq;
-using CakeGestao.Application.Dtos.Requests.Usuario;
-using CakeGestao.Application.UseCases.User.Interface;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
 using FluentValidation;
 using FluentValidation.Results;
+using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace CakeGestao.Application.UseCases.User.UseCase;
+namespace CakeGestao.Application.Features.User.Command.UpdateUser;
 
-public class UpdateUserUseCase : IUpdateUserUseCase
+public class UpdateUserHandler: IRequestHandler<UpdateUsuarioCommand, Result>
 {
     private readonly IUsuarioRepository _repositoryUser; 
-    private readonly IValidator<UpdateUsuarioRequest> _validator;
-    private readonly ILogger<UpdateUserUseCase> _logger;
+    private readonly IValidator<UpdateUsuarioCommand> _validator;
+    private readonly ILogger<UpdateUserHandler> _logger;
     private const string UseCaseLogPrefix = "[Update Usuario]";
 
-    public UpdateUserUseCase(IUsuarioRepository repositoryUser, IValidator<UpdateUsuarioRequest> validator, ILogger<UpdateUserUseCase> logger)
+    public UpdateUserHandler(IUsuarioRepository repositoryUser, IValidator<UpdateUsuarioCommand> validator, ILogger<UpdateUserHandler> logger)
     {
         _repositoryUser = repositoryUser;
         _validator = validator;
@@ -24,7 +22,7 @@ public class UpdateUserUseCase : IUpdateUserUseCase
     }
 
 
-    public async Task<Result> ExecuteAsync(UpdateUsuarioRequest request)
+    public async Task<Result> Handle(UpdateUsuarioCommand request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("{UseCaseLogPrefix} Iniciando processo de atualização do usuário. UsuarioId: {UsuarioId}, Email: {Email}", UseCaseLogPrefix, request.Id, request.Email);
         

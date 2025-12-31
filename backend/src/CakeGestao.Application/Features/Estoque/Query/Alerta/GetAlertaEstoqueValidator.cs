@@ -2,7 +2,7 @@
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentValidation;
 
-namespace CakeGestao.Application.UseCases.Estoque.Alerta;
+namespace CakeGestao.Application.Features.Estoque.Query.Alerta;
 
 public class GetAlertaEstoqueValidator : AbstractValidator<GetAlertaEstoqueQuery>
 {

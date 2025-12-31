@@ -1,8 +1,10 @@
 ﻿using System.Text.Json.Serialization;
+using FluentResults;
+using MediatR;
 
-namespace CakeGestao.Application.Dtos.Requests.Usuario;
+namespace CakeGestao.Application.Features.User.Command.UpdateSenhaUsuario;
 
-public class UpdateSenhaUsuarioRequest
+public class UpdateSenhaUsuarioCommand : IRequest<Result>
 {
     [JsonIgnore]
     public int Id { get; set; }

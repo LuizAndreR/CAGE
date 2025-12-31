@@ -1,9 +1,8 @@
-using CakeGestao.Application.Dtos.Requests.Usuario;
 using FluentValidation;
 
-namespace CakeGestao.Application.Validators.User;
+namespace CakeGestao.Application.Features.User.Command.UpdateUser;
 
-public class UpdateUsuarioValidator : AbstractValidator<UpdateUsuarioRequest>
+public class UpdateUsuarioValidator : AbstractValidator<UpdateUsuarioCommand>
 {
     public UpdateUsuarioValidator()
     {

@@ -1,28 +1,27 @@
-﻿using CakeGestao.Application.Dtos.Requests.Usuario;
-using CakeGestao.Application.UseCases.User.Interface;
-using CakeGestao.Domain.Interfaces.Repositories;
+﻿using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
 using FluentValidation;
 using FluentValidation.Results;
+using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace CakeGestao.Application.UseCases.User.UseCase;
+namespace CakeGestao.Application.Features.User.Command.UpdateSenhaUsuario;
 
-public class UpdateSenhaUsuarioUseCase : IUpdateSenhaUsuarioUseCase
+public class UpdateSenhaUsuarioHandler : IRequestHandler<UpdateSenhaUsuarioCommand, Result>
 {
     private readonly IUsuarioRepository _repositoryUser;
-    private readonly ILogger<UpdateSenhaUsuarioUseCase> _logger;
-    private readonly IValidator<UpdateSenhaUsuarioRequest> _validator;
+    private readonly ILogger<UpdateSenhaUsuarioHandler> _logger;
+    private readonly IValidator<UpdateSenhaUsuarioCommand> _validator;
     private const string UseCaseLogPrefix = "[Update Senha Usuario]" ;
 
-    public UpdateSenhaUsuarioUseCase(IUsuarioRepository repositoryUser, ILogger<UpdateSenhaUsuarioUseCase> logger, IValidator<UpdateSenhaUsuarioRequest> validator)
+    public UpdateSenhaUsuarioHandler(IUsuarioRepository repositoryUser, ILogger<UpdateSenhaUsuarioHandler> logger, IValidator<UpdateSenhaUsuarioCommand> validator)
     {
         _repositoryUser = repositoryUser;
         _logger = logger;
         _validator = validator;
     }
 
-    public async Task<Result> ExecuteAsync(UpdateSenhaUsuarioRequest request)
+    public async Task<Result> Handle(UpdateSenhaUsuarioCommand request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("{UseCaseLogPrefix} Iniciando processo de atualização de senha. UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
 

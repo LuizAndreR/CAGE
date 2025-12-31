@@ -1,9 +1,9 @@
-﻿using CakeGestao.Application.UseCases.Estoque.Common;
+﻿using System.Text.Json.Serialization;
+using CakeGestao.Application.UseCases.Estoque.Common;
 using FluentResults;
 using MediatR;
-using System.Text.Json.Serialization;
 
-namespace CakeGestao.Application.UseCases.Estoque.Alerta;
+namespace CakeGestao.Application.Features.Estoque.Query.Alerta;
 
 public class GetAlertaEstoqueQuery : IRequest<Result<List<ItemEstoqueResponse>>>
 {
