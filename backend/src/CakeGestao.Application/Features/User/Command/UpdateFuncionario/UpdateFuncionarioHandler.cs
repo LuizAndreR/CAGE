@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CakeGestao.Domain.Enun;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
 using FluentValidation;
@@ -47,16 +48,9 @@ public class UpdateFuncionarioHandler : IRequestHandler<UpdateFuncionarioCommand
         var usuario = usuarioResult.Value;
         _logger.LogInformation("{UseCaseLogPrefix} Usuário encontrado. UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
 
-        _logger.LogInformation("{UseCaseLogPrefix} Verificando se há alterações para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
-        if (usuario.Nome == request.Nome && usuario.Role.ToString().Equals(request.Role, StringComparison.OrdinalIgnoreCase))
-        {
-            _logger.LogWarning("{UseCaseLogPrefix} Nenhuma alteração detectada para UsuarioId: {UsuarioId}. Operação cancelada.", UseCaseLogPrefix, request.Id);
-            return Result.Ok();
-        }
-        _logger.LogInformation("{UseCaseLogPrefix} Alterações detectadas para UsuarioId: {UsuarioId}. Prosseguindo.", UseCaseLogPrefix, request.Id);
-
         _logger.LogInformation("{UseCaseLogPrefix} Iniciando mapeamento das alterações para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
-        usuario = _mapper.Map(request, usuario);
+        var role = Enum.Parse<UserRole>(request.Role);
+        usuario.AtualizarFuncionario(request.Nome, role);
         _logger.LogInformation("{UseCaseLogPrefix} Mapeamento concluído para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
 
         _logger.LogInformation("{UseCaseLogPrefix} Iniciando persistência das alterações para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);

@@ -53,16 +53,9 @@ public class UpdateSenhaUsuarioHandler : IRequestHandler<UpdateSenhaUsuarioComma
         }
         _logger.LogInformation("{UseCaseLogPrefix} Senha atual verificada com sucesso para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
 
-        _logger.LogInformation("{UseCaseLogPrefix} Verificando se nova senha é diferente da atual para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
-        if (BCrypt.Net.BCrypt.Verify(request.NovaSenha, usuario.SenhaHash))
-        {
-            _logger.LogWarning("{UseCaseLogPrefix} Nova senha igual à atual para UsuarioId: {UsuarioId}. Operação cancelada.", UseCaseLogPrefix, request.Id);
-            return Result.Fail(new ConflictError("A nova senha não pode ser igual à senha atual"));
-        }
-        _logger.LogInformation("{UseCaseLogPrefix} Nova senha validada como diferente da atual para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
-
         _logger.LogInformation("{UseCaseLogPrefix} Iniciando atualização da senha em memória para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
-        usuario.SenhaHash = BCrypt.Net.BCrypt.HashPassword(request.NovaSenha);
+        var senhaHash = BCrypt.Net.BCrypt.HashPassword(request.NovaSenha);
+        usuario.AlterarSenhaHash(senhaHash);
         _logger.LogInformation("{UseCaseLogPrefix} Atualização da senha em memória concluída para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
 
         _logger.LogInformation("{UseCaseLogPrefix} Iniciando persistência da nova senha para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);

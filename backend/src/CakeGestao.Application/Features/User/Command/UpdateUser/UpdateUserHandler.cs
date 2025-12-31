@@ -46,17 +46,8 @@ public class UpdateUserHandler: IRequestHandler<UpdateUsuarioCommand, Result>
         var usuario = usuarioResult.Value;
         _logger.LogInformation("{UseCaseLogPrefix} Usuário encontrado. UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
         
-        _logger.LogInformation("{UseCaseLogPrefix} Verificando se há alterações para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
-        if (usuario.Nome == request.Nome && usuario.Email == request.Email)
-        {
-            _logger.LogWarning("{UseCaseLogPrefix} Nenhuma alteração detectada para UsuarioId: {UsuarioId}. Operação cancelada.", UseCaseLogPrefix, request.Id);
-            return Result.Ok();
-        }
-        _logger.LogInformation("{UseCaseLogPrefix} Alterações detectadas para UsuarioId: {UsuarioId}. Prosseguindo com atualização.", UseCaseLogPrefix, request.Id);
-        
         _logger.LogInformation("{UseCaseLogPrefix} Iniciando mapeamento dos novos dados para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
-        usuario.Nome = request.Nome;
-        usuario.Email = request.Email;
+        usuario.AtualizarUsuario(request.Nome, request.Email);
         _logger.LogInformation("{UseCaseLogPrefix} Mapeamento concluído para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
         
         _logger.LogInformation("{UseCaseLogPrefix} Iniciando persistência da atualização para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
