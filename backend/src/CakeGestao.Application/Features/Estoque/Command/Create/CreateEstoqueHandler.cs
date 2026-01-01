@@ -52,6 +52,7 @@ public class CreateEstoqueHandler : IRequestHandler<CreateEstoqueCommand, Result
                 request.Nome,
                 request.QuantidadeAtual,
                 unidadeEnum,
+                request.QunatidadeMinina,
                 request.Valor,
                 request.EmpresaId
         );

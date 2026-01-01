@@ -1,7 +1,6 @@
 ﻿using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
 using FluentValidation;
-using FluentValidation.Results;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -26,7 +25,7 @@ public class UpdateSenhaUsuarioHandler : IRequestHandler<UpdateSenhaUsuarioComma
         _logger.LogInformation("{UseCaseLogPrefix} Iniciando processo de atualização de senha. UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
 
         _logger.LogInformation("{UseCaseLogPrefix} Validando requisição para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
-        ValidationResult validationResult = _validator.Validate(request);
+        var validationResult = await _validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
         {
             var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();

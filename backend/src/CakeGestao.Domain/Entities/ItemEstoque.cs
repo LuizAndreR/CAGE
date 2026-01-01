@@ -8,6 +8,7 @@ public class ItemEstoque
     public string Nome { get; private set; } = null!;
     public decimal QuantidadeAtual { get; private set; }
     public UnidadeMedidaEnum UnidadeMedida { get; private set; }
+    public decimal QuantidadeMinina { get; private set; }
     public decimal ValorMedia { get; private set; }    
 
     public virtual ICollection<Ingrediente> Ingredientes { get; set; } = new List<Ingrediente>();
@@ -17,19 +18,21 @@ public class ItemEstoque
 
     protected ItemEstoque() { }
 
-    public ItemEstoque(string nome, decimal quantidadeAtual, UnidadeMedidaEnum unidadeMedida, decimal valorMedia, int empresaId)
+    public ItemEstoque(string nome, decimal quantidadeAtual, UnidadeMedidaEnum unidadeMedida, decimal quantidadeMinina, decimal valorMedia, int empresaId)
     {
         Nome = nome;
         QuantidadeAtual = quantidadeAtual;
         UnidadeMedida = unidadeMedida;
+        QuantidadeMinina = quantidadeMinina;
         ValorMedia = valorMedia;
         EmpresaId = empresaId;
     }
 
-    public void AtualizarDadosCadastrais(string nome, decimal quantidadeAtual, UnidadeMedidaEnum unidade)
+    public void AtualizarDadosCadastrais(string nome, decimal quantidadeAtual, decimal quantidadeMinima, UnidadeMedidaEnum unidade)
     {
         Nome = nome;
         QuantidadeAtual = quantidadeAtual;
+        QuantidadeMinina = quantidadeMinima;
         UnidadeMedida = unidade;
     }
 

@@ -47,7 +47,7 @@ public class UpdateItemEstoqueHandler : IRequestHandler<UpdateItemEstoqueCommand
 
         _logger.LogInformation("{LogPrefix} Atualizando dados cadastrais do item de estoque...", UseCaseLogPrefix);
         var unidadeMedidaAlterada = Enum.Parse<UnidadeMedidaEnum>(request.UnidadeMedida);
-        itemEstoque.AtualizarDadosCadastrais(request.Nome, request.QuantidadeAtual, unidadeMedidaAlterada);
+        itemEstoque.AtualizarDadosCadastrais(request.Nome, request.QuantidadeAtual, request.QuantidadeMinima, unidadeMedidaAlterada);
         _logger.LogInformation("{LogPrefix} Dados cadastrais do item de estoque atualizados. ItemId: {ItemId}", UseCaseLogPrefix, request.ItemId);
 
         _logger.LogInformation("{LogPrefix} Persistindo alterações no repositório...", UseCaseLogPrefix);

@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using CakeGestao.Application.Features.Auth.Common;
-using CakeGestao.Application.Features.Auth.Login;
+﻿using CakeGestao.Application.Features.Auth.Common;
 using CakeGestao.Domain.Interfaces.Repositories;
 using CakeGestao.Domain.Interfaces.Security;
 using FluentResults;
@@ -9,7 +7,7 @@ using FluentValidation.Results;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace CakeGestao.Application.UseCases.Auth.Login;
+namespace CakeGestao.Application.Features.Auth.Login;
 
 public class LoginHandler : IRequestHandler<LoginCommand, Result<TokensResponse>>
 { 

@@ -11,6 +11,7 @@ public class CreateEstoqueCommand : IRequest<Result>
 
     public required string Nome { get; set; }
     public decimal QuantidadeAtual { get; set; }
+    public decimal QunatidadeMinina { get; set; }
     public required string UnidadeMedida { get; set; }
     public decimal Valor { get; set; }
 }

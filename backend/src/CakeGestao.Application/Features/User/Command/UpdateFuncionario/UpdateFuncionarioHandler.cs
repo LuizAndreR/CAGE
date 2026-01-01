@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using CakeGestao.Domain.Enun;
+﻿using CakeGestao.Domain.Enun;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
 using FluentValidation;
@@ -13,15 +12,13 @@ public class UpdateFuncionarioHandler : IRequestHandler<UpdateFuncionarioCommand
     private readonly ILogger<UpdateFuncionarioHandler> _logger;   
     private readonly IUsuarioRepository _repositoryUser;
     private readonly IValidator<UpdateFuncionarioCommand> _validator;
-    private readonly IMapper _mapper;
     private const string UseCaseLogPrefix = "[Update Funcionario]";
 
-    public UpdateFuncionarioHandler(ILogger<UpdateFuncionarioHandler> logger, IUsuarioRepository repositoryUser, IValidator<UpdateFuncionarioCommand> validator, IMapper mapper)
+    public UpdateFuncionarioHandler(ILogger<UpdateFuncionarioHandler> logger, IUsuarioRepository repositoryUser, IValidator<UpdateFuncionarioCommand> validator)
     {
         _logger = logger;
         _repositoryUser = repositoryUser;
         _validator = validator;
-        _mapper = mapper;
     }
 
     public async Task<Result> Handle(UpdateFuncionarioCommand request, CancellationToken cancellationToken)
@@ -29,7 +26,7 @@ public class UpdateFuncionarioHandler : IRequestHandler<UpdateFuncionarioCommand
         _logger.LogInformation("{UseCaseLogPrefix} Iniciando processo de atualização de funcionário. UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
 
         _logger.LogInformation("{UseCaseLogPrefix} Validando requisição para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
-        var validationResult = _validator.Validate(request);
+        var validationResult = await _validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
         {
             var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();

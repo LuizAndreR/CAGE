@@ -1,15 +1,12 @@
-﻿using System.Linq;
-using CakeGestao.Application.Features.Auth.Cadastro;
-using CakeGestao.Domain.Entities;
+﻿using CakeGestao.Domain.Entities;
 using CakeGestao.Domain.Enun;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
 using FluentValidation;
-using FluentValidation.Results;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace CakeGestao.Application.UseCases.Auth.Cadastro;
+namespace CakeGestao.Application.Features.Auth.Cadastro;
 
 public class CadastroHandler : IRequestHandler<CadastroCommand, Result>
 {

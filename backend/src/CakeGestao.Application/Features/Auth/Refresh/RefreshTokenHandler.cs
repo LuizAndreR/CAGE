@@ -1,12 +1,11 @@
 ﻿using CakeGestao.Application.Features.Auth.Common;
-using CakeGestao.Application.Features.Auth.Refresh;
 using CakeGestao.Domain.Interfaces.Repositories;
 using CakeGestao.Domain.Interfaces.Security;
 using FluentResults;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace CakeGestao.Application.UseCases.Auth.Refresh;
+namespace CakeGestao.Application.Features.Auth.Refresh;
 
 public class RefreshTokenHandler : IRequestHandler<RefreshTokenCommand, Result<TokensResponse>>
 {

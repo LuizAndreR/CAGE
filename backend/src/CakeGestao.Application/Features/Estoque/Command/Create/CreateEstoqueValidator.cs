@@ -19,6 +19,9 @@ public class CreateEstoqueValidator : AbstractValidator<CreateEstoqueCommand>
 
         RuleFor(x => x.QuantidadeAtual)
             .GreaterThanOrEqualTo(0).WithMessage("A quantidade atual não pode ser negativa.");
+        
+        RuleFor(x => x.QunatidadeMinina)
+            .GreaterThanOrEqualTo(0).WithMessage("A quantidade minina deve ser negativa.");
 
         RuleFor(x => x.UnidadeMedida)
             .IsEnumName(typeof(UnidadeMedidaEnum), caseSensitive: false).WithMessage("Tipo de unidade de medida inválida.");

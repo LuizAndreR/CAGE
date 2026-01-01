@@ -24,6 +24,9 @@ public class UpdateItemEstoqueValidator : AbstractValidator<UpdateItemEstoqueCom
         RuleFor(x => x.QuantidadeAtual)
             .GreaterThanOrEqualTo(0).WithMessage("A quantidade do item de estoque não pode ser negativa.");
 
+        RuleFor(x => x.QuantidadeMinima)
+            .GreaterThanOrEqualTo(0).WithMessage("A quantidade minima do item não pode ser negativa.");
+
         RuleFor(x => x.UnidadeMedida)
             .IsEnumName(typeof(UnidadeMedidaEnum), caseSensitive: false).WithMessage("Tipo de unidade de medida inválida.");
     }

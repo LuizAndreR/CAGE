@@ -20,7 +20,12 @@ internal class ItemEstoqueMap : IEntityTypeConfiguration<ItemEstoque>
             .IsRequired()
             .HasColumnType("decimal(10,2)")
             .HasDefaultValue(0);
-
+        
+        builder.Property(x => x.QuantidadeMinina)
+            .IsRequired()
+            .HasColumnType("decimal(10,2)")
+            .HasDefaultValue(3);
+        
         builder.Property(x => x.UnidadeMedida)
             .IsRequired()
             .HasMaxLength(5);
