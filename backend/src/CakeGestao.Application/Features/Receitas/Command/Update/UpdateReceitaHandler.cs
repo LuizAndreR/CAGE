@@ -1,21 +1,20 @@
 ﻿using AutoMapper;
-using CakeGestao.Application.Dtos.Requests.Receita;
-using CakeGestao.Application.UseCases.Receitas.Interface;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
 using FluentValidation;
+using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace CakeGestao.Application.UseCases.Receitas.UseCase;
+namespace CakeGestao.Application.Features.Receitas.Command.Update;
 
-public class UpdateReceitaUseCase : IUpdateReceitaUseCase
+public class UpdateReceitaHandler: IRequestHandler<UpdateReceitaCommand, Result>
 {
     private readonly IReceitaRepository _receitaRepository;
-    private readonly ILogger<UpdateReceitaUseCase> _logger;
-    private readonly IValidator<UpdateReceitaRequest> _validator;
+    private readonly ILogger<UpdateReceitaHandler> _logger;
+    private readonly IValidator<UpdateReceitaCommand> _validator;
     private readonly IMapper _mapper;
 
-    public UpdateReceitaUseCase(IReceitaRepository receitaRepository, ILogger<UpdateReceitaUseCase> logger, IValidator<UpdateReceitaRequest> validator, IMapper mapper)
+    public UpdateReceitaHandler(IReceitaRepository receitaRepository, ILogger<UpdateReceitaHandler> logger, IValidator<UpdateReceitaCommand> validator, IMapper mapper)
     {
         _receitaRepository = receitaRepository;
         _logger = logger;
@@ -23,7 +22,7 @@ public class UpdateReceitaUseCase : IUpdateReceitaUseCase
         _mapper = mapper;
     }
 
-    public async Task<Result> Execute(UpdateReceitaRequest request, int id)
+    public async Task<Result> Handle(UpdateReceitaCommand request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Iniciando processo de atualização da receita: {Nome}", request.Nome);
 
@@ -37,11 +36,11 @@ public class UpdateReceitaUseCase : IUpdateReceitaUseCase
         _logger.LogInformation("Dados validados com sucesso para a receita: {Nome}", request.Nome);
 
         _logger.LogInformation("Varificando existência da receita: {Nome}", request.Nome);
-        var existingReceitaResult = await _receitaRepository.GetReceitaByIdAsync(id);
+        var existingReceitaResult = await _receitaRepository.GetReceitaByIdAsync(request.IdReceita);
         if (existingReceitaResult.IsFailed)
         {
             _logger.LogWarning("Receita não encontrada para atualização: {Nome}", request.Nome);
-            return Result.Fail(new NotFoundError($"Receita com ID {id} não encontrada."));
+            return Result.Fail(new NotFoundError($"Receita com ID {request.IdReceita} não encontrada."));
         }
         _logger.LogInformation("Receita encontrada para atualização: {Nome}", request.Nome);
 

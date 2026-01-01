@@ -5,8 +5,6 @@ using CakeGestao.Application.Services.Interface;
 using CakeGestao.Application.Services.Service;
 using CakeGestao.Application.UseCases.Financeiro.Interface;
 using CakeGestao.Application.UseCases.Financeiro.UseCase;
-using CakeGestao.Application.UseCases.Receitas.Interface;
-using CakeGestao.Application.UseCases.Receitas.UseCase;
 using CakeGestao.Domain.Interfaces.Repositories;
 using CakeGestao.Domain.Interfaces.Security;
 using CakeGestao.Infrastructure.Data;
@@ -19,6 +17,7 @@ using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Serilog.Formatting.Json;
 using System.Text;
+using CakeGestao.Application.Features.Estoque.Command.Create;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -69,12 +68,7 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Ad
 
 builder.Services.AddScoped<ICreateTransacaoUseCase, CreateTransacaoUseCase>();
 
-builder.Services.AddScoped<ICreateReceitaUseCase, CreateReceitaUseCase>();
-builder.Services.AddScoped<IGetReceitaUseCase, GetReceitaUseCase>();
-builder.Services.AddScoped<IGetAllReceitaUseCase, GetAllReceitaUseCase>();
-
 builder.Services.AddScoped<IFinanceiroService, FinanceiroService>();
-builder.Services.AddScoped<IReceitaService, ReceitaService>();
 
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 
@@ -85,7 +79,7 @@ builder.Services.AddScoped<IEstoqueRepository, EstoqueRepository>();
 builder.Services.AddScoped<IFinanceiroRepository, FinanceiroRepository>();
 builder.Services.AddScoped<IReceitaRepository, ReceitaRepository>();
 
-builder.Services.AddValidatorsFromAssembly(typeof(CreateReceitaUseCase).Assembly);
+builder.Services.AddValidatorsFromAssembly(typeof(CreateEstoqueValidator).Assembly);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>

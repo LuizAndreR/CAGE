@@ -1,22 +1,21 @@
 using AutoMapper;
-using CakeGestao.Application.Dtos.Requests.Receita;
-using CakeGestao.Application.UseCases.Receitas.Interface;
 using CakeGestao.Domain.Entities;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
 using FluentValidation;
+using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace CakeGestao.Application.UseCases.Receitas.UseCase;
+namespace CakeGestao.Application.Features.Receitas.Command.Create;
 
-public class CreateReceitaUseCase : ICreateReceitaUseCase
+public class CreateReceitaHandler : IRequestHandler<CreateReceitaCommand, Result>
 {
     private readonly IReceitaRepository _repository;
     private readonly IMapper _mapper;
-    private readonly IValidator<CreateReceitaRequest> _validator;
-    private readonly ILogger<CreateReceitaUseCase> _logger;
+    private readonly IValidator<CreateReceitaCommand> _validator;
+    private readonly ILogger<CreateReceitaHandler> _logger;
 
-    public CreateReceitaUseCase(IReceitaRepository repository, IMapper mapper, IValidator<CreateReceitaRequest> validator, ILogger<CreateReceitaUseCase> logger)
+    public CreateReceitaHandler(IReceitaRepository repository, IMapper mapper, IValidator<CreateReceitaCommand> validator, ILogger<CreateReceitaHandler> logger)
     {
         _repository = repository;
         _mapper = mapper;
@@ -24,12 +23,12 @@ public class CreateReceitaUseCase : ICreateReceitaUseCase
         _logger = logger;
     }
 
-    public async Task<Result> Execute(CreateReceitaRequest request)
+    public async Task<Result> Handle(CreateReceitaCommand request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Iniciando o processo de criação de uma nova receita de nome: {Nome}", request.Nome);
         
         _logger.LogInformation("Iniciando o processo de verificação da request de uma nova receita de nome: {Nome}", request.Nome);
-        var resultValidato = _validator.Validate(request);
+        var resultValidato = await _validator.ValidateAsync(request, cancellationToken);
         if (!resultValidato.IsValid)
         {
             _logger.LogInformation("A varificação da request de criação de uma nova receita de nome: {Nome} falou",  request.Nome);

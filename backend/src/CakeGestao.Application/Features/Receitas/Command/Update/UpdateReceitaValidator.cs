@@ -1,9 +1,8 @@
-﻿using CakeGestao.Application.Dtos.Requests.Receita;
-using FluentValidation;
+﻿using FluentValidation;
 
-namespace CakeGestao.Application.Validators.Receita;
+namespace CakeGestao.Application.Features.Receitas.Command.Update;
 
-public class UpdateReceitaValidator : AbstractValidator<UpdateReceitaRequest>
+public class UpdateReceitaValidator : AbstractValidator<UpdateReceitaCommand>
 {
     public UpdateReceitaValidator()
     {

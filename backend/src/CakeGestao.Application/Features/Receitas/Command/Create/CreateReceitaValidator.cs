@@ -1,9 +1,8 @@
-using CakeGestao.Application.Dtos.Requests.Receita;
 using FluentValidation;
 
-namespace CakeGestao.Application.Validators.Receita;
+namespace CakeGestao.Application.Features.Receitas.Command.Create;
 
-public class CreateReceitaValidator : AbstractValidator<CreateReceitaRequest>
+public class CreateReceitaValidator : AbstractValidator<CreateReceitaCommand>
 {
     public CreateReceitaValidator()
     {

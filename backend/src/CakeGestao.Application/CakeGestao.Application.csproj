@@ -20,9 +20,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Dtos\Requests\Receita\" />
     <Folder Include="Dtos\Requests\Usuario\" />
+    <Folder Include="Features\Receitas\Common\" />
+    <Folder Include="Features\Receitas\UseCase\" />
     <Folder Include="Features\User\Command\" />
     <Folder Include="Features\User\Query\" />
+    <Folder Include="Validators\Receita\" />
   </ItemGroup>
 
 </Project>
