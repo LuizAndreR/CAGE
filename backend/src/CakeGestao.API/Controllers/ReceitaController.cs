@@ -1,47 +1,49 @@
-﻿using CakeGestao.Application.Dtos.Requests.Receita;
-using CakeGestao.Application.Services.Interface;
+﻿using CakeGestao.Application.Features.Receitas.Command.Create;
+using CakeGestao.Application.Features.Receitas.Query.GetAll;
+using CakeGestao.Application.Features.Receitas.Query.GetReceita;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 namespace CakeGestao.API.Controllers;
 
 [ApiController]
 [Route("api/receita/")]
-public class ReceitaController : ControllerBase
+public class ReceitaController : ApiControllerBase
 {
     private readonly ILogger<ReceitaController> _logger;
-    private readonly IReceitaService _receitaService;
+    private readonly IMediator _mediator;
 
-    public ReceitaController(ILogger<ReceitaController> logger, IReceitaService receitaService)
+    public ReceitaController(ILogger<ReceitaController> logger, IMediator mediator)
     {
         _logger = logger;
-        _receitaService = receitaService;
+        _mediator = mediator;
     }
 
     [HttpGet("get/{id}")]
     public async Task<IActionResult> GetReceitaById([FromRoute]int id)
     {
         _logger.LogInformation("Recebendo requisição para busca de receita de ID: {Id}", id);
-        var receitaResponse = await _receitaService.GetReceita(id);
+        var receitaResult = await _mediator.Send(new GetReceitaQuery{Id = id});
         _logger.LogInformation("Receita de ID: {Id} encontrada com sucesso. Código HTTP 200.", id);
-        return Ok(receitaResponse.Value);
+        return HandleResult(receitaResult);
     }
 
     [HttpGet("getall")]
     public async Task<IActionResult> GetAllReceitas()
     {
         _logger.LogInformation("Recebendo requisição para busca todas receita cadastradas com sucesso.");
-        var receitaResult = await _receitaService.GetAllReceita();
+        var receitaResult = await _mediator.Send(new GetAllReceitaQuery());
         _logger.LogInformation("Foi encontrado com susseso {Numero} receitas cadastrada no banco de dados", receitaResult.Value.Count);
-        return Ok(receitaResult.Value);
+        return HandleResult(receitaResult);
     }
 
     [HttpPost("create")]
-    public async Task<IActionResult> CreateReceita([FromBody]CreateReceitaRequest request)
+    public async Task<IActionResult> CreateReceita([FromBody]CreateReceitaCommand request)
     {
         _logger.LogInformation("Recebendo requisição para criação de receita de nome: {Nome}", request.Nome);
 
-        var result = await _receitaService.CreateReceita(request);
+        var result = await _mediator.Send(request);
 
         _logger.LogInformation("Receita {Nome} criada com sucesso. Código HTTP 201.", request.Nome);
-        return StatusCode(StatusCodes.Status201Created);
+        return HandleResult<object>(result);
     }
 }

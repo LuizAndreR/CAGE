@@ -9,4 +9,10 @@ public class ValidationError : Error
     {
         Errors = errors;
     }
+
+    public ValidationError(string error)
+        : base("Erro de validação.")
+    {
+        Errors = new List<string> { error };
+    }
 }

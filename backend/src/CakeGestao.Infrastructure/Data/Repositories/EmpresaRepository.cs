@@ -61,7 +61,7 @@ public class EmpresaRepository : IEmpresaRepository
 
     public async Task<Result> EmpresaExistsByIdAsync(int empresaId)
     {
-        _logger.LogInformation("erificando existência de empresa com id {Id} no banco de dados", empresaId);
+        _logger.LogInformation("Verificando existência de empresa com id {Id} no banco de dados", empresaId);
 
         var exists = await _context.Empresas.AnyAsync(e => e.Id == empresaId);
         if (exists is false)
