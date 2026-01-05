@@ -20,7 +20,7 @@ public class UsuarioRepository : IUsuarioRepository
     public async Task<Result<List<Usuario>>> GetAllUsuariosAsync()
     {
         _logger.LogInformation("Iniciando a busca no banco de dados");
-        var usuarios = await _context.Usuarios.ToListAsync();
+        var usuarios = await _context.Usuarios.AsNoTracking().ToListAsync();
         if (usuarios.Count == 0)
         {
             _logger.LogInformation("Nenhum usuario encontrado");

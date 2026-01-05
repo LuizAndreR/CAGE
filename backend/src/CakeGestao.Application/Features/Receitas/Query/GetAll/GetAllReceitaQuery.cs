@@ -1,4 +1,4 @@
-using CakeGestao.Application.Dtos.Responses;
+using CakeGestao.Application.Features.Receitas.Common;
 using FluentResults;
 using MediatR;
 

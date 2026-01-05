@@ -1,5 +1,5 @@
 using AutoMapper;
-using CakeGestao.Application.Dtos.Responses;
+using CakeGestao.Application.Features.Receitas.Common;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
 using MediatR;

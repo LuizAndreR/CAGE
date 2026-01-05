@@ -66,8 +66,8 @@ builder.Services.AddControllers();
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<AddQuantidadeEstoqueHandler>());
 
+//Remover Futuramente
 builder.Services.AddScoped<ICreateTransacaoUseCase, CreateTransacaoUseCase>();
-
 builder.Services.AddScoped<IFinanceiroService, FinanceiroService>();
 
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();

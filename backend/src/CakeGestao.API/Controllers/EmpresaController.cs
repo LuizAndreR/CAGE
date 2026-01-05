@@ -24,7 +24,7 @@ public class EmpresaController : ApiControllerBase
         _logger = logger;
     }
 
-    [HttpGet("GetAll")]
+    [HttpGet("getAll")]
     public async Task<IActionResult> GetAllEmpresas()
     {
         _logger.LogInformation("Recebendo solicitação de getall das empresa cadastrado no banco de dados");
@@ -33,7 +33,7 @@ public class EmpresaController : ApiControllerBase
         return HandleResult(result);
     }
 
-    [HttpGet("Get/{id}")]
+    [HttpGet("get/{id}")]
     public async Task<IActionResult> GetEmpresaById(int id)
     {
         _logger.LogInformation("Recebendo solicitação para obter empresa com ID: {Id}", id);
@@ -51,6 +51,17 @@ public class EmpresaController : ApiControllerBase
         return HandleResult<object>(result);
     }
 
+    [HttpPatch("updatedono/{id}")]
+    [Authorize(Roles = "Admin, Dono")]
+    public async Task<IActionResult> UpdateEmpresaDono([FromBody] UpdateEmpresaCommand request, [FromRoute] int id)
+    {
+        _logger.LogInformation("Recebendo solicitação para update feita pelo dono  da empresa com id: {Id}", id);
+        request.Id = id;
+        var result = await _mediator.Send(request);
+        _logger.LogInformation("Solicitação para update feita pelo dono da empresa de id: {Id} processada com sussesso", id);
+        return HandleResult<object>(result);
+    }
+    
     [HttpPatch("update/{id}")]
     public async Task<IActionResult> UpdateEmpresa([FromBody] UpdateEmpresaCommand request, [FromRoute] int id)
     {

@@ -37,6 +37,7 @@ public class AuthContoller : ApiControllerBase
     {
         _logger.LogInformation("Recebendo requisição para cadastro de novo usuário com email: {Email}", request.Email);
         var empresaId = User.GetEmpresaId();
+        request.EmpresaId = empresaId.Value;
         var result = await _mediator.Send(request);
         return HandleResult<object>(result);
     }

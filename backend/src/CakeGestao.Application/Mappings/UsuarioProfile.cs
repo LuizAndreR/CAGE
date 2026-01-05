@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using CakeGestao.Application.Dtos.Responses;
 using CakeGestao.Application.Features.User.Common;
 using CakeGestao.Domain.Entities;
 

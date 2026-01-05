@@ -1,4 +1,4 @@
-﻿namespace CakeGestao.Application.Dtos.Responses;
+﻿namespace CakeGestao.Application.Features.Receitas.Common;
 
 public class ReceitaResponse
 {
