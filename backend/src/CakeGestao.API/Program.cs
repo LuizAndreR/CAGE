@@ -1,10 +1,6 @@
 using CakeGestao.API.Middlewares;
 using CakeGestao.Application.Features.Estoque.Command.AddQuantidade;
 using CakeGestao.Application.Mappings;
-using CakeGestao.Application.Services.Interface;
-using CakeGestao.Application.Services.Service;
-using CakeGestao.Application.UseCases.Financeiro.Interface;
-using CakeGestao.Application.UseCases.Financeiro.UseCase;
 using CakeGestao.Domain.Interfaces.Repositories;
 using CakeGestao.Domain.Interfaces.Security;
 using CakeGestao.Infrastructure.Data;
@@ -65,10 +61,6 @@ builder.Services.AddAutoMapper(_ => {}, typeof(ReceitaProfile).Assembly);
 builder.Services.AddControllers();
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<AddQuantidadeEstoqueHandler>());
-
-//Remover Futuramente
-builder.Services.AddScoped<ICreateTransacaoUseCase, CreateTransacaoUseCase>();
-builder.Services.AddScoped<IFinanceiroService, FinanceiroService>();
 
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 

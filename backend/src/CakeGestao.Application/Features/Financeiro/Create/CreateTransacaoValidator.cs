@@ -1,12 +1,11 @@
 ﻿using CakeGestao.Application.Common;
-using CakeGestao.Application.Dtos.Requests.Transacao;
 using CakeGestao.Domain.Enum;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentValidation;
 
-namespace CakeGestao.Application.Validators.Financeiro;
+namespace CakeGestao.Application.Features.Financeiro.Create;
 
-public class CreateTransacaoValidator : AbstractValidator<CreateTransacaoRequest>
+public class CreateTransacaoValidator : AbstractValidator<CreateTransacaoCommand>
 {
     public CreateTransacaoValidator(IEmpresaRepository empresaRepo)
     {
@@ -18,7 +17,7 @@ public class CreateTransacaoValidator : AbstractValidator<CreateTransacaoRequest
             .IsEnumName(typeof(TipoTransacaoEnum), caseSensitive: false).WithMessage($"Tipo de transação inválido. Valores aceitos: {string.Join(", ", Enum.GetNames(typeof(TipoTransacaoEnum)))}");
 
         RuleFor(x => x.Categoria)
-            .IsEnumName(typeof(CategoriasEnum), caseSensitive: false).WithMessage("Categoria inválida.");
+            .IsEnumName(typeof(CategoriasEnum), caseSensitive: false).WithMessage($"Categoria inválida. Valores aceitos: {string.Join(", ", Enum.GetNames(typeof(CategoriasEnum)))}");
 
         RuleFor(x => x.Valor)
             .GreaterThan(0).WithMessage("O valor da transação deve ser maior que zero.");
