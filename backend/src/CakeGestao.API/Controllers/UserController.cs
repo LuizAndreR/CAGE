@@ -75,7 +75,7 @@ public class UserController : ApiControllerBase
         return HandleResult<object>(userResult);
     }
 
-    [HttpPatch("updatesenha")]
+    [HttpPut("updatesenha")]
     public async Task<IActionResult> UpdateSenhaUsuario([FromBody]UpdateSenhaUsuarioCommand request)
     {
         _logger.LogInformation("Recebendo requisição para update da senha do usuario");
