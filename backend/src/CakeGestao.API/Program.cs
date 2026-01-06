@@ -14,6 +14,8 @@ using Serilog;
 using Serilog.Formatting.Json;
 using System.Text;
 using CakeGestao.Application.Features.Estoque.Command.Create;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -107,6 +109,18 @@ var app = builder.Build();
 
 app.UseMiddleware<ExceptionMiddleware>();
 
+app.Lifetime.ApplicationStarted.Register(() =>
+{
+    var addresses = app.Services.GetRequiredService<IServer>()
+        .Features.Get<IServerAddressesFeature>()?
+        .Addresses;
+    
+    foreach (var address in addresses ?? [])
+    {
+        Log.Information("🚀 API Iniciada! Acesse em: {Url}/swagger", address);
+    }
+});
+
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -125,7 +139,6 @@ app.MapControllers();
 
 try
 {
-    Log.Information("Iniciando a Api");
     app.Run();
 }
 catch (Exception ex)
