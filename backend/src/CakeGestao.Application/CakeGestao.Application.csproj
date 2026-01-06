@@ -20,12 +20,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Dtos\Requests\Transacao\" />
-    <Folder Include="Dtos\Responses\" />
     <Folder Include="Features\User\Command\" />
     <Folder Include="Features\User\Query\" />
-    <Folder Include="Validators\Financeiro\" />
-    <Folder Include="Validators\Receita\" />
   </ItemGroup>
 
 </Project>
