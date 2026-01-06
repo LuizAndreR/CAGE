@@ -1,5 +1,6 @@
 ﻿using CakeGestao.API.Extensions;
 using CakeGestao.Application.Features.Financeiro.Create;
+using CakeGestao.Application.Features.Financeiro.GetAll;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +19,15 @@ public class FinanceiroController : ApiControllerBase
     {
         _logger = logger;
         _mediator = mediator;
+    }
+
+    [HttpGet("getall")]
+    public async Task<IActionResult> GetAll()
+    {
+        var empresaId = User.GetEmpresaId();
+        _logger.LogInformation("Recebido requisição para getAll das transações da empresa de id: {Id}", empresaId);
+        var transacaoResult = await _mediator.Send(new GetAllTransacaoQuery{EmpresaId = empresaId.Value});
+        return HandleResult(transacaoResult);
     }
 
     [HttpPost("Create")]

@@ -43,10 +43,10 @@ public class EstoqueRepository : IEstoqueRepository
         return Result.Ok(listItemEstoque);
     }
 
-    public async Task<Result<List<ItemEstoque>>> GetAlertaEstoqueByEmpresaIdAsync(int empresaId, int QuantidadeMinima)
+    public async Task<Result<List<ItemEstoque>>> GetAlertaEstoqueByEmpresaIdAsync(int empresaId, int quantidadeMinima)
     {
         _logger.LogInformation("Buscando itens do estoque com alerta para a empresa de id: {Id}", empresaId);
-        var alertaEstoque = await _context.ItensEstoque.AsNoTracking().Where(i => i.EmpresaId == empresaId && i.QuantidadeAtual <= QuantidadeMinima).ToListAsync();
+        var alertaEstoque = await _context.ItensEstoque.AsNoTracking().Where(i => i.EmpresaId == empresaId && i.QuantidadeAtual <= quantidadeMinima).ToListAsync();
         if (alertaEstoque == null)
         {
             _logger.LogInformation("Nenhum item com alerta de estoque encontrado para a empresa de id: {Id}", empresaId);
