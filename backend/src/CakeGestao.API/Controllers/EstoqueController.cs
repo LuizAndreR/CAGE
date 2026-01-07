@@ -61,11 +61,6 @@ public class EstoqueController : ApiControllerBase
     {
         _logger.LogInformation("Iniciando processo de obtenção de alertas de estoque.");
         var empresaId = User.GetEmpresaId();
-        if (empresaId.IsFailed)
-        {
-            _logger.LogWarning("Token de autorização inválido ou não contém EmpresaId.");
-            return Unauthorized("Token inválido.");
-        }
 
         var alertEstoqueResult = await _mediator.Send(new GetAlertaEstoqueQuery { EmpresaId = empresaId.Value });
         return HandleResult(alertEstoqueResult);

@@ -23,10 +23,10 @@ public class AuthContoller : ApiControllerBase
     
     [HttpPost("cadastro")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> CadastroDono([FromBody] CadastroCommand request, [FromQuery] int? empresaId)
+    public async Task<IActionResult> CadastroDono([FromBody] CadastroCommand request, [FromQuery] int? id)
     {
         _logger.LogInformation("Recebendo requisição para cadastro usuario de role Dono ou Admin com email: {Email}", request.Email);
-        request.EmpresaId = empresaId.HasValue ? empresaId.Value : 0;
+        request.EmpresaId = id > 0 ? id.Value : 0;
         var result = await _mediator.Send(request);
         return HandleResult<object>(result);
     }
@@ -37,6 +37,11 @@ public class AuthContoller : ApiControllerBase
     {
         _logger.LogInformation("Recebendo requisição para cadastro de novo usuário com email: {Email}", request.Email);
         var empresaId = User.GetEmpresaId();
+        if (empresaId.IsFailed)
+        {
+            _logger.LogWarning("Erro: {Error}", empresaId.Errors);
+            return Unauthorized();
+        }
         request.EmpresaId = empresaId.Value;
         var result = await _mediator.Send(request);
         return HandleResult<object>(result);

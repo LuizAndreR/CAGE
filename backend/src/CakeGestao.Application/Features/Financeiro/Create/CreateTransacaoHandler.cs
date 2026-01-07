@@ -43,6 +43,7 @@ public class CreateTransacaoHandler : IRequestHandler<CreateTransacaoCommand, Re
             categoria: categoriaEnum,
             valor: request.Valor,
             data: request.Data,
+            descricao: request.Descricao,
             pedidoId: request.PedidoId,
             empresaId: request.EmpresaId
         );

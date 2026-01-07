@@ -34,7 +34,7 @@ public class EstoqueRepository : IEstoqueRepository
     {
         _logger.LogInformation("Buscando todo os itens do estoque da empresa de id: {Id}", empresaId);
         var listItemEstoque = await _context.ItensEstoque.AsNoTracking().Where(i => i.EmpresaId == empresaId).ToListAsync();
-        if (listItemEstoque == null)
+        if (listItemEstoque.Count == 0)
         {
             _logger.LogInformation("Nenhum item encontrado cadastrado no banco de dados da empresa de id: {Id}", empresaId);
             return Result.Fail<List<ItemEstoque>>("ItemEstoque não encontrado.");
@@ -47,7 +47,8 @@ public class EstoqueRepository : IEstoqueRepository
     {
         _logger.LogInformation("Buscando itens do estoque com alerta para a empresa de id: {Id}", empresaId);
         var alertaEstoque = await _context.ItensEstoque.AsNoTracking().Where(i => i.EmpresaId == empresaId && i.QuantidadeAtual <= quantidadeMinima).ToListAsync();
-        if (alertaEstoque == null)
+        _logger.LogInformation("Lista de alerta {list}", alertaEstoque);
+        if (alertaEstoque.Count == 0)
         {
             _logger.LogInformation("Nenhum item com alerta de estoque encontrado para a empresa de id: {Id}", empresaId);
             return Result.Fail<List<ItemEstoque>>("Nenhum item com alerta de estoque encontrado.");

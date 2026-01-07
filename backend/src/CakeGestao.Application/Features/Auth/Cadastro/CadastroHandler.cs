@@ -1,5 +1,5 @@
 ﻿using CakeGestao.Domain.Entities;
-using CakeGestao.Domain.Enun;
+using CakeGestao.Domain.Enum;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
 using FluentValidation;

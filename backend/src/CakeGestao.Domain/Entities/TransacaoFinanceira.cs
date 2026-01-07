@@ -17,12 +17,13 @@ public class TransacaoFinanceira
     public int EmpresaId { get; private set; }
     public virtual Empresa Empresa { get; set; } = null!;
     
-    public TransacaoFinanceira(TipoTransacaoEnum tipo, CategoriasEnum categoria, decimal valor, DateTime data, int? pedidoId, int empresaId)
+    public TransacaoFinanceira(TipoTransacaoEnum tipo, CategoriasEnum categoria, decimal valor, DateTime data, string descricao, int? pedidoId, int empresaId)
     {
         Tipo = tipo;
         Categoria = categoria;
         Valor = valor;
         Data = data;
+        Descricao = descricao;
         PedidoId = pedidoId;
         EmpresaId = empresaId;
     }

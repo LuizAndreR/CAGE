@@ -53,6 +53,7 @@ public class JwtTokenService : IJwtTokenService
 
         if (role != "Admin")
         {
+            _logger.LogInformation("Colocando id da empresa: {Id} no token", empresaId);
             claims.Add(new Claim("EmpresaId", empresaId.ToString()!)); 
         }
         

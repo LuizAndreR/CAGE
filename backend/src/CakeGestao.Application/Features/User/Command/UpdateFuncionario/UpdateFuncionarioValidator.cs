@@ -1,4 +1,4 @@
-﻿using CakeGestao.Domain.Enun;
+﻿using CakeGestao.Domain.Enum;
 using FluentValidation;
 
 namespace CakeGestao.Application.Features.User.Command.UpdateFuncionario;

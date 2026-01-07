@@ -49,8 +49,8 @@ public class AddQuantidadeEstoqueHandler : IRequestHandler<AddQuantidadeEstoqueC
             EmpresaId =  request.ItemId,
             Tipo = "Saida",
             Categoria = "Compras",
-            Data = DateTime.Now,
-            Descricao = $"Compra de {request.QuantidadeAdicionar} de {itemEstoque.Nome}",
+            Data = DateTime.UtcNow,
+            Descricao = $"Compra de {request.QuantidadeAdicionar} {itemEstoque.UnidadeMedida.ToString()} de {itemEstoque.Nome}",
             Valor =  request.Valor
         });
         

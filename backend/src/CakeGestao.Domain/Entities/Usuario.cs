@@ -1,4 +1,4 @@
-﻿using CakeGestao.Domain.Enun;
+﻿using CakeGestao.Domain.Enum;
 
 namespace CakeGestao.Domain.Entities;
 
