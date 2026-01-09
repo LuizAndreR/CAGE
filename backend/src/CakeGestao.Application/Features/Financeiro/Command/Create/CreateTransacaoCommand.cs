@@ -2,7 +2,7 @@
 using FluentResults;
 using MediatR;
 
-namespace CakeGestao.Application.Features.Financeiro.Create;
+namespace CakeGestao.Application.Features.Financeiro.Command.Create;
 
 public class CreateTransacaoCommand : IRequest<Result>
 {

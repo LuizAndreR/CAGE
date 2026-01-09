@@ -6,7 +6,7 @@ using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace CakeGestao.Application.Features.Financeiro.GetAll;
+namespace CakeGestao.Application.Features.Financeiro.Query.GetAll;
 
 public class GetAllTransacaoHandler : IRequestHandler<GetAllTransacaoQuery, Result<List<TransacaoResponse>>>
 {

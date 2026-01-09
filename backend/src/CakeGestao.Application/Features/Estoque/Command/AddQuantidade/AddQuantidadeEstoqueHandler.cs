@@ -1,4 +1,4 @@
-﻿using CakeGestao.Application.Features.Financeiro.Create;
+﻿using CakeGestao.Application.Features.Financeiro.Command.Create;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
 using FluentValidation;

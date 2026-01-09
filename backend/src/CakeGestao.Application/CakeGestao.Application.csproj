@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Features\Financeiro\Command\" />
     <Folder Include="Features\User\Command\" />
     <Folder Include="Features\User\Query\" />
   </ItemGroup>

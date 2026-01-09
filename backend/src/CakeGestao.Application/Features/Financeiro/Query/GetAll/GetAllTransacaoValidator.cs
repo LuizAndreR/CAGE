@@ -2,7 +2,7 @@ using CakeGestao.Application.Common;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentValidation;
 
-namespace CakeGestao.Application.Features.Financeiro.GetAll;
+namespace CakeGestao.Application.Features.Financeiro.Query.GetAll;
 
 public class GetAllTransacaoValidator : AbstractValidator<GetAllTransacaoQuery>
 {

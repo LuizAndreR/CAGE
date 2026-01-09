@@ -3,7 +3,7 @@ using CakeGestao.Domain.Enum;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentValidation;
 
-namespace CakeGestao.Application.Features.Financeiro.Create;
+namespace CakeGestao.Application.Features.Financeiro.Command.Create;
 
 public class CreateTransacaoValidator : AbstractValidator<CreateTransacaoCommand>
 {

@@ -7,7 +7,7 @@ using FluentValidation.Results;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace CakeGestao.Application.Features.Financeiro.Create;
+namespace CakeGestao.Application.Features.Financeiro.Command.Create;
 
 public class CreateTransacaoHandler : IRequestHandler<CreateTransacaoCommand, Result>
 {

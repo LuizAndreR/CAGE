@@ -1,6 +1,7 @@
 ﻿using CakeGestao.API.Extensions;
-using CakeGestao.Application.Features.Financeiro.Create;
-using CakeGestao.Application.Features.Financeiro.GetAll;
+using CakeGestao.Application.Features.Financeiro.Command.Create;
+using CakeGestao.Application.Features.Financeiro.Query.Get;
+using CakeGestao.Application.Features.Financeiro.Query.GetAll;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,6 +31,15 @@ public class FinanceiroController : ApiControllerBase
         return HandleResult(transacaoResult);
     }
 
+    [HttpGet("getbyid/{id}")]
+    public async Task<IActionResult> GetById([FromRoute]int id)
+    {
+        var empresaId = User.GetEmpresaId().Value;
+        _logger.LogInformation("Recebido requisição para get da transação de id: {Id}", id);
+        var transacaoResult = await _mediator.Send(new GetTransacaoQuery{Id = id, EmpresaId = empresaId});
+        return HandleResult(transacaoResult);
+    }
+    
     [HttpPost("Create")]
     public async Task<IActionResult> CreateTransacao([FromBody] CreateTransacaoCommand request)
     {
