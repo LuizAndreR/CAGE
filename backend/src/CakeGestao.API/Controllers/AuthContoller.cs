@@ -14,36 +14,42 @@ public class AuthContoller : ApiControllerBase
 {
     private readonly IMediator _mediator;
     private readonly ILogger<AuthContoller> _logger;
+    private const string ControllerLogPrefix = "[Auth Controller]";
 
-    public AuthContoller(IMediator mediator, ILogger<AuthContoller> logger) 
+    public AuthContoller(IMediator mediator, ILogger<AuthContoller> logger)
     {
         _mediator = mediator;
         _logger = logger;
     }
-    
+
     [HttpPost("cadastro")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> CadastroDono([FromBody] CadastroCommand request, [FromQuery] int? id)
     {
-        _logger.LogInformation("Recebendo requisição para cadastro usuario de role Dono ou Admin com email: {Email}", request.Email);
-        request.EmpresaId = id > 0 ? id.Value : 0;
+        _logger.LogInformation("{LogPrefix} Recebendo requisição de cadastro administrativo (Admin/Dono). Email: {Email}", ControllerLogPrefix, request.Email);
+
+        request.EmpresaId = id >= 0 ? id.Value : 0;
         var result = await _mediator.Send(request);
+
         return HandleResult<object>(result);
     }
 
     [HttpPost("cadastrofunc")]
-    [Authorize(Roles = "Admin, Dono")]
+    [Authorize(Roles = "Dono")]
     public async Task<IActionResult> Cadastro([FromBody] CadastroCommand request)
     {
-        _logger.LogInformation("Recebendo requisição para cadastro de novo usuário com email: {Email}", request.Email);
+        _logger.LogInformation("{LogPrefix} Recebendo requisição de cadastro de funcionário. Email: {Email}", ControllerLogPrefix, request.Email);
+
         var empresaId = User.GetEmpresaId();
         if (empresaId.IsFailed)
         {
-            _logger.LogWarning("Erro: {Error}", empresaId.Errors);
+            _logger.LogWarning("{LogPrefix} Falha ao obter EmpresaId do token para o email: {Email}. Erro: {Error}", ControllerLogPrefix, request.Email, empresaId.Errors);
             return Unauthorized();
         }
+
         request.EmpresaId = empresaId.Value;
         var result = await _mediator.Send(request);
+
         return HandleResult<object>(result);
     }
 
@@ -51,8 +57,10 @@ public class AuthContoller : ApiControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> Login([FromBody] LoginCommand request)
     {
-        _logger.LogInformation("Recebendo requisição de login para o usuário com email: {Email}", request.Email);
+        _logger.LogInformation("{LogPrefix} Recebendo tentativa de login. Email: {Email}", ControllerLogPrefix, request.Email);
+
         var result = await _mediator.Send(request);
+
         return HandleResult(result);
     }
 
@@ -60,8 +68,10 @@ public class AuthContoller : ApiControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenCommand request)
     {
-        _logger.LogInformation("Recebendo requisição para refresh token.");
+        _logger.LogInformation("{LogPrefix} Recebendo requisição de Refresh Token.", ControllerLogPrefix);
+
         var result = await _mediator.Send(request);
+
         return HandleResult(result);
     }
 }

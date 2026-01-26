@@ -1,7 +1,7 @@
 ﻿using FluentResults;
 using MediatR;
 
-namespace CakeGestao.Application.Dtos.Requests.Empresa;
+namespace CakeGestao.Application.Features.Empresas.Command.Create;
 
 public class CreateEmpresaCommand : IRequest<Result>
 {

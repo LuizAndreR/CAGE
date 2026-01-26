@@ -1,4 +1,4 @@
-﻿using CakeGestao.Application.Dtos.Requests.Empresa;
+﻿using CakeGestao.Application.Features.Empresas.Command.Create;
 using FluentValidation;
 
 namespace CakeGestao.Application.Features.Empresas.Create;

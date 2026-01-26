@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using CakeGestao.Application.Dtos.Requests.Empresa;
+using CakeGestao.Application.Features.Empresas.Command.Create;
 using CakeGestao.Domain.Entities;
 using CakeGestao.Domain.Enum;
 using CakeGestao.Domain.Interfaces.Repositories;

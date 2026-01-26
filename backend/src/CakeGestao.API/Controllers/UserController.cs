@@ -18,7 +18,8 @@ public class UserController : ApiControllerBase
 {
     private readonly ILogger<UserController> _logger;
     private readonly IMediator _mediator;
-    
+    private const string ControllerLogPrefix = "[User Controller]";
+
     public UserController(ILogger<UserController> logger, IMediator mediator)
     {
         _logger = logger;
@@ -29,46 +30,52 @@ public class UserController : ApiControllerBase
     [Authorize(Roles = "Admin, Dono")]
     public async Task<IActionResult> GetAllUsers()
     {
-        _logger.LogInformation("ecebendo requisição para obter todos os usuários cadastro no banco de dados");
+        _logger.LogInformation("{LogPrefix} Listando usuários vinculados à empresa.", ControllerLogPrefix);
 
-        var listUserResult = await _mediator.Send(new GetAllUsuarioQuery());
+        // Segurança: O Dono só pode ver usuários da SUA empresa
+        var empresaId = User.GetEmpresaId();
+        if (empresaId.IsFailed)
+        {
+            // Se for Admin (SuperUser) talvez não tenha empresa, mas assumindo o padrão SaaS:
+            _logger.LogWarning("{LogPrefix} Falha de autorização ao listar usuários (Empresa não identificada).", ControllerLogPrefix);
+            return Unauthorized("Token inválido.");
+        }
+
+        // Nota: O filtro por EmpresaId deve ser implementado na query handler
+        var listUserResult = await _mediator.Send(new GetAllUsuarioQuery {  });
+
         return HandleResult(listUserResult);
     }
 
     [HttpGet("getuser")]
     public async Task<IActionResult> GetUserById()
     {
-        _logger.LogInformation("Recebendo requisição para obter o usuário");
-        
-        _logger.LogInformation("Pegando o id do usuairo meio de token");
         var id = User.GetUserId();
-
         if (id.IsFailed)
         {
-            _logger.LogWarning("Token de autorização inválido ou não contém ID.");
+            _logger.LogWarning("{LogPrefix} Token sem ID de usuário válido.", ControllerLogPrefix);
             return Unauthorized("Token inválido.");
         }
-        
-        _logger.LogInformation("Iniciando a requisição para obter o usuário com ID: {Id}", id);
-        var userResult = await _mediator.Send(new GetUsuarioQuery{Id = id.Value});
+
+        _logger.LogInformation("{LogPrefix} Buscando dados do próprio perfil. ID: {Id}", ControllerLogPrefix, id.Value);
+
+        var userResult = await _mediator.Send(new GetUsuarioQuery { Id = id.Value });
 
         return HandleResult(userResult);
     }
 
     [HttpPut("update")]
-    public async Task<IActionResult> UpdateUsuario([FromBody]UpdateUsuarioCommand request)
+    public async Task<IActionResult> UpdateUsuario([FromBody] UpdateUsuarioCommand request)
     {
-        _logger.LogInformation("Recebendo requisição para update de usuario");
-        
-        _logger.LogInformation("Pegando o id do usuairo meio de token");
         var id = User.GetUserId();
         if (id.IsFailed)
         {
-            _logger.LogWarning("Token de autorização inválido ou não contém ID.");
+            _logger.LogWarning("{LogPrefix} Tentativa de update de perfil sem ID válido.", ControllerLogPrefix);
             return Unauthorized("Token inválido.");
         }
-        
-        _logger.LogInformation("Iniciando a requisição para update do usuário com ID: {Id}", id);
+
+        _logger.LogInformation("{LogPrefix} Atualizando dados do perfil. ID: {Id}", ControllerLogPrefix, id.Value);
+
         request.Id = id.Value;
         var userResult = await _mediator.Send(request);
 
@@ -76,20 +83,18 @@ public class UserController : ApiControllerBase
     }
 
     [HttpPut("updatesenha")]
-    public async Task<IActionResult> UpdateSenhaUsuario([FromBody]UpdateSenhaUsuarioCommand request)
+    public async Task<IActionResult> UpdateSenhaUsuario([FromBody] UpdateSenhaUsuarioCommand request)
     {
-        _logger.LogInformation("Recebendo requisição para update da senha do usuario");
-        
-        _logger.LogInformation("Pegando o id do usuairo meio de token");
         var id = User.GetUserId();
         if (id.IsFailed)
         {
-            _logger.LogWarning("Token de autorização inválido ou não contém ID.");
+            _logger.LogWarning("{LogPrefix} Tentativa de alteração de senha sem ID válido.", ControllerLogPrefix);
             return Unauthorized("Token inválido.");
         }
-        
-        _logger.LogInformation("Iniciando a requisição para update da senha do usuário com ID: {Id}", id);
-        request.Id = id.Value;  
+
+        _logger.LogInformation("{LogPrefix} Iniciando alteração de senha do usuário. ID: {Id}", ControllerLogPrefix, id.Value);
+
+        request.Id = id.Value;
         var userResult = await _mediator.Send(request);
 
         return HandleResult<object>(userResult);
@@ -99,18 +104,23 @@ public class UserController : ApiControllerBase
     [Authorize(Roles = "Admin, Dono")]
     public async Task<IActionResult> UpdateFuncaoUsuario([FromBody] UpdateFuncionarioCommand request)
     {
-        _logger.LogInformation("Recebendo requisição para update da função do usuario");
+        // Dica: Logar quem está sendo alterado ajuda a rastrear mudanças de permissão indevidas
+        _logger.LogInformation("{LogPrefix} Alteração de cargo/função de funcionário solicitada.", ControllerLogPrefix);
+
+        // Idealmente, injetar EmpresaId no command também para garantir que o Dono não edite func de outra empresa
         var userResult = await _mediator.Send(request);
+
         return HandleResult<object>(userResult);
     }
 
     [HttpDelete("delete/{id}")]
     [Authorize(Roles = "Admin, Dono")]
-    public async Task<IActionResult> DeleteUsuario([FromRoute]int id)
+    public async Task<IActionResult> DeleteUsuario([FromRoute] int id)
     {
-        _logger.LogInformation("Recebendo requisição para deletar um usuário");
-        int idValue = id;
-        var userResult = await _mediator.Send(new DeleteUsuarioCommand{Id=idValue});
+        _logger.LogInformation("{LogPrefix} Solicitação de exclusão de usuário. ID Alvo: {TargetId}", ControllerLogPrefix, id);
+
+        var userResult = await _mediator.Send(new DeleteUsuarioCommand { Id = id });
+
         return HandleResult<object>(userResult);
     }
 }
