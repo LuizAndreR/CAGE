@@ -31,7 +31,7 @@ public class AuthContoller : ApiControllerBase
         request.EmpresaId = id >= 0 ? id.Value : 0;
         var result = await _mediator.Send(request);
 
-        return HandleResult<object>(result);
+        return HandleResult<object>(result, _logger, ControllerLogPrefix);
     }
 
     [HttpPost("cadastrofunc")]
@@ -50,7 +50,7 @@ public class AuthContoller : ApiControllerBase
         request.EmpresaId = empresaId.Value;
         var result = await _mediator.Send(request);
 
-        return HandleResult<object>(result);
+        return HandleResult<object>(result, _logger, ControllerLogPrefix);
     }
 
     [HttpPost("login")]
@@ -61,7 +61,7 @@ public class AuthContoller : ApiControllerBase
 
         var result = await _mediator.Send(request);
 
-        return HandleResult(result);
+        return HandleResult(result, _logger, ControllerLogPrefix);
     }
 
     [HttpPost("refresh")]
@@ -72,6 +72,6 @@ public class AuthContoller : ApiControllerBase
 
         var result = await _mediator.Send(request);
 
-        return HandleResult(result);
+        return HandleResult(result, _logger, ControllerLogPrefix);
     }
 }

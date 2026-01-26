@@ -42,9 +42,9 @@ public class UserController : ApiControllerBase
         }
 
         // Nota: O filtro por EmpresaId deve ser implementado na query handler
-        var listUserResult = await _mediator.Send(new GetAllUsuarioQuery {  });
+        var userResult = await _mediator.Send(new GetAllUsuarioQuery {  });
 
-        return HandleResult(listUserResult);
+        return HandleResult(userResult, _logger, ControllerLogPrefix);
     }
 
     [HttpGet("getuser")]
@@ -61,7 +61,7 @@ public class UserController : ApiControllerBase
 
         var userResult = await _mediator.Send(new GetUsuarioQuery { Id = id.Value });
 
-        return HandleResult(userResult);
+        return HandleResult(userResult, _logger, ControllerLogPrefix);
     }
 
     [HttpPut("update")]
@@ -79,7 +79,7 @@ public class UserController : ApiControllerBase
         request.Id = id.Value;
         var userResult = await _mediator.Send(request);
 
-        return HandleResult<object>(userResult);
+        return HandleResult<object>(userResult, _logger, ControllerLogPrefix);
     }
 
     [HttpPut("updatesenha")]
@@ -97,7 +97,7 @@ public class UserController : ApiControllerBase
         request.Id = id.Value;
         var userResult = await _mediator.Send(request);
 
-        return HandleResult<object>(userResult);
+        return HandleResult<object>(userResult, _logger, ControllerLogPrefix);
     }
 
     [HttpPatch("updatefuncionario")]
@@ -110,7 +110,7 @@ public class UserController : ApiControllerBase
         // Idealmente, injetar EmpresaId no command também para garantir que o Dono não edite func de outra empresa
         var userResult = await _mediator.Send(request);
 
-        return HandleResult<object>(userResult);
+        return HandleResult<object>(userResult, _logger, ControllerLogPrefix);
     }
 
     [HttpDelete("delete/{id}")]
@@ -121,6 +121,6 @@ public class UserController : ApiControllerBase
 
         var userResult = await _mediator.Send(new DeleteUsuarioCommand { Id = id });
 
-        return HandleResult<object>(userResult);
+        return HandleResult<object>(userResult, _logger, ControllerLogPrefix);
     }
 }

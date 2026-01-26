@@ -36,7 +36,7 @@ public class FinanceiroController : ApiControllerBase
         }
 
         var transacaoResult = await _mediator.Send(new GetAllTransacaoQuery { EmpresaId = empresaId.Value });
-        return HandleResult(transacaoResult);
+        return HandleResult(transacaoResult, _logger, ControllerLogPrefix);
     }
 
     [HttpGet("getbyid/{id}")]
@@ -52,7 +52,7 @@ public class FinanceiroController : ApiControllerBase
         }
 
         var transacaoResult = await _mediator.Send(new GetTransacaoQuery { Id = id, EmpresaId = empresaId.Value });
-        return HandleResult(transacaoResult);
+        return HandleResult(transacaoResult, _logger, ControllerLogPrefix);
     }
 
     [HttpPost("create")]
@@ -71,6 +71,6 @@ public class FinanceiroController : ApiControllerBase
         request.EmpresaId = empresaId.Value;
         var transacaoResult = await _mediator.Send(request);
 
-        return HandleResult<object>(transacaoResult);
+        return HandleResult<object>(transacaoResult, _logger, ControllerLogPrefix);
     }
 }

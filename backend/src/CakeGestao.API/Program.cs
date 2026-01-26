@@ -117,7 +117,7 @@ app.Lifetime.ApplicationStarted.Register(() =>
     
     foreach (var address in addresses ?? [])
     {
-        Log.Information("🚀 API Iniciada! Acesse em: {Url}/swagger", address);
+        Log.Information("API Iniciada! Acesse em: {Url}/swagger", address);
     }
 });
 

@@ -32,7 +32,7 @@ public class EmpresaController : ApiControllerBase
 
         var result = await _mediator.Send(new GetAllEmpresaQuery());
 
-        return HandleResult(result);
+        return HandleResult(result, _logger, ControllerLogPrefix);
     }
 
     [HttpGet("get/{id}")]
@@ -42,7 +42,7 @@ public class EmpresaController : ApiControllerBase
 
         var result = await _mediator.Send(new GetEmpresaQuery { Id = id });
 
-        return HandleResult(result);
+        return HandleResult(result, _logger, ControllerLogPrefix);
     }
 
     [HttpPost("create")]
@@ -52,7 +52,7 @@ public class EmpresaController : ApiControllerBase
 
         var result = await _mediator.Send(request);
 
-        return HandleResult<object>(result);
+        return HandleResult<object>(result, _logger, ControllerLogPrefix);
     }
 
     [HttpPatch("updatedono/{id}")]
@@ -64,7 +64,7 @@ public class EmpresaController : ApiControllerBase
         request.Id = id;
         var result = await _mediator.Send(request);
 
-        return HandleResult<object>(result);
+        return HandleResult<object>(result, _logger, ControllerLogPrefix);
     }
 
     [HttpPatch("update/{id}")]
@@ -75,7 +75,7 @@ public class EmpresaController : ApiControllerBase
         request.Id = id;
         var result = await _mediator.Send(request);
 
-        return HandleResult<object>(result);
+        return HandleResult<object>(result, _logger, ControllerLogPrefix);
     }
 
     [HttpPut("updatestatus/{id}")]
@@ -86,7 +86,7 @@ public class EmpresaController : ApiControllerBase
         request.EmpresaId = id;
         var result = await _mediator.Send(request);
 
-        return HandleResult<object>(result);
+        return HandleResult<object>(result, _logger, ControllerLogPrefix);
     }
 
     [HttpDelete("delete/{id}")] 
@@ -96,6 +96,6 @@ public class EmpresaController : ApiControllerBase
 
         var result = await _mediator.Send(new DeleteEmpresaCommand { Id = id });
 
-        return HandleResult<object>(result);
+        return HandleResult<object>(result, _logger, ControllerLogPrefix);
     }
 }

@@ -41,7 +41,7 @@ public class EstoqueController : ApiControllerBase
         }
 
         var result = await _mediator.Send(new GetAllItemEstoqueQuery { EmpresaId = empresaId.Value });
-        return HandleResult(result);
+        return HandleResult(result, _logger, ControllerLogPrefix);
     }
 
     [HttpGet("get/{id}")]
@@ -57,7 +57,7 @@ public class EstoqueController : ApiControllerBase
         }
 
         var result = await _mediator.Send(new GetItemEstoqueQuery { EmpresaId = empresaId.Value, ItemId = id });
-        return HandleResult(result);
+        return HandleResult(result, _logger, ControllerLogPrefix);
     }
 
     [HttpGet("alert")]
@@ -73,7 +73,7 @@ public class EstoqueController : ApiControllerBase
         }
 
         var result = await _mediator.Send(new GetAlertaEstoqueQuery { EmpresaId = empresaId.Value });
-        return HandleResult(result);
+        return HandleResult(result, _logger, ControllerLogPrefix);
     }
 
     [HttpPost("create")]
@@ -91,7 +91,7 @@ public class EstoqueController : ApiControllerBase
         request.EmpresaId = empresaId.Value;
         var result = await _mediator.Send(request);
 
-        return HandleResult<object>(result);
+        return HandleResult<object>(result, _logger, ControllerLogPrefix);
     }
 
     [HttpPatch("update/{id}")]
@@ -110,7 +110,7 @@ public class EstoqueController : ApiControllerBase
         request.ItemId = id;
 
         var result = await _mediator.Send(request);
-        return HandleResult<object>(result);
+        return HandleResult<object>(result, _logger, ControllerLogPrefix);
     }
 
     [HttpPut("add-quantidade/{itemId}")]
@@ -129,7 +129,7 @@ public class EstoqueController : ApiControllerBase
         request.ItemId = itemId;
 
         var result = await _mediator.Send(request);
-        return HandleResult<object>(result);
+        return HandleResult<object>(result, _logger, ControllerLogPrefix);
     }
 
     [HttpPut("remove-quantidade/{itemId}")]
@@ -148,7 +148,7 @@ public class EstoqueController : ApiControllerBase
         request.ItemId = itemId;
 
         var result = await _mediator.Send(request);
-        return HandleResult<object>(result);
+        return HandleResult<object>(result, _logger, ControllerLogPrefix);
     }
 
     [HttpDelete("delete/{id}")]
@@ -164,6 +164,6 @@ public class EstoqueController : ApiControllerBase
         }
 
         var result = await _mediator.Send(new DeleteItemEstoqueCommand { EmpresaId = empresaId.Value, ItemId = id });
-        return HandleResult<object>(result);
+        return HandleResult<object>(result, _logger, ControllerLogPrefix);
     }
 }
