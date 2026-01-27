@@ -5,6 +5,7 @@ using CakeGestao.Application.Features.User.Command.UpdateSenhaUsuario;
 using CakeGestao.Application.Features.User.Command.UpdateUser;
 using CakeGestao.Application.Features.User.Query.Get;
 using CakeGestao.Application.Features.User.Query.GetAll;
+using CakeGestao.Application.Features.User.Query.GetFuncionario;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -27,23 +28,31 @@ public class UserController : ApiControllerBase
     }
 
     [HttpGet("getall")]
-    [Authorize(Roles = "Admin, Dono")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetAllUsers()
     {
-        _logger.LogInformation("{LogPrefix} Listando usuários vinculados à empresa.", ControllerLogPrefix);
-
-        // Segurança: O Dono só pode ver usuários da SUA empresa
-        var empresaId = User.GetEmpresaId();
-        if (empresaId.IsFailed)
-        {
-            // Se for Admin (SuperUser) talvez não tenha empresa, mas assumindo o padrão SaaS:
-            _logger.LogWarning("{LogPrefix} Falha de autorização ao listar usuários (Empresa não identificada).", ControllerLogPrefix);
-            return Unauthorized("Token inválido.");
-        }
+        _logger.LogInformation("{LogPrefix} Listando usuários cadastrados.", ControllerLogPrefix);
 
         // Nota: O filtro por EmpresaId deve ser implementado na query handler
         var userResult = await _mediator.Send(new GetAllUsuarioQuery {  });
 
+        return HandleResult(userResult, _logger, ControllerLogPrefix);
+    }
+
+    [HttpGet("getfuncionarios")]
+    [Authorize(Roles = "Dono")]
+    public async Task<IActionResult> GetFuncionarios()
+    {
+        var empresaid = User.GetEmpresaId();
+        if (empresaid.IsFailed)
+        {
+            _logger.LogWarning("{LogPrefix} Token sem ID de empresa válido.", ControllerLogPrefix);
+            return Unauthorized("Token inválido.");
+        }
+        
+        _logger.LogInformation("{LogPrefix} Listando funcionários cadastrados e viculado da empresa de id: {Id}", ControllerLogPrefix, empresaid);
+
+        var userResult = await _mediator.Send(new GetFuncionariosQuery { EmpresaId = empresaid.Value});
         return HandleResult(userResult, _logger, ControllerLogPrefix);
     }
 
@@ -104,10 +113,14 @@ public class UserController : ApiControllerBase
     [Authorize(Roles = "Admin, Dono")]
     public async Task<IActionResult> UpdateFuncaoUsuario([FromBody] UpdateFuncionarioCommand request)
     {
-        // Dica: Logar quem está sendo alterado ajuda a rastrear mudanças de permissão indevidas
-        _logger.LogInformation("{LogPrefix} Alteração de cargo/função de funcionário solicitada.", ControllerLogPrefix);
+        var id = User.GetUserId();
+        if (id.IsFailed)
+        {
+            _logger.LogWarning("{LogPrefix} Tentativa de alteração de função sem ID válido.", ControllerLogPrefix);
+            return Unauthorized("Token inválido.");
+        }
+        _logger.LogInformation("{LogPrefix} Alteração de cargo/função de funcionário solicitada. Solitado pelo usuario de id: {Id}", ControllerLogPrefix, id.Value);
 
-        // Idealmente, injetar EmpresaId no command também para garantir que o Dono não edite func de outra empresa
         var userResult = await _mediator.Send(request);
 
         return HandleResult<object>(userResult, _logger, ControllerLogPrefix);

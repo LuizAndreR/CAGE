@@ -36,7 +36,6 @@ public class GetAllUsuarioHandler : IRequestHandler<GetAllUsuarioQuery, Result<L
 
         _logger.LogInformation("{UseCaseLogPrefix} Removendo usu�rios com fun��es administrativas (Dono, Admin) da lista", UseCaseLogPrefix);
         var usuarios = listUsuarioResult.Value;
-        usuarios.RemoveAll(u => u.Role.ToString() == "Dono");
         usuarios.RemoveAll(u => u.Role.ToString() == "Admin");
         _logger.LogInformation("{UseCaseLogPrefix} Remo��o de administradores conclu�da. Total de usu�rios comuns ap�s filtro: {TotalFiltered}", UseCaseLogPrefix, usuarios.Count);
 

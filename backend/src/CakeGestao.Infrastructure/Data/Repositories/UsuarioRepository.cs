@@ -17,16 +17,23 @@ public class UsuarioRepository : IUsuarioRepository
         _logger = logger;
     }
 
-    public async Task<Result<List<Usuario>>> GetAllUsuariosAsync()
+    public async Task<Result<List<Usuario>>> GetAllUsuariosAsync(int? empresaId)
     {
         _logger.LogInformation("Iniciando a busca no banco de dados");
-        var usuarios = await _context.Usuarios.AsNoTracking().ToListAsync();
+
+        var query = _context.Usuarios.AsNoTracking();
+        if (empresaId.HasValue)
+        {
+            query = query.Where(u => u.EmpresaId == empresaId.Value);
+        }
+        var usuarios = await query.ToListAsync();
+
         if (usuarios.Count == 0)
         {
             _logger.LogInformation("Nenhum usuario encontrado");
             return Result.Fail<List<Usuario>>("Nenhum usuario encontrado.");
         }
-        _logger.LogInformation("Usuario encontrado com sucesso");
+        _logger.LogInformation("{Count} usuários encontrados com sucesso.", usuarios.Count);
         return Result.Ok(usuarios);
     }
     
@@ -34,7 +41,7 @@ public class UsuarioRepository : IUsuarioRepository
     {
         _logger.LogInformation("Verificando a existencia do usuario no banco de dados: {Email}", email);
 
-        var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == email);
+        var usuario = await _context.Usuarios.AsNoTracking().FirstOrDefaultAsync(u => u.Email == email);
 
         if (usuario == null)
         {
