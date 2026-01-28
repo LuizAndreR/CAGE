@@ -7,5 +7,5 @@ public interface IFinanceiroRepository
 {
     public Task CreateTransacaoAsync(TransacaoFinanceira transacao);
     public Task<Result<List<TransacaoFinanceira>>> GetAllTransacoesAsync(int empresaId);
-    public Task<Result<TransacaoFinanceira>> GetTransacaoAsync(int id);
+    public Task<Result<TransacaoFinanceira>> GetTransacaoAsync(int id, int empresaId);
 }

@@ -17,16 +17,16 @@ public class EstoqueRepository : IEstoqueRepository
         _logger = logger;
     }
 
-    public async Task<Result<ItemEstoque>> GetItemEstoqueByIdAsync(int id)
+    public async Task<Result<ItemEstoque>> GetItemEstoqueByIdAsync(int itemId, int empresaId)
     {
-        _logger.LogInformation("Buscando ItemEstoque com ID: {Id}", id);
-        var itemEstoque = await _context.ItensEstoque.FindAsync(id);
+        _logger.LogInformation("Buscando ItemEstoque com ID: {Id}", itemId);
+        var itemEstoque = await _context.ItensEstoque.FirstOrDefaultAsync(x => x.Id == itemId && x.EmpresaId == empresaId);
         if (itemEstoque == null)
         {
-            _logger.LogWarning("ItemEstoque com ID: {Id} não encontrado.", id);
+            _logger.LogWarning("ItemEstoque com ID: {Id} não encontrado.", itemId);
             return Result.Fail<ItemEstoque>("ItemEstoque não encontrado.");
         }
-        _logger.LogInformation("ItemEstoque com ID: {Id} encontrado com sucesso.", id);
+        _logger.LogInformation("ItemEstoque com ID: {Id} encontrado com sucesso.", itemId);
         return Result.Ok(itemEstoque);
     }
 

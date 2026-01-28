@@ -40,11 +40,11 @@ public class FinanceiroRepository : IFinanceiroRepository
         return Result.Ok(listTransacoes);
     }
 
-    public async Task<Result<TransacaoFinanceira>> GetTransacaoAsync(int id)
+    public async Task<Result<TransacaoFinanceira>> GetTransacaoAsync(int id, int empresaId)
     {
         _logger.LogInformation("Iniciando busca da transação de id: {Id} no banco de dados", id);
 
-        var transacao = await _context.TransacoesFinanceiras.FindAsync(id);
+        var transacao = await _context.TransacoesFinanceiras.FirstOrDefaultAsync(x => x.Id == id && x.EmpresaId == empresaId);
         if (transacao == null)
         {
             _logger.LogWarning("Transação de id: {Id} não encontrado no banco de  dados", id);

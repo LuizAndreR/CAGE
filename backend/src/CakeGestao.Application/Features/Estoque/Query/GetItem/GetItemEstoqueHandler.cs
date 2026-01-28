@@ -14,7 +14,7 @@ public class GetItemEstoqueHandler : IRequestHandler<GetItemEstoqueQuery, Result
     private readonly ILogger<GetItemEstoqueHandler> _logger;
     private readonly IMapper _mapper;
     private readonly IValidator<GetItemEstoqueQuery> _validator;
-    private const string UseCaseLogPrefix = "[Get Item Estoque]";
+    private const string LogPrefix = "[Get Item Estoque Handler]";
 
     public GetItemEstoqueHandler(IEstoqueRepository estoqueRepository, ILogger<GetItemEstoqueHandler> logger, IMapper mapper, IValidator<GetItemEstoqueQuery> validator)
     {
@@ -26,32 +26,28 @@ public class GetItemEstoqueHandler : IRequestHandler<GetItemEstoqueQuery, Result
 
     public async Task<Result<ItemEstoqueResponse>> Handle(GetItemEstoqueQuery request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("{LogPrefix} Iniciando execução do caso de uso com EmpresaId: {EmpresaId}, ItemId: {ItemId}", UseCaseLogPrefix, request.EmpresaId, request.ItemId);
+        _logger.LogInformation("{LogPrefix} Buscando detalhes do item. ItemID: {ItemId} | EmpresaID: {EmpresaId}", LogPrefix, request.ItemId, request.EmpresaId);
 
-        _logger.LogInformation("{LogPrefix} Validando requisição...", UseCaseLogPrefix);
         var validationResult = await _validator.ValidateAsync(request);
         if (!validationResult.IsValid)
         {
-            _logger.LogWarning("{LogPrefix} Validação falhou: {Errors}", UseCaseLogPrefix, validationResult.Errors);
-            return Result.Fail<ItemEstoqueResponse>("Requisição inválida").WithErrors(validationResult.Errors.Select(e => e.ErrorMessage));
+            var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+            _logger.LogWarning("{LogPrefix} Requisição inválida. Erros: {Errors}", LogPrefix, string.Join(", ", errors));
+            return Result.Fail(new ValidationError(errors));
         }
-        _logger.LogInformation("{LogPrefix} Requisição validada com sucesso.", UseCaseLogPrefix);
 
-        _logger.LogInformation("{LogPrefix} Buscando item de estoque no repositório...", UseCaseLogPrefix);
-        var itemEstoqueResult = await _estoqueRepository.GetItemEstoqueByIdAsync(request.ItemId);
+        var itemEstoqueResult = await _estoqueRepository.GetItemEstoqueByIdAsync(request.ItemId, request.EmpresaId);
         if (itemEstoqueResult.IsFailed)
         {
-            _logger.LogWarning("{LogPrefix} Item de estoque não encontrado para EmpresaId: {EmpresaId}, ItemId: {ItemId}", UseCaseLogPrefix, request.EmpresaId, request.ItemId);
-            return Result.Fail<ItemEstoqueResponse>("Item de estoque não encontrado").WithErrors(itemEstoqueResult.Errors);
+            _logger.LogWarning("{LogPrefix} Item não encontrado no banco. ItemID: {ItemId}", LogPrefix, request.ItemId);
+            var erro = itemEstoqueResult.Errors.ToString();
+            return Result.Fail(new NotFoundError(erro!));
         }
         var itemEstoque = itemEstoqueResult.Value;
-        _logger.LogInformation("{LogPrefix} Item de estoque encontrado com sucesso.", UseCaseLogPrefix);
 
-        _logger.LogInformation("{LogPrefix} Mapeando entidade para DTO de resposta...", UseCaseLogPrefix);
         var itemEstoqueResponse = _mapper.Map<ItemEstoqueResponse>(itemEstoque);
-        _logger.LogInformation("{LogPrefix} Mapeamento concluído com sucesso.", UseCaseLogPrefix);
 
-        _logger.LogInformation("{LogPrefix} Execução do caso de uso concluída com sucesso.", UseCaseLogPrefix);
+        _logger.LogInformation("{LogPrefix} Dados retornados com sucesso. ID: {Id}", LogPrefix, request.ItemId);
         return Result.Ok(itemEstoqueResponse);
     }
 }

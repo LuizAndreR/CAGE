@@ -14,7 +14,7 @@ public class GetAllTransacaoHandler : IRequestHandler<GetAllTransacaoQuery, Resu
     private readonly IMapper _mapper;
     private readonly ILogger<GetAllTransacaoHandler> _logger;
     private readonly IValidator<GetAllTransacaoQuery> _validator;
-    private const string UseCaseLogPrefix = "[GetAll Transacao]";
+    private const string LogPrefix = "[Get All Transacao Handler]";
 
     public GetAllTransacaoHandler(IFinanceiroRepository financeiroRepository, IMapper mapper, ILogger<GetAllTransacaoHandler> logger, IValidator<GetAllTransacaoQuery> validator)
     {
@@ -26,26 +26,27 @@ public class GetAllTransacaoHandler : IRequestHandler<GetAllTransacaoQuery, Resu
 
     public async Task<Result<List<TransacaoResponse>>> Handle(GetAllTransacaoQuery request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("{UseCaseLogPrefix} Iniciando o processo de busca de todas transações da empresa de id: {Id}", UseCaseLogPrefix, request.EmpresaId);
-        
+        _logger.LogInformation("{LogPrefix} Iniciando listagem financeira. EmpresaId: {EmpresaId}", LogPrefix, request.EmpresaId);
+
         var validationResult = await _validator.ValidateAsync(request);
         if (!validationResult.IsValid)
         {
             var erros =  validationResult.Errors.Select(x => x.ErrorMessage).ToList();
+            _logger.LogWarning("{LogPrefix} Requisição inválida. EmpresaId: {EmpresaId}. Erros: {Errors}", LogPrefix, request.EmpresaId, string.Join(", ", erros));
             return Result.Fail(new ValidationError(erros));
         }
         
         var listTransacaoResult = await _financeiroRepository.GetAllTransacoesAsync(request.EmpresaId);
         if (listTransacaoResult.IsFailed)
         {
-            _logger.LogWarning("{UseCaseLogPrefix} Processo de busca de transações da empresa de id: {Id} falhou", UseCaseLogPrefix, request.EmpresaId);
+            _logger.LogWarning("{LogPrefix} Falha ao buscar lista de transações.", LogPrefix);
             var erro = listTransacaoResult.Errors.ToString();
             return Result.Fail(new NotFoundError(erro!)); 
         }
         
         var listTransacao = _mapper.Map<List<TransacaoResponse>>(listTransacaoResult.Value);
-        
-        _logger.LogInformation("{UseCaseLogPrefix} Processo de busca de todas transações da empresa de id: {Id} realizada com susseso",  UseCaseLogPrefix, request.EmpresaId);
+
+        _logger.LogInformation("{LogPrefix} Listagem financeira concluída. Total de registros: {Count}", LogPrefix, listTransacao.Count);
         return Result.Ok(listTransacao);
     }
 }

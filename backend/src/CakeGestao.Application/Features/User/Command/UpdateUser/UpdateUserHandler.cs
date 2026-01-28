@@ -1,4 +1,5 @@
 using CakeGestao.Domain.Interfaces.Repositories;
+using CakeGestao.Infrastructure.Data.Repositories;
 using FluentResults;
 using FluentValidation;
 using MediatR;
@@ -8,14 +9,14 @@ namespace CakeGestao.Application.Features.User.Command.UpdateUser;
 
 public class UpdateUserHandler: IRequestHandler<UpdateUsuarioCommand, Result>
 {
-    private readonly IUsuarioRepository _repositoryUser; 
+    private readonly IUsuarioRepository _usuarioRepository; 
     private readonly IValidator<UpdateUsuarioCommand> _validator;
     private readonly ILogger<UpdateUserHandler> _logger;
-    private const string UseCaseLogPrefix = "[Update Usuario]";
+    private const string LogPrefix = "[Update Usuario Handler]";
 
-    public UpdateUserHandler(IUsuarioRepository repositoryUser, IValidator<UpdateUsuarioCommand> validator, ILogger<UpdateUserHandler> logger)
+    public UpdateUserHandler(IUsuarioRepository usuarioRepository, IValidator<UpdateUsuarioCommand> validator, ILogger<UpdateUserHandler> logger)
     {
-        _repositoryUser = repositoryUser;
+        _usuarioRepository = usuarioRepository;
         _validator = validator;
         _logger = logger;
     }
@@ -23,37 +24,39 @@ public class UpdateUserHandler: IRequestHandler<UpdateUsuarioCommand, Result>
 
     public async Task<Result> Handle(UpdateUsuarioCommand request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("{UseCaseLogPrefix} Iniciando processo de atualização do usuário. UsuarioId: {UsuarioId}, Email: {Email}", UseCaseLogPrefix, request.Id, request.Email);
-        
-        _logger.LogInformation("{UseCaseLogPrefix} Validando requisição para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
+        _logger.LogInformation("{LogPrefix} Iniciando atualização de perfil. ID: {Id} | Novo Email: {Email}", LogPrefix, request.Id, request.Email);
+
         var validationResult = await _validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
         {
             var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
-            _logger.LogWarning("{UseCaseLogPrefix} Validação falhou para UsuarioId: {UsuarioId}. Erros: {Errors}", UseCaseLogPrefix, request.Id, errors);
+            _logger.LogWarning("{LogPrefix} Dados inválidos. ID: {Id}. Erros: {Errors}", LogPrefix, request.Id, string.Join(", ", errors));
             return Result.Fail(new ValidationError(errors));
         }
-        _logger.LogInformation("{UseCaseLogPrefix} Validação concluída com sucesso para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
-        
-        _logger.LogInformation("{UseCaseLogPrefix} Buscando usuário no repositório. UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
-        var usuarioResult = await _repositoryUser.GetByIdAsync(request.Id);
+
+        var usuarioResult = await _usuarioRepository.GetByIdAsync(request.Id, request.EmpresaId);
         if (usuarioResult.IsFailed)
         {
-            _logger.LogWarning("{UseCaseLogPrefix} Usuário não encontrado. UsuarioId: {UsuarioId}. Erros: {@Errors}", UseCaseLogPrefix, request.Id, usuarioResult.Errors);
+            _logger.LogWarning("{LogPrefix} Usuário não encontrado. ID: {Id}", LogPrefix, request.Id);
             return Result.Fail(new NotFoundError("Usuario nao foi encontrado no banco de dados"));
         }
         var usuario = usuarioResult.Value;
-        _logger.LogInformation("{UseCaseLogPrefix} Usuário encontrado. UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
-        
-        _logger.LogInformation("{UseCaseLogPrefix} Iniciando mapeamento dos novos dados para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
+
+        if (usuario.Email != request.Email)
+        {
+            var emailExists = await _usuarioRepository.GetUsuarioByEmailAsync(request.Email);
+            if (emailExists.IsSuccess)
+            {
+                _logger.LogWarning("{LogPrefix} Email já está em uso. Email: {Email}", LogPrefix, request.Email);
+                return Result.Fail(new ConflictError("Email ja esta em uso por outro usuario"));
+            }
+        }
+
         usuario.AtualizarUsuario(request.Nome, request.Email);
-        _logger.LogInformation("{UseCaseLogPrefix} Mapeamento concluído para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
-        
-        _logger.LogInformation("{UseCaseLogPrefix} Iniciando persistência da atualização para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
-        await _repositoryUser.UpdateUsuarioAsync(usuario);
-        _logger.LogInformation("{UseCaseLogPrefix} Persistência concluída com sucesso para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
-        
-        _logger.LogInformation("{UseCaseLogPrefix} Processo de atualização finalizado com sucesso para UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Id);
+
+        await _usuarioRepository.UpdateUsuarioAsync(usuario);
+
+        _logger.LogInformation("{LogPrefix} Perfil atualizado com sucesso. ID: {Id}", LogPrefix, request.Id);
         return Result.Ok();
     }
 }

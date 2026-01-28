@@ -9,7 +9,6 @@ internal static class ExistValidator
         this IRuleBuilder<T, int> ruleBuilder, IEmpresaRepository repo)
     {
         return ruleBuilder
-            .GreaterThan(0).WithMessage("O ID da Empresa é inválido.")
             .MustAsync(async (id, cancellation) =>
             {
                 var result = await repo.EmpresaExistsByIdAsync(id);

@@ -11,7 +11,7 @@ public class DeleteItemEstoqueHandler : IRequestHandler<DeleteItemEstoqueCommand
     private readonly IEstoqueRepository _estoqueRepository;
     private readonly IValidator<DeleteItemEstoqueCommand> _validator;
     private readonly ILogger<DeleteItemEstoqueHandler> _logger;
-    private const string UseCaseLogPrefix = "[Delete Item Estoque]";
+    private const string LogPrefix = "[Delete Estoque Handler]";
 
     public DeleteItemEstoqueHandler(IEstoqueRepository estoqueRepository, IValidator<DeleteItemEstoqueCommand> validator, ILogger<DeleteItemEstoqueHandler> logger)
     {
@@ -22,33 +22,27 @@ public class DeleteItemEstoqueHandler : IRequestHandler<DeleteItemEstoqueCommand
 
     public async Task<Result> Handle(DeleteItemEstoqueCommand request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("{LogPrefix} Iniciando execução do caso de uso.", UseCaseLogPrefix);
+        _logger.LogInformation("{LogPrefix} Solicitada exclusão de item de estoque. ID: {ItemId} | EmpresaID: {EmpresaId}", LogPrefix, request.ItemId, request.EmpresaId);
 
-        _logger.LogInformation("{LogPrefix} Validando requisição...", UseCaseLogPrefix);
         var validationResult = await _validator.ValidateAsync(request);
         if (!validationResult.IsValid)
         {
-            _logger.LogInformation("{LogPrefix} Validação falhou: {Errors}", UseCaseLogPrefix, validationResult.Errors);
             var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+            _logger.LogWarning("{LogPrefix} Requisição inválida. ID: {ItemId}. Erros: {Errors}", LogPrefix, request.ItemId, string.Join(", ", errors));
             return Result.Fail(new ValidationError(errors));
         }
-        _logger.LogInformation("{LogPrefix} Requisição validada com sucesso.", UseCaseLogPrefix);
 
-        _logger.LogInformation("{LogPrefix} Verificando existência do item de estoque a ser deletado...", UseCaseLogPrefix);
-        var itemEstoqueResult = await _estoqueRepository.GetItemEstoqueByIdAsync(request.ItemId);
+        var itemEstoqueResult = await _estoqueRepository.GetItemEstoqueByIdAsync(request.ItemId, request.EmpresaId);
         if (itemEstoqueResult.IsFailed)
         {
-            _logger.LogInformation("{LogPrefix} Item de estoque não encontrado para exclusão. ItemId: {ItemId}", UseCaseLogPrefix, request.ItemId);
+            _logger.LogWarning("{LogPrefix} Item não encontrado para exclusão. ID: {ItemId}", LogPrefix, request.ItemId);
             return Result.Fail(new NotFoundError("Item de estoque não encontrado para exclusão."));
         }
         var itemEstoque = itemEstoqueResult.Value;
-        _logger.LogInformation("{LogPrefix} Item de estoque encontrado para exclusão. ItemId: {ItemId}", UseCaseLogPrefix, request.ItemId);
 
-        _logger.LogInformation("{LogPrefix} Deletando item de estoque no repositório...", UseCaseLogPrefix);
         await _estoqueRepository.DeleteItemEstoqueAsync(itemEstoque);
-        _logger.LogInformation("{LogPrefix} Item de estoque deletado com sucesso.", UseCaseLogPrefix);
 
-        _logger.LogInformation("{LogPrefix} Execução do caso de uso concluída com sucesso.", UseCaseLogPrefix);
+        _logger.LogInformation("{LogPrefix} Item excluído permanentemente. ID: {ItemId} | Nome: {Nome}", LogPrefix, request.ItemId, itemEstoque.Nome);
         return Result.Ok();
     }
 }

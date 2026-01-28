@@ -7,6 +7,9 @@ namespace CakeGestao.Application.Features.User.Command.UpdateSenhaUsuario;
 public class UpdateSenhaUsuarioCommand : IRequest<Result>
 {
     [JsonIgnore]
+    public int EmpresaId { get; set; }
+
+    [JsonIgnore]
     public int Id { get; set; }
 
     public required string SenhaAtual { get; set; }

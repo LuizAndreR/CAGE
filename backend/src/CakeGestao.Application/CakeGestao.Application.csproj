@@ -21,7 +21,6 @@
 
   <ItemGroup>
     <Folder Include="Features\Financeiro\Command\" />
-    <Folder Include="Features\User\Command\" />
   </ItemGroup>
 
 </Project>

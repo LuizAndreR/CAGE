@@ -13,7 +13,7 @@ public class UpdateStatusEmpresaHandler : IRequestHandler<UpdateStatusEmpresaCom
     private readonly ILogger<UpdateStatusEmpresaHandler> _logger;
     private readonly IEmpresaRepository _empresaRepository;
     private readonly IValidator<UpdateStatusEmpresaCommand> _validator;
-    private const string UseCaseLogPrefix = "[Update Status Empresa]";
+    private const string LogPrefix = "[Update Status Empresa Handler]";
 
     public UpdateStatusEmpresaHandler(ILogger<UpdateStatusEmpresaHandler> logger, IEmpresaRepository empresaRepository, IValidator<UpdateStatusEmpresaCommand> validator)
     {
@@ -24,38 +24,30 @@ public class UpdateStatusEmpresaHandler : IRequestHandler<UpdateStatusEmpresaCom
 
     public async Task<Result> Handle(UpdateStatusEmpresaCommand request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("{UseCaseLogPrefix} Iniciando processo para a empresa de id: {Id}", UseCaseLogPrefix, request.EmpresaId);
+        _logger.LogInformation("{LogPrefix} Iniciando alteração de status. ID: {Id} | Novo Status (Request): {Status}", LogPrefix, request.EmpresaId, request.Status);
 
-        _logger.LogInformation("{UseCaseLogPrefix} Validando dados para a empresa de id: {Id}", UseCaseLogPrefix, request.EmpresaId);
         ValidationResult validationResult = _validator.Validate(request);
         if (!validationResult.IsValid)
         {
             var errors = validationResult.Errors.Select(e => e.ErrorMessage);
-            _logger.LogWarning("{UseCaseLogPrefix} Validação falhou para a empresa de id: {Id}. Erros: {Errors}", UseCaseLogPrefix, request.EmpresaId, errors);
+            _logger.LogWarning("{LogPrefix} Dados inválidos. ID: {Id}. Erros: {Errors}", LogPrefix, request.EmpresaId, string.Join(", ", errors));
             return Result.Fail(errors);
         }
-        _logger.LogInformation("{UseCaseLogPrefix} Validação para a empresa de id: {Id} realizada com sucesso", UseCaseLogPrefix, request.EmpresaId);
 
-        _logger.LogInformation("{UseCaseLogPrefix} Buscando a empresa de id: {Id} no banco de dados", UseCaseLogPrefix, request.EmpresaId);
         var empresaResult = await _empresaRepository.GetEmpresaByIdAsync(request.EmpresaId);
         if (empresaResult.IsFailed)
         {
-            _logger.LogWarning("{UseCaseLogPrefix} Empresa de id: {Id} não encontrada no banco de dados", UseCaseLogPrefix, request.EmpresaId);
+            _logger.LogWarning("{LogPrefix} Empresa não encontrada. ID: {Id}", LogPrefix, request.EmpresaId);
             return Result.Fail(empresaResult.Errors);
         }
         var empresa = empresaResult.Value;
-        _logger.LogInformation("{UseCaseLogPrefix} Empresa de id: {Id} encontrada com sucesso", UseCaseLogPrefix, request.EmpresaId);
 
-        _logger.LogInformation("{UseCaseLogPrefix} Atualizando status da empresa de id: {Id}", UseCaseLogPrefix, request.EmpresaId);
         var status = Enum.Parse<StatusEmpresaEnum>(request.Status);
         empresa.AtulizarStatus(status);
-        _logger.LogInformation("{UseCaseLogPrefix} Status da empresa de id: {Id} atualizado com sucesso", UseCaseLogPrefix, request.EmpresaId);
 
-        _logger.LogInformation("{UseCaseLogPrefix} Iniciando persistência da atualização para a empresa de id: {Id}", UseCaseLogPrefix, request.EmpresaId);
         await _empresaRepository.UpdateEmpresaAsync(empresa);
-        _logger.LogInformation("{UseCaseLogPrefix} Persistência da atualização para a empresa de id: {Id} concluída com sucesso", UseCaseLogPrefix, request.EmpresaId);
 
-        _logger.LogInformation("{UseCaseLogPrefix} Processo para a empresa de id: {Id} finalizado com sucesso", UseCaseLogPrefix, request.EmpresaId);
+        _logger.LogInformation("{LogPrefix} Status atualizado com sucesso. ID: {Id} | Novo Status: {Status}", LogPrefix, request.EmpresaId, request.Status);
         return Result.Ok();
     }
 }

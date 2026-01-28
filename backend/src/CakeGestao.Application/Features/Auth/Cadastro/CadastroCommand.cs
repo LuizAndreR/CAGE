@@ -9,6 +9,9 @@ public class CadastroCommand : IRequest<Result>
     [JsonIgnore]
     public int EmpresaId { get; set; }
 
+    [JsonIgnore]
+    public bool AdminRole { get; set; } = false;
+
     public required string Nome { get; set; }
     public required string Email { get; set; }
     public required string Senha { get; set; }

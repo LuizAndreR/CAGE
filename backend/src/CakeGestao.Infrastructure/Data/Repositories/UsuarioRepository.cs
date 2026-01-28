@@ -53,11 +53,11 @@ public class UsuarioRepository : IUsuarioRepository
         return Result.Ok(usuario);
     }
 
-    public async Task<Result<Usuario>> GetByIdAsync(int id)
+    public async Task<Result<Usuario>> GetByIdAsync(int id, int? empresaId)
     {
         _logger.LogInformation("Buscando usuario por ID no banco de dados: {Id}", id);
 
-        var usuario = await _context.Usuarios.FindAsync(id);
+        var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Id == id && u.EmpresaId == empresaId);
         
         if (usuario == null)
         {

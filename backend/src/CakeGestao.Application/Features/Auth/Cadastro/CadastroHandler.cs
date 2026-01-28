@@ -13,7 +13,7 @@ public class CadastroHandler : IRequestHandler<CadastroCommand, Result>
     private readonly IUsuarioRepository _usuarioRepository;
     private readonly ILogger<CadastroHandler> _logger;
     private readonly IValidator<CadastroCommand> _validator;    
-    private const string UseCaseLogPrefix = "[Cadastro Usuario]";
+    private const string LogPrefix = "[Cadastro Handler]";
 
     public CadastroHandler(IUsuarioRepository usuarioRepository, ILogger<CadastroHandler> logger, IValidator<CadastroCommand> validator)
     {
@@ -24,28 +24,32 @@ public class CadastroHandler : IRequestHandler<CadastroCommand, Result>
 
     public async Task<Result> Handle(CadastroCommand request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("{UseCaseLogPrefix} Iniciando processo de cadastro de usuário. Email: {Email}", UseCaseLogPrefix, request.Email);
+        _logger.LogInformation("{LogPrefix} Iniciando processo de cadastro. Email: {Email} | Role: {Role}", LogPrefix, request.Email, request.Role);
 
-        _logger.LogInformation("{UseCaseLogPrefix} Validando dados para cadastro de usuário. Email: {Email}", UseCaseLogPrefix, request.Email);
         var validationResult = await _validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
         {
             var listErrors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
-            _logger.LogWarning("{UseCaseLogPrefix} Validação falhou durante cadastro. Email: {Email}. Erros: {Errors}", UseCaseLogPrefix, request.Email, listErrors);
+            _logger.LogWarning("{LogPrefix} Dados inválidos no cadastro. Email: {Email}. Erros: {Errors}", LogPrefix, request.Email, string.Join(", ", listErrors));
             return Result.Fail(new ValidationError(listErrors));
         }
 
-        _logger.LogInformation("{UseCaseLogPrefix} Verificando existência de usuário com email fornecido. Email: {Email}", UseCaseLogPrefix, request.Email);
+        var userRole = Enum.Parse<UserRole>(request.Role, true);
+        if (userRole == UserRole.Admin && request.AdminRole == false)
+        {
+            _logger.LogWarning("{LogPrefix} Conflito: Somente Admin pode cadastra novo usuario role Admin", LogPrefix);
+            return Result.Fail(new ConflictError("Somente Admin pode cadastra novo usuario role Admin"));
+        }
+
         var usuarioExistenteResult = await _usuarioRepository.GetUsuarioByEmailAsync(request.Email);
         if (usuarioExistenteResult.IsSuccess)
         {
-            _logger.LogWarning("{UseCaseLogPrefix} Tentativa de cadastro para email já existente. Email: {Email}", UseCaseLogPrefix, request.Email);
+            _logger.LogWarning("{LogPrefix} Conflito: Email já cadastrado. Email: {Email}", LogPrefix, request.Email);
             return Result.Fail(new ConflictError("Usuário com mesmo email já existe"));
         }
 
-        _logger.LogInformation("{UseCaseLogPrefix} Criando entidade de usuário para persistência. Email: {Email}", UseCaseLogPrefix, request.Email);
         var dataCriacao = DateTime.UtcNow;
-        var userRole = Enum.Parse<UserRole>(request.Role, true);
+        
         var senhaHash = BCrypt.Net.BCrypt.HashPassword(request.Senha);
         int? empresaIdTratado = request.EmpresaId > 0 ? request.EmpresaId : null;
         Usuario usuario = new Usuario(
@@ -57,10 +61,9 @@ public class CadastroHandler : IRequestHandler<CadastroCommand, Result>
             empresaIdTratado
         );
 
-        _logger.LogInformation("{UseCaseLogPrefix} Persistindo novo usuário. Email: {Email}", UseCaseLogPrefix, request.Email);
         await _usuarioRepository.CreateUserAsync(usuario);
 
-        _logger.LogInformation("{UseCaseLogPrefix} Cadastro concluído com sucesso. Email: {Email}, UsuarioId: {UsuarioId}", UseCaseLogPrefix, request.Email, usuario.Id);
+        _logger.LogInformation("{LogPrefix} Usuário cadastrado com sucesso. ID: {Id} | Email: {Email}", LogPrefix, usuario.Id, request.Email);
         return Result.Ok();
     }
 }

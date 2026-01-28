@@ -12,7 +12,7 @@ public class GetAllEmpresaHandler : IRequestHandler<GetAllEmpresaQuery, Result<L
     private readonly IEmpresaRepository _empresaRepository;
     private readonly ILogger<GetAllEmpresaHandler> _logger;
     private readonly IMapper _mapper;
-    private const string UseCaseLogPrefix = "[Get All Empresas]";
+    private const string LogPrefix = "[Get All Empresas Handler]";
 
     public GetAllEmpresaHandler(IEmpresaRepository empresaRepository, ILogger<GetAllEmpresaHandler> logger, IMapper mapper)
     {
@@ -23,21 +23,17 @@ public class GetAllEmpresaHandler : IRequestHandler<GetAllEmpresaQuery, Result<L
 
     public async Task<Result<List<EmpresaResponse>>> Handle(GetAllEmpresaQuery request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("{UseCaseLogPrefix} Iniciando processo de busca de todas as empresas", UseCaseLogPrefix);
+        _logger.LogInformation("{LogPrefix} Iniciando listagem de todas as empresas cadastradas.", LogPrefix);
 
         var listEmpresaResult = await _empresaRepository.GetAllEmpresasAsync();
         if (listEmpresaResult.IsFailed)
         {
-            _logger.LogWarning("{UseCaseLogPrefix} Falha ao buscar empresas no banco de dados", UseCaseLogPrefix);
+            _logger.LogWarning("{LogPrefix} Falha ao buscar lista de empresas.", LogPrefix);
             return Result.Fail(listEmpresaResult.Errors);
         }
-        _logger.LogInformation("{UseCaseLogPrefix} Busca realizada com sucesso. {Count} empresas encontradas", UseCaseLogPrefix, listEmpresaResult.Value.Count);
-
-        _logger.LogInformation("{UseCaseLogPrefix} Iniciando mapeamento das entidades para EmpresaResponse", UseCaseLogPrefix);
         var listEmpresa = _mapper.Map<List<EmpresaResponse>>(listEmpresaResult.Value);
-        _logger.LogInformation("{UseCaseLogPrefix} Mapeamento concluído com sucesso", UseCaseLogPrefix);
 
-        _logger.LogInformation("{UseCaseLogPrefix} Processo finalizado com sucesso", UseCaseLogPrefix);
+        _logger.LogInformation("{LogPrefix} Listagem concluída com sucesso. Total de registros: {Count}", LogPrefix, listEmpresaResult.Value.Count);
         return Result.Ok(listEmpresa);
     }
 }

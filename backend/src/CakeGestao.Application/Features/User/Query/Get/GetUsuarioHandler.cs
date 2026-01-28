@@ -12,7 +12,7 @@ public class GetUsuarioHandler : IRequestHandler<GetUsuarioQuery, Result<Usuario
     private readonly ILogger<GetUsuarioHandler> _logger;
     private readonly IUsuarioRepository _usuarioRepository;
     private readonly IMapper _mapper;
-    private const string UseCaseLogPrefix = "[Get Usuario]";
+    private const string LogPrefix = "[Get Usuario Handler]";
 
     public GetUsuarioHandler(ILogger<GetUsuarioHandler> logger, IUsuarioRepository usuarioRepository, IMapper mapper)
     {
@@ -23,22 +23,18 @@ public class GetUsuarioHandler : IRequestHandler<GetUsuarioQuery, Result<Usuario
 
     public async Task<Result<UsuarioResponse>> Handle(GetUsuarioQuery request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("{UseCaseLogPrefix} Iniciando processo para o usuário de id: {Id}", UseCaseLogPrefix, request.Id);
+        _logger.LogInformation("{LogPrefix} Buscando detalhes do usuário. ID: {Id}", LogPrefix, request.Id);
 
-        _logger.LogInformation("{UseCaseLogPrefix} Buscando usuário no repositório. UsuarioId: {Id}", UseCaseLogPrefix, request.Id);
-        var usuarioResult = await _usuarioRepository.GetByIdAsync(request.Id);
+        var usuarioResult = await _usuarioRepository.GetByIdAsync(request.Id, request.EmpresaId);
         if (usuarioResult.IsFailed)
         {
-            _logger.LogWarning("{UseCaseLogPrefix} Usuário não encontrado no repositório. UsuarioId: {Id}. Erros: {@Errors}", UseCaseLogPrefix, request.Id, usuarioResult.Errors);
+            _logger.LogWarning("{LogPrefix} Usuário não encontrado. ID: {Id}", LogPrefix, request.Id);
             return Result.Fail(new NotFoundError("Usuário não encontrado"));
         }
-        _logger.LogInformation("{UseCaseLogPrefix} Usuário encontrado com sucesso. UsuarioId: {Id}", UseCaseLogPrefix, request.Id);
 
-        _logger.LogInformation("{UseCaseLogPrefix} Iniciando mapeamento da entidade Usuario para UsuarioResponse. UsuarioId: {Id}", UseCaseLogPrefix, request.Id);
         var usuarioResponse = _mapper.Map<UsuarioResponse>(usuarioResult.Value);
-        _logger.LogInformation("{UseCaseLogPrefix} Mapeamento concluído com sucesso. UsuarioId: {Id}", UseCaseLogPrefix, request.Id);
 
-        _logger.LogInformation("{UseCaseLogPrefix} Processo finalizado com sucesso para o usuário de id: {Id}", UseCaseLogPrefix, request.Id);
+        _logger.LogInformation("{LogPrefix} Usuário retornado com sucesso. ID: {Id}", LogPrefix, request.Id);
         return Result.Ok(usuarioResponse);
     }
 }

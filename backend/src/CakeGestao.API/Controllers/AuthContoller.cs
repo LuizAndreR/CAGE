@@ -29,6 +29,7 @@ public class AuthContoller : ApiControllerBase
         _logger.LogInformation("{LogPrefix} Recebendo requisição de cadastro administrativo (Admin/Dono). Email: {Email}", ControllerLogPrefix, request.Email);
 
         request.EmpresaId = id >= 0 ? id.Value : 0;
+        request.AdminRole = true;
         var result = await _mediator.Send(request);
 
         return HandleResult<object>(result, _logger, ControllerLogPrefix);

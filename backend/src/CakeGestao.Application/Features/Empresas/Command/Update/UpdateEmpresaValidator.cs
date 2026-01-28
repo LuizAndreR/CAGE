@@ -8,14 +8,17 @@ public class UpdateEmpresaValidator : AbstractValidator<UpdateEmpresaCommand>
     public UpdateEmpresaValidator()
     {
         RuleFor(x => x.Nome)
+           .Cascade(CascadeMode.Stop)
            .NotEmpty().WithMessage("O nome da empresa é obrigatório.")
            .MaximumLength(150).WithMessage("O nome da empresa deve ter no máximo 150 caracteres.");
 
         RuleFor(x => x.Endereco)
+            .Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage("O endereço da empresa é obrigatório.")
             .MaximumLength(250).WithMessage("O endereço da empresa deve ter no máximo 250 caracteres.");
 
         RuleFor(x => x.Status)
+            .Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage("O status é obrigatório.")
             .Must(status => Enum.TryParse<StatusEmpresaEnum>(status, true, out _)).WithMessage($"Status inválido. Valores permitidos: {string.Join(", ", Enum.GetNames(typeof(StatusEmpresaEnum)))}.");
     }

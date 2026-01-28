@@ -16,7 +16,7 @@ public class CreateEstoqueHandler : IRequestHandler<CreateEstoqueCommand, Result
     private readonly ILogger<CreateEstoqueHandler> _logger;
     private readonly IValidator<CreateEstoqueCommand> _validator;
     private readonly IMediator _mediator;
-    private const string UseCaseLogPrefix = "[Create Estoque]";
+    private const string LogPrefix = "[Create Estoque Handler]";
 
     public CreateEstoqueHandler(IEstoqueRepository estoqueRepository, ILogger<CreateEstoqueHandler> logger, IValidator<CreateEstoqueCommand> validator, IMediator mediator)
     {
@@ -28,20 +28,20 @@ public class CreateEstoqueHandler : IRequestHandler<CreateEstoqueCommand, Result
 
     public async Task<Result> Handle(CreateEstoqueCommand request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("{UseCaseLogPrefix} Iniciando processo de criação de item de estoque. EmpresaId: {EmpresaId}, Nome: {Nome}", UseCaseLogPrefix, request.EmpresaId, request.Nome);
-        
+        _logger.LogInformation("{LogPrefix} Iniciando cadastro de novo item. EmpresaId: {EmpresaId} | Nome: {Nome}", LogPrefix, request.EmpresaId, request.Nome);
+
         ValidationResult validationResult = await _validator.ValidateAsync(request);
         if (!validationResult.IsValid)
         {
             var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
-            _logger.LogWarning("{UseCaseLogPrefix} Validação falhou para novo item de estoque. EmpresaId: {EmpresaId}, Nome: {Nome}. Erros: {Errors}", UseCaseLogPrefix, request.EmpresaId, request.Nome, errors);
+            _logger.LogWarning("{LogPrefix} Dados inválidos. EmpresaId: {EmpresaId}. Erros: {Errors}", LogPrefix, request.EmpresaId, string.Join(", ", errors));
             return Result.Fail(new ValidationError(errors));
         }
         
         var existingItemResult = await _estoqueRepository.ExistItemByNome(request.Nome, request.EmpresaId);
         if(existingItemResult.IsSuccess)
         {
-            _logger.LogWarning("{UseCaseLogPrefix} Já existe um item de estoque com o nome fornecido. EmpresaId: {EmpresaId}, Nome: {Nome}", UseCaseLogPrefix, request.EmpresaId, request.Nome);
+            _logger.LogWarning("{LogPrefix} Item já cadastrado. EmpresaId: {EmpresaId} | Nome: {Nome}", LogPrefix, request.EmpresaId, request.Nome);
             return Result.Fail(new ConflictError("Já existe um item de estoque com o nome fornecido."));
         }
         
@@ -67,15 +67,14 @@ public class CreateEstoqueHandler : IRequestHandler<CreateEstoqueCommand, Result
         
         if (financeiroResult.IsFailed)
         {
-            var listErros = financeiroResult.Errors.Select(e => e.Message).ToList();
-            _logger.LogWarning("{UseCaseLogPrefix} Validação falhou na criação de uma nova transição por causa {Erros}", UseCaseLogPrefix, listErros);
-            return Result.Fail(new ValidationError(listErros));
+            var listErros = string.Join("; ", financeiroResult.Errors.Select(e => e.Message));
+            _logger.LogWarning("{LogPrefix} Falha ao registrar financeiro. Cadastro abortado. Erros: {Errors}", LogPrefix, listErros);
+            return Result.Fail(new ValidationError(new List<string> { "Falha ao registrar a despesa financeira do novo item." }));
         }
 
         await _estoqueRepository.CreateItemEstoqueAsync(itemEstoque);
-        
-        _logger.LogInformation("{UseCaseLogPrefix} Persistência concluída com sucesso. EmpresaId: {EmpresaId}, Nome: {Nome}, ItemEstoqueId: {ItemEstoqueId}", UseCaseLogPrefix, itemEstoque.EmpresaId, itemEstoque.Nome, itemEstoque.Id);
 
+        _logger.LogInformation("{LogPrefix} Item criado com sucesso. ID Gerado: {Id} | Nome: {Nome}", LogPrefix, itemEstoque.Id, itemEstoque.Nome);
         return Result.Ok();
     }
 }

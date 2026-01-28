@@ -14,7 +14,7 @@ public class CreateTransacaoHandler : IRequestHandler<CreateTransacaoCommand, Re
     private readonly IFinanceiroRepository _financeiroRepository;
     private readonly ILogger<CreateTransacaoHandler> _logger;
     private readonly IValidator<CreateTransacaoCommand> _validator;
-    private const string UseCaseLogPrefix = "[Create Transacao]";
+    private const string LogPrefix = "[Create Transacao Handler]";
 
     public CreateTransacaoHandler(IFinanceiroRepository financeiroRepository, ILogger<CreateTransacaoHandler> logger, IValidator<CreateTransacaoCommand> validator)
     {
@@ -25,13 +25,13 @@ public class CreateTransacaoHandler : IRequestHandler<CreateTransacaoCommand, Re
 
     public async Task<Result> Handle(CreateTransacaoCommand request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("{UseCaseLogPrefix} Iniciando processo. Tipo: {Tipo}, Valor: {Valor}, EmpresaId: {EmpresaId}", UseCaseLogPrefix, request.Tipo, request.Valor, request.EmpresaId);
+        _logger.LogInformation("{LogPrefix} Iniciando registro financeiro. Tipo: {Tipo} | Valor: {Valor} | EmpresaId: {EmpresaId}", LogPrefix, request.Tipo, request.Valor, request.EmpresaId);
 
         ValidationResult validationResult = await _validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
         {
             var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
-            _logger.LogWarning("{UseCaseLogPrefix} Validação falhou. Erros: {Errors}", UseCaseLogPrefix, errors);
+            _logger.LogWarning("{LogPrefix} Dados inválidos. EmpresaId: {EmpresaId}. Erros: {Errors}", LogPrefix, request.EmpresaId, string.Join(", ", errors));
             return Result.Fail(new ValidationError(errors));
         }
 
@@ -49,7 +49,7 @@ public class CreateTransacaoHandler : IRequestHandler<CreateTransacaoCommand, Re
         );
 
         await _financeiroRepository.CreateTransacaoAsync(transacaoEntity);
-        _logger.LogInformation("{UseCaseLogPrefix} Persistência concluída com sucesso para transação. EmpresaId: {EmpresaId}, PedidoId: {PedidoId}, Valor: {Valor}", UseCaseLogPrefix, request.EmpresaId, transacaoEntity.PedidoId, transacaoEntity.Valor);
+        _logger.LogInformation("{LogPrefix} Transação registrada com sucesso. ID: {Id} | Tipo: {Tipo} | Valor: {Valor}", LogPrefix, transacaoEntity.Id, request.Tipo, transacaoEntity.Valor);
 
         return Result.Ok();
     }
