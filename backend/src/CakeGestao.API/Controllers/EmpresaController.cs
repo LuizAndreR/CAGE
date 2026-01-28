@@ -55,11 +55,10 @@ public class EmpresaController : ApiControllerBase
         return HandleResult<object>(result, _logger, ControllerLogPrefix);
     }
 
-    [HttpPatch("updatedono/{id}")]
-    [Authorize(Roles = "Admin, Dono")]
-    public async Task<IActionResult> UpdateEmpresaDono([FromBody] UpdateEmpresaCommand request, [FromRoute] int id)
+    [HttpPatch("update/{id}")]
+    public async Task<IActionResult> UpdateEmpresa([FromBody] UpdateEmpresaCommand request, [FromRoute] int id)
     {
-        _logger.LogInformation("{LogPrefix} Atualização de empresa solicitada pelo Dono/Admin. ID: {Id}", ControllerLogPrefix, id);
+        _logger.LogInformation("{LogPrefix} Atualizando dados cadastrais da empresa. ID: {Id}", ControllerLogPrefix, id);
 
         request.Id = id;
         var result = await _mediator.Send(request);
@@ -67,10 +66,11 @@ public class EmpresaController : ApiControllerBase
         return HandleResult<object>(result, _logger, ControllerLogPrefix);
     }
 
-    [HttpPatch("update/{id}")]
-    public async Task<IActionResult> UpdateEmpresa([FromBody] UpdateEmpresaCommand request, [FromRoute] int id)
+    [HttpPatch("updatedono/{id}")]
+    [Authorize(Roles = "Admin, Dono")]
+    public async Task<IActionResult> UpdateEmpresaDono([FromBody] UpdateEmpresaCommand request, [FromRoute] int id)
     {
-        _logger.LogInformation("{LogPrefix} Atualizando dados cadastrais da empresa. ID: {Id}", ControllerLogPrefix, id);
+        _logger.LogInformation("{LogPrefix} Atualização de empresa solicitada pelo Dono/Admin. ID: {Id}", ControllerLogPrefix, id);
 
         request.Id = id;
         var result = await _mediator.Send(request);

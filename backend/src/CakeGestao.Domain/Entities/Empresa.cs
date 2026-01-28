@@ -24,11 +24,10 @@ public class Empresa
         Status = status;
     }
 
-    public void AtualizarDadosCadastrais(string nome, string endereco, StatusEmpresaEnum status)
+    public void AtualizarDadosCadastrais(string nome, string endereco)
     {
         Nome = nome;
         Endereco = endereco;
-        Status = status;
     }
 
     public void AtulizarStatus(StatusEmpresaEnum status)

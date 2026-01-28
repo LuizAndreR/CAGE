@@ -1,5 +1,4 @@
-﻿using CakeGestao.Domain.Enum;
-using CakeGestao.Domain.Interfaces.Repositories;
+﻿using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
 using FluentValidation;
 using MediatR;
@@ -41,12 +40,11 @@ public class UpdateEmpresaHandler : IRequestHandler<UpdateEmpresaCommand, Result
         }
         var empresa = empresaResult.Value;
 
-        var status = Enum.Parse<StatusEmpresaEnum>(request.Status);
-        empresa.AtualizarDadosCadastrais(request.Nome, request.Endereco, status);
+        empresa.AtualizarDadosCadastrais(request.Nome, request.Endereco);
 
         await _empresaRepository.UpdateEmpresaAsync(empresa);
 
-        _logger.LogInformation("{LogPrefix} Empresa atualizada com sucesso. ID: {Id} | Novo Status: {Status}", LogPrefix, request.Id, request.Status);
+        _logger.LogInformation("{LogPrefix} Empresa atualizada com sucesso. ID: {Id}", LogPrefix, request.Id);
         return Result.Ok();
     }
 }

@@ -11,5 +11,4 @@ public class UpdateEmpresaCommand : IRequest<Result>
 
     public required string Nome { get; set; }
     public required string Endereco { get; set; }
-    public required string Status { get; set; }
 }
