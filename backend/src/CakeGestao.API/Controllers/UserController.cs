@@ -117,7 +117,7 @@ public class UserController : ApiControllerBase
     [Authorize(Roles = "Admin, Dono")]
     public async Task<IActionResult> UpdateFuncaoUsuario([FromBody] UpdateFuncionarioCommand request, [FromRoute] int id, [FromQuery] int empresaId)
     {
-        if (empresaId != 0)
+        if (empresaId <= 0)
         {
             var empresaidResult = User.GetEmpresaId();
             if (empresaidResult.IsFailed)

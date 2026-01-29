@@ -1,4 +1,5 @@
-﻿using CakeGestao.Application.Features.Empresas.Command.Create; 
+﻿using CakeGestao.API.Extensions;
+using CakeGestao.Application.Features.Empresas.Command.Create; 
 using CakeGestao.Application.Features.Empresas.Command.Update;
 using CakeGestao.Application.Features.Empresas.Command.UpdateStatus;
 using CakeGestao.Application.Features.Empresas.Delete;
@@ -67,12 +68,18 @@ public class EmpresaController : ApiControllerBase
     }
 
     [HttpPatch("updatedono/{id}")]
-    [Authorize(Roles = "Admin, Dono")]
-    public async Task<IActionResult> UpdateEmpresaDono([FromBody] UpdateEmpresaCommand request, [FromRoute] int id)
+    [Authorize(Roles = "Dono")]
+    public async Task<IActionResult> UpdateEmpresaDono([FromBody] UpdateEmpresaCommand request)
     {
-        _logger.LogInformation("{LogPrefix} Atualização de empresa solicitada pelo Dono/Admin. ID: {Id}", ControllerLogPrefix, id);
+        var idResult = User.GetEmpresaId();
+        if (idResult.IsFailed)
+        {
+            _logger.LogWarning("{LogPrefix} Tentativa de alteração de cargo/função sem ID de empresa válido.", ControllerLogPrefix);
+            return Unauthorized("Token inválido.");
+        }
+        _logger.LogInformation("{LogPrefix} Atualização de empresa solicitada pelo Dono. ID: {Id}", ControllerLogPrefix, idResult.Value);
 
-        request.Id = id;
+        request.Id = idResult.Value;
         var result = await _mediator.Send(request);
 
         return HandleResult<object>(result, _logger, ControllerLogPrefix);
