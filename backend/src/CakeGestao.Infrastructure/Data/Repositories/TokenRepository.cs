@@ -10,6 +10,7 @@ public class TokenRepository : ITokenRepository
 {
     private readonly CageContext _context;
     private readonly ILogger<TokenRepository> _logger;
+    private const string LogPrefix = "[Token Repository]";
 
     public TokenRepository(CageContext context, ILogger<TokenRepository> logger)
     {
@@ -19,38 +20,33 @@ public class TokenRepository : ITokenRepository
 
     public async Task<Result<TokenRefresh>> GetRefreshTokenAsync(string refreshToken)
     {
-        _logger.LogInformation("Buscando refresh token no banco de dados.");
+        _logger.LogDebug("{LogPrefix} Consultando validade do Refresh Token.", LogPrefix);
 
-        var token = await _context.TokensRefresh.FirstOrDefaultAsync(r => r.RefreshToken == refreshToken);
+        var token = await _context.TokensRefresh.AsNoTracking().FirstOrDefaultAsync(r => r.RefreshToken == refreshToken);
         if (token == null)
         {
-            _logger.LogInformation("Refresh token não encontrado no banco de dados.");
+            _logger.LogWarning("{LogPrefix} Token não encontrado ou inválido.", LogPrefix);
             return Result.Fail("Refresh token não encontrado.");
         }
 
-        _logger.LogInformation("Refresh token encontrado no banco de dados.");
         return Result.Ok(token);
     }
 
     public async Task<Result> SaveRefreshTokenAsync(TokenRefresh refreshToken)
     {
-        _logger.LogInformation("Salvando refresh token no banco de dados para o usuário: {UsuarioId}", refreshToken.UsuarioId);
-
-        _context.TokensRefresh.Add(refreshToken);
+        await _context.TokensRefresh.AddAsync(refreshToken);
         await _context.SaveChangesAsync();
 
-        _logger.LogInformation("Refresh token salvo com sucesso no banco de dados para o usuário: {UsuarioId}", refreshToken.UsuarioId);
+        _logger.LogInformation("{LogPrefix} Nova sessão registrada. UsuarioId: {UsuarioId} | Expira em: {Expiracao}", LogPrefix, refreshToken.UsuarioId, refreshToken.ExpiresAt);
         return Result.Ok();
     }
 
     public async Task<Result> UpdateRefreshTokenAsync(TokenRefresh refreshToken)
     {
-        _logger.LogInformation("Atualizando refresh token no banco de dados para o usuário: {UsuarioId}", refreshToken.UsuarioId);
-
         _context.TokensRefresh.Update(refreshToken);
         await _context.SaveChangesAsync();
 
-        _logger.LogInformation("Refresh token atualizado com sucesso no banco de dados para o usuário: {UsuarioId}", refreshToken.UsuarioId);
+        _logger.LogInformation("{LogPrefix} Token atualizado (Revogado/Usado). UsuarioId: {UsuarioId}", LogPrefix, refreshToken.UsuarioId);
         return Result.Ok();
     }
 }

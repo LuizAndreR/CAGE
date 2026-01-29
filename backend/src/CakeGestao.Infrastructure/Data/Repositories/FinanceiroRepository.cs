@@ -10,6 +10,7 @@ public class FinanceiroRepository : IFinanceiroRepository
 {
     private readonly CageContext _context;
     private readonly ILogger<FinanceiroRepository> _logger;
+    private const string LogPrefix = "[Financeiro Repository]";
 
     public FinanceiroRepository(CageContext context, ILogger<FinanceiroRepository> logger)
     {
@@ -17,41 +18,51 @@ public class FinanceiroRepository : IFinanceiroRepository
         _logger = logger;
     }
 
-    public async Task CreateTransacaoAsync(TransacaoFinanceira transacao)
-    {
-        _logger.LogInformation("Criando nova transação finaceira no banco de dados de {Tipo} no valor {Valor}", transacao.Tipo, transacao.Valor);
-
-        _context.TransacoesFinanceiras.Add(transacao);
-        await _context.SaveChangesAsync();
-
-        _logger.LogInformation("Transação financeira criada com sucesso com ID {Id}", transacao.Id);
-    }
-
     public async Task<Result<List<TransacaoFinanceira>>> GetAllTransacoesAsync(int empresaId)
     {
-        _logger.LogInformation("Iniciando a busca de todas transações da empresa de id: {Id}", empresaId);
-        var listTransacoes = await _context.TransacoesFinanceiras.AsNoTracking().Where(i => i.EmpresaId == empresaId).ToListAsync();
-        if (listTransacoes == null)
+        _logger.LogDebug("{LogPrefix} Listando financeiro. EmpresaId: {Id}", LogPrefix, empresaId);
+
+        var listTransacoes = await _context.TransacoesFinanceiras
+            .AsNoTracking()
+            .Where(i => i.EmpresaId == empresaId)
+            .OrderByDescending(x => x.Data)
+            .ToListAsync();
+
+        if (listTransacoes.Count == 0)
         {
-            _logger.LogWarning("Nenhuma transação encontrada no banco de dados da empresa de id: {Id}", empresaId);
+            _logger.LogInformation("{LogPrefix} Nenhuma transação registrada.", LogPrefix);
             return Result.Fail("Nenhuma transação encontrada no banco de dados");
         }
-        _logger.LogInformation("Foi encontrada no total de {Transações} no banco de dados da empresa de id: {Id}", listTransacoes.Count, empresaId);
+
         return Result.Ok(listTransacoes);
     }
 
-    public async Task<Result<TransacaoFinanceira>> GetTransacaoAsync(int id, int empresaId)
+    public async Task<Result<TransacaoFinanceira>> GetTransacaoAsync(int id, int? empresaId)
     {
-        _logger.LogInformation("Iniciando busca da transação de id: {Id} no banco de dados", id);
+        _logger.LogDebug("{LogPrefix} Buscando transação ID {Id}. EmpresaId: {EmpresaId}", LogPrefix, id, empresaId);
 
-        var transacao = await _context.TransacoesFinanceiras.FirstOrDefaultAsync(x => x.Id == id && x.EmpresaId == empresaId);
+        var query = _context.TransacoesFinanceiras.AsQueryable();
+
+        if (empresaId.HasValue)
+        {
+            query = query.Where(x => x.EmpresaId == empresaId.Value);
+        }
+        var transacao = await query.FirstOrDefaultAsync(x => x.Id == id);
+
         if (transacao == null)
         {
-            _logger.LogWarning("Transação de id: {Id} não encontrado no banco de  dados", id);
+            _logger.LogWarning("{LogPrefix} Transação ID {Id} não encontrada.", LogPrefix, id);
             return Result.Fail("Transação não encontrado no banco de dados");
         }
-        
-        _logger.LogInformation("Transação de id: {Id} encontrado no banco de dados", id);
+
         return Result.Ok(transacao);
+    }
+
+    public async Task CreateTransacaoAsync(TransacaoFinanceira transacao)
+    {
+        _logger.LogInformation("{LogPrefix} Registrando transação: {Tipo} | Valor: {Valor}", LogPrefix, transacao.Tipo, transacao.Valor);
+
+        _context.TransacoesFinanceiras.Add(transacao);
+        await _context.SaveChangesAsync();
     }
 }

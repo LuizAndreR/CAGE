@@ -5,7 +5,7 @@ namespace CakeGestao.Domain.Interfaces.Repositories;
 
 public interface IEstoqueRepository
 {
-    public Task<Result<ItemEstoque>> GetItemEstoqueByIdAsync(int id, int empresaId);
+    public Task<Result<ItemEstoque>> GetItemEstoqueByIdAsync(int id, int? empresaId);
     public Task<Result<List<ItemEstoque>>> GetAllItemEstoqueByEmpresaIdAsync(int empresaId);
     public Task<Result<List<ItemEstoque>>> GetAlertaEstoqueByEmpresaIdAsync(int empresaId, int QuantidadeMinima);
     public Task<Result> ExistItemByNome(string nome, int empresaId);

@@ -10,6 +10,7 @@ public class UsuarioRepository : IUsuarioRepository
 {
     private readonly CageContext _context;
     private readonly ILogger<UsuarioRepository> _logger;
+    private const string LogPrefix = "[Usuario Repository]";
 
     public UsuarioRepository(CageContext context, ILogger<UsuarioRepository> logger)
     {
@@ -19,7 +20,7 @@ public class UsuarioRepository : IUsuarioRepository
 
     public async Task<Result<List<Usuario>>> GetAllUsuariosAsync(int? empresaId)
     {
-        _logger.LogInformation("Iniciando a busca no banco de dados");
+        _logger.LogInformation("{LogPrefix} Buscando usuários. Filtro EmpresaId: {EmpresaId}", LogPrefix, empresaId);
 
         var query = _context.Usuarios.AsNoTracking();
         if (empresaId.HasValue)
@@ -30,48 +31,51 @@ public class UsuarioRepository : IUsuarioRepository
 
         if (usuarios.Count == 0)
         {
-            _logger.LogInformation("Nenhum usuario encontrado");
-            return Result.Fail<List<Usuario>>("Nenhum usuario encontrado.");
+            _logger.LogInformation("{LogPrefix} Nenhum usuário encontrado para o filtro.", LogPrefix);
+            return Result.Fail("Nenhum usuario encontrado.");
         }
-        _logger.LogInformation("{Count} usuários encontrados com sucesso.", usuarios.Count);
+        _logger.LogInformation("{LogPrefix} {Count} usuários encontrados.", LogPrefix, usuarios.Count);
         return Result.Ok(usuarios);
     }
     
     public async Task<Result<Usuario>> GetUsuarioByEmailAsync(string email)
     {
-        _logger.LogInformation("Verificando a existencia do usuario no banco de dados: {Email}", email);
+        _logger.LogDebug("{LogPrefix} Verificando a existencia usuário por email: {Email}", LogPrefix, email);
 
         var usuario = await _context.Usuarios.AsNoTracking().FirstOrDefaultAsync(u => u.Email == email);
 
         if (usuario == null)
         {
-            _logger.LogInformation("Usuario não encontrado no banco de dados: {Email}", email);
             return Result.Fail("Usuário não encontrado.");
         }
 
-        _logger.LogInformation("Usuario encontrado no banco de dados: {Email}", email);
         return Result.Ok(usuario);
     }
 
     public async Task<Result<Usuario>> GetByIdAsync(int id, int? empresaId)
     {
-        _logger.LogInformation("Buscando usuario por ID no banco de dados: {Id}", id);
+        _logger.LogInformation("{LogPrefix} Buscando usuario por ID: {Id}", LogPrefix, id);
 
-        var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Id == id && u.EmpresaId == empresaId);
-        
+        var query = _context.Usuarios.AsQueryable();
+        if (empresaId.HasValue)
+        {
+            query = query.Where(u => u.EmpresaId == empresaId.Value);
+        }
+
+        var usuario = await query.FirstOrDefaultAsync(u => u.Id == id);
+
         if (usuario == null)
         {
-            _logger.LogInformation("Usuario não encontrado no banco de dados: {Id}", id);
+            _logger.LogWarning("{LogPrefix} Usuário ID {Id} não encontrado (ou não pertence à empresa {EmpresaId}).", LogPrefix, id, empresaId);
             return Result.Fail<Usuario>("Usuário não encontrado.");
         }
 
-        _logger.LogInformation("Usuario encontrado no banco de dados: {Id}", id);
         return Result.Ok(usuario);
     }
 
     public async Task CreateUserAsync(Usuario usuario)
     {
-        _logger.LogInformation("Criando um usuario no banco de dados: {Email}", usuario.Email);
+        _logger.LogInformation("{LogPrefix} Inserindo novo usuário: {Email}", LogPrefix, usuario.Email);
 
         await _context.Usuarios.AddAsync(usuario);
         await _context.SaveChangesAsync();
@@ -79,19 +83,17 @@ public class UsuarioRepository : IUsuarioRepository
 
     public async Task UpdateUsuarioAsync(Usuario usuario)
     {
-        _logger.LogInformation("Atualizando usuario no banco de dados: {Email}", usuario.Email);
+        _logger.LogInformation("{LogPrefix} Atualizando usuário ID: {Id}", LogPrefix, usuario.Id);
+
         _context.Usuarios.Update(usuario);
         await _context.SaveChangesAsync();
-        _logger.LogInformation("Usuario atualizado com sucesso no banco de dados: {Email}", usuario.Email);
     }
 
     public async Task DeleteAsync(Usuario usuario)
     {
-        _logger.LogInformation("Deletando usuario no banco de dados: {Email}", usuario.Email);
+        _logger.LogInformation("{LogPrefix} Removendo usuário ID: {Id}", LogPrefix, usuario.Id);
 
         _context.Usuarios.Remove(usuario);
         await _context.SaveChangesAsync();
-
-        _logger.LogInformation("Usuario deletado com sucesso no banco de dados: {Email}", usuario.Email);
     }
 }

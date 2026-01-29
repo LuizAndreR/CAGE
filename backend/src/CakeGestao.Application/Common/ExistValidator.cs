@@ -11,8 +11,8 @@ internal static class ExistValidator
         return ruleBuilder
             .MustAsync(async (id, cancellation) =>
             {
-                var result = await repo.EmpresaExistsByIdAsync(id);
-                return result.IsSuccess;
+                var result = await repo.GetEmpresaByIdAsync(id);
+                return result.IsFailed;
             })
             .WithMessage("A Empresa informada não foi encontrada.");
     }
