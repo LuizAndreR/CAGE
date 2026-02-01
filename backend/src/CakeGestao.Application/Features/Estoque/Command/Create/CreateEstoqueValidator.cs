@@ -2,6 +2,7 @@
 using CakeGestao.Domain.Enum;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentValidation;
+using System.Linq;
 
 namespace CakeGestao.Application.Features.Estoque.Command.Create;
 
@@ -24,6 +25,6 @@ public class CreateEstoqueValidator : AbstractValidator<CreateEstoqueCommand>
             .GreaterThanOrEqualTo(0).WithMessage("A quantidade minina deve ser negativa.");
 
         RuleFor(x => x.UnidadeMedida)
-            .IsEnumName(typeof(UnidadeMedidaEnum), caseSensitive: false).WithMessage("Tipo de unidade de medida inválida.");
+            .IsEnumName(typeof(UnidadeMedidaEnum), caseSensitive: false).WithMessage($"Tipo de unidade de medida inválida. Valores permitidos: {string.Join(", ", Enum.GetNames(typeof(UnidadeMedidaEnum)))}.");
     }
 }

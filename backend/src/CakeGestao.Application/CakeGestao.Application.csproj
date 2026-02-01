@@ -21,6 +21,9 @@
 
   <ItemGroup>
     <Folder Include="Features\Financeiro\Command\" />
+    <Folder Include="Features\Financeiro\Query\GetEntrada\" />
+    <Folder Include="Features\Financeiro\Query\GetSaida\" />
+    <Folder Include="Features\Financeiro\Query\GetSaldo\" />
   </ItemGroup>
 
 </Project>

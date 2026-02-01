@@ -39,7 +39,7 @@ public class FinanceiroController : ApiControllerBase
         return HandleResult(transacaoResult, _logger, ControllerLogPrefix);
     }
 
-    [HttpGet("getbyid/{id}")]
+    [HttpGet("get/{id}")]
     public async Task<IActionResult> GetById([FromRoute] int id)
     {
         _logger.LogInformation("{LogPrefix} Buscando detalhes da transação. ID: {Id}", ControllerLogPrefix, id);

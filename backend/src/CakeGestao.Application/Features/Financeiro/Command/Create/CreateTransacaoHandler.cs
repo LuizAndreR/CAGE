@@ -42,14 +42,14 @@ public class CreateTransacaoHandler : IRequestHandler<CreateTransacaoCommand, Re
             tipo: tipoEnum,
             categoria: categoriaEnum,
             valor: request.Valor,
-            data: request.Data,
+            data: request.Data.ToUniversalTime(),
             descricao: request.Descricao,
             pedidoId: request.PedidoId,
             empresaId: request.EmpresaId
         );
 
         await _financeiroRepository.CreateTransacaoAsync(transacaoEntity);
-        _logger.LogInformation("{LogPrefix} Transação registrada com sucesso. ID: {Id} | Tipo: {Tipo} | Valor: {Valor}", LogPrefix, transacaoEntity.Id, request.Tipo, transacaoEntity.Valor);
+        _logger.LogInformation("{LogPrefix} Transação registrada com sucesso. EmpresaId {Id} | Tipo: {Tipo} | Valor: {Valor}", LogPrefix, transacaoEntity.EmpresaId, request.Tipo, transacaoEntity.Valor);
 
         return Result.Ok();
     }

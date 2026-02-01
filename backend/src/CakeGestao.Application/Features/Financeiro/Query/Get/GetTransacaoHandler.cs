@@ -5,7 +5,6 @@ using FluentResults;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace CakeGestao.Application.Features.Financeiro.Query.Get;
 
@@ -44,7 +43,7 @@ public class GetTransacaoHandler : IRequestHandler<GetTransacaoQuery, Result<Tra
             var erro = transacaoResult.Errors.ToString();
             return Result.Fail(new NotFoundError(erro!));
         }
-        
+
         var transacao = _mapper.Map<TransacaoResponse>(transacaoResult.Value);
 
         _logger.LogInformation("{LogPrefix} Dados retornados com sucesso. ID: {Id}", LogPrefix, request.Id);
