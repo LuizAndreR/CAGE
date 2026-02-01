@@ -67,7 +67,7 @@ public class UsuarioRepository : IUsuarioRepository
         if (usuario == null)
         {
             _logger.LogWarning("{LogPrefix} Usuário ID {Id} não encontrado (ou não pertence à empresa {EmpresaId}).", LogPrefix, id, empresaId);
-            return Result.Fail<Usuario>("Usuário não encontrado.");
+            return Result.Fail("Usuário não encontrado.");
         }
 
         return Result.Ok(usuario);

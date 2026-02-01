@@ -30,8 +30,6 @@ public class CadastroUserValidator : AbstractValidator<CadastroCommand>
             .NotNull()
                .When(x => x.Role != "Admin")
                .WithMessage("O Id da empresa é obrigatório para usuários não-administradores.")
-            .DeveExistirEmpresa(empresaRepository)
-               .When(x => x.EmpresaId > 0)
-               .WithMessage("A empresa informada não existe.");
+            .DeveExistirEmpresa(empresaRepository);
     }
 }

@@ -12,7 +12,7 @@ internal static class ExistValidator
             .MustAsync(async (id, cancellation) =>
             {
                 var result = await repo.GetEmpresaByIdAsync(id);
-                return result.IsFailed;
+                return result.IsSuccess;
             })
             .WithMessage("A Empresa informada não foi encontrada.");
     }
