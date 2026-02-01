@@ -10,4 +10,5 @@ public interface IFinanceiroRepository
     public Task<Result<decimal>> GetSaidaAsync(int empresaId);
     public Task<Result<TransacaoFinanceira>> GetTransacaoAsync(int id, int? empresaId);
     public Task CreateTransacaoAsync(TransacaoFinanceira transacao);
+    public Task UpdateTransacaoAsync(TransacaoFinanceira transacao);
 }

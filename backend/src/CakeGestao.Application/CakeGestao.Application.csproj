@@ -19,8 +19,4 @@
     <ProjectReference Include="..\CakeGestao.Infrastructure\CakeGestao.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Features\Financeiro\Command\Cancelamento\" />
-  </ItemGroup>
-
 </Project>

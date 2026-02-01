@@ -43,7 +43,7 @@ public class FinanceiroRepository : IFinanceiroRepository
 
         var totalEntrada = await _context.TransacoesFinanceiras
             .AsNoTracking()
-            .Where(x => x.EmpresaId == empresaId && x.Tipo == Domain.Enum.TipoTransacaoEnum.Entrada)
+            .Where(x => x.EmpresaId == empresaId && x.Tipo == Domain.Enum.TipoTransacaoEnum.Entrada && x.IsCancelado == false)
             .SumAsync(x => x.Valor);
 
         if (totalEntrada == 0)
@@ -61,7 +61,7 @@ public class FinanceiroRepository : IFinanceiroRepository
 
         var totalSaida = await _context.TransacoesFinanceiras
             .AsNoTracking()
-            .Where(x => x.EmpresaId == empresaId && x.Tipo == Domain.Enum.TipoTransacaoEnum.Saida)
+            .Where(x => x.EmpresaId == empresaId && x.Tipo == Domain.Enum.TipoTransacaoEnum.Saida && x.IsCancelado == false)
             .SumAsync(x => x.Valor);
 
         if (totalSaida == 0)
@@ -99,6 +99,14 @@ public class FinanceiroRepository : IFinanceiroRepository
         _logger.LogInformation("{LogPrefix} Registrando transação: {Tipo} | Valor: {Valor}", LogPrefix, transacao.Tipo, transacao.Valor);
 
         _context.TransacoesFinanceiras.Add(transacao);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task UpdateTransacaoAsync(TransacaoFinanceira transacao)
+    {
+        _logger.LogInformation("{LogPrefix} Atualizando transação ID {Id}", LogPrefix, transacao.Id);
+
+        _context.TransacoesFinanceiras.Update(transacao);
         await _context.SaveChangesAsync();
     }
 }

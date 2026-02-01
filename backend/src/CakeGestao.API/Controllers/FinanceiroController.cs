@@ -1,4 +1,5 @@
 ﻿using CakeGestao.API.Extensions;
+using CakeGestao.Application.Features.Financeiro.Command.Cancelamento;
 using CakeGestao.Application.Features.Financeiro.Command.Create;
 using CakeGestao.Application.Features.Financeiro.Query.Get;
 using CakeGestao.Application.Features.Financeiro.Query.GetAll;
@@ -88,5 +89,25 @@ public class FinanceiroController : ApiControllerBase
         var transacaoResult = await _mediator.Send(request);
 
         return HandleResult<object>(transacaoResult, _logger, ControllerLogPrefix);
+    }
+
+    [HttpPost("cancel/{id}")]
+    public async Task<IActionResult> CancelarTransacao([FromBody] CancelTransacaoCommand request, [FromRoute] int id)
+    {
+        _logger.LogInformation("{LogPrefix} Solicitando cancelamento de transação. ID: {Id}", ControllerLogPrefix, id);
+        var empresaId = User.GetEmpresaId();
+        var userId = User.GetUserId();
+        if (empresaId.IsFailed)
+        {
+            _logger.LogWarning("{LogPrefix} Tentativa de cancelamento sem autorização válida. ID: {Id}", ControllerLogPrefix, id);
+            return Unauthorized("Token inválido.");
+        }
+
+        request.TransacaoId = id;
+        request.EmpresaId = empresaId.Value;
+        request.UsuarioId = userId.Value;
+        var cancelResult = await _mediator.Send(request);
+
+        return HandleResult<object>(cancelResult, _logger, ControllerLogPrefix);
     }
 }

@@ -8,5 +8,6 @@ public class TransacaoResponse
     public decimal Valor { get; set; }
     public string Descricao { get; set; } = string.Empty;
     public DateTime Data { get; set; }
+    public string IsCancelado { get; set; } = string.Empty;
     public string MotivoCancelamento { get; set; } = string.Empty;
 }
