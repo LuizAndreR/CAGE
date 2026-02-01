@@ -2,6 +2,7 @@
 using CakeGestao.Application.Features.Financeiro.Command.Create;
 using CakeGestao.Application.Features.Financeiro.Query.Get;
 using CakeGestao.Application.Features.Financeiro.Query.GetAll;
+using CakeGestao.Application.Features.Financeiro.Query.GetEntrada;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -36,6 +37,21 @@ public class FinanceiroController : ApiControllerBase
         }
 
         var transacaoResult = await _mediator.Send(new GetAllTransacaoQuery { EmpresaId = empresaId.Value });
+        return HandleResult(transacaoResult, _logger, ControllerLogPrefix);
+    }
+
+    [HttpGet("getresumo")]
+    public async Task<IActionResult> GetResumo()
+    {
+        _logger.LogInformation("{LogPrefix} Solicitando resumo financeiro.", ControllerLogPrefix);
+        var empresaId = User.GetEmpresaId();
+        if (empresaId.IsFailed)
+        {
+            _logger.LogWarning("{LogPrefix} Falha de autorização ao buscar resumo de entradas.", ControllerLogPrefix);
+            return Unauthorized("Token inválido.");
+        }
+        var transacaoResult = await _mediator.Send(new GetFinanceiroResumoQuery { EmpresaId = empresaId.Value });
+
         return HandleResult(transacaoResult, _logger, ControllerLogPrefix);
     }
 

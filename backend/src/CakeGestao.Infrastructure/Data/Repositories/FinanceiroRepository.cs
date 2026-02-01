@@ -37,6 +37,42 @@ public class FinanceiroRepository : IFinanceiroRepository
         return Result.Ok(listTransacoes);
     }
 
+    public async Task<Result<decimal>> GetEntradaAsync(int empresaId)
+    {
+        _logger.LogDebug("{LogPrefix} Calculando total de entradas. EmpresaId: {Id}", LogPrefix, empresaId);
+
+        var totalEntrada = await _context.TransacoesFinanceiras
+            .AsNoTracking()
+            .Where(x => x.EmpresaId == empresaId && x.Tipo == Domain.Enum.TipoTransacaoEnum.Entrada)
+            .SumAsync(x => x.Valor);
+
+        if (totalEntrada == 0)
+        {
+            _logger.LogInformation("{LogPrefix} Nenhuma entrada registrada.", LogPrefix);
+            return Result.Fail("Nenhuma entrada encontrada no banco de dados");
+        }
+
+        return Result.Ok(totalEntrada);
+    }
+
+    public async Task<Result<decimal>> GetSaidaAsync(int empresaId)
+    {
+        _logger.LogDebug("{LogPrefix} Calculando total de saídas. EmpresaId: {Id}", LogPrefix, empresaId);
+
+        var totalSaida = await _context.TransacoesFinanceiras
+            .AsNoTracking()
+            .Where(x => x.EmpresaId == empresaId && x.Tipo == Domain.Enum.TipoTransacaoEnum.Saida)
+            .SumAsync(x => x.Valor);
+
+        if (totalSaida == 0)
+        {
+            _logger.LogInformation("{LogPrefix} Nenhuma saída registrada.", LogPrefix);
+            return Result.Fail("Nenhuma saída encontrada no banco de dados");
+        }
+
+        return Result.Ok(totalSaida);
+    }
+
     public async Task<Result<TransacaoFinanceira>> GetTransacaoAsync(int id, int? empresaId)
     {
         _logger.LogDebug("{LogPrefix} Buscando transação ID {Id}. EmpresaId: {EmpresaId}", LogPrefix, id, empresaId);
