@@ -1,4 +1,4 @@
-﻿namespace CakeGestao.Domain.Enun;
+﻿namespace CakeGestao.Domain.Enum;
 
 public enum UserRole
 {

@@ -1,12 +1,6 @@
 using CakeGestao.API.Middlewares;
+using CakeGestao.Application.Features.Estoque.Command.AddQuantidade;
 using CakeGestao.Application.Mappings;
-using CakeGestao.Application.Services.Interface;
-using CakeGestao.Application.Services.Service;
-using CakeGestao.Application.UseCases.Auth.Cadastro;
-using CakeGestao.Application.UseCases.Auth.Login;
-using CakeGestao.Application.UseCases.Auth.Refresh;
-using CakeGestao.Application.UseCases.Receitas.Interface;
-using CakeGestao.Application.UseCases.Receitas.UseCase;
 using CakeGestao.Domain.Interfaces.Repositories;
 using CakeGestao.Domain.Interfaces.Security;
 using CakeGestao.Infrastructure.Data;
@@ -19,8 +13,9 @@ using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Serilog.Formatting.Json;
 using System.Text;
-using CakeGestao.Application.UseCases.User.Interface;
-using CakeGestao.Application.UseCases.User.UseCase;
+using CakeGestao.Application.Features.Estoque.Command.Create;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Hosting.Server.Features;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -67,39 +62,64 @@ builder.Services.AddAutoMapper(_ => {}, typeof(ReceitaProfile).Assembly);
 
 builder.Services.AddControllers();
 
-builder.Services.AddScoped<ICadastroUseCase, CadastroUseCase>();   
-builder.Services.AddScoped<ILoginUseCase, LoginUseCase>();
-builder.Services.AddScoped<IRefreshTokenUseCase, RefreshTokenUseCase>();
-
-builder.Services.AddScoped<IGetUsuarioUseCase, GetUsuarioUseCase>();
-builder.Services.AddScoped<IGetAllUsuarioUseCase, GetAllUsuarioUseCase>();
-builder.Services.AddScoped<IUpdateUserUseCase, UpdateUserUseCase>();
-builder.Services.AddScoped<IUpdateSenhaUsuarioUseCase, UpdateSenhaUsuarioUseCase>();
-builder.Services.AddScoped<IUpdateFuncionarioUseCase, UpdateFuncionarioUseCase>();
-builder.Services.AddScoped<IDeleteUsuarioUseCase, DeleteUsuarioUseCase>();
-
-builder.Services.AddScoped<ICreateReceitaUseCase, CreateReceitaUseCase>();
-builder.Services.AddScoped<IGetReceitaUseCase, GetReceitaUseCase>();
-builder.Services.AddScoped<IGetAllReceitaUseCase, GetAllReceitaUseCase>();
-
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IReceitaService, ReceitaService>();
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<AddQuantidadeEstoqueHandler>());
 
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
-builder.Services.AddScoped<ITokenRepository, TokenRepository>();        
+builder.Services.AddScoped<ITokenRepository, TokenRepository>();    
+builder.Services.AddScoped<IEmpresaRepository, EmpresaRepository>();
+builder.Services.AddScoped<IEstoqueRepository, EstoqueRepository>();
+builder.Services.AddScoped<IFinanceiroRepository, FinanceiroRepository>();
 builder.Services.AddScoped<IReceitaRepository, ReceitaRepository>();
 
-builder.Services.AddValidatorsFromAssembly(typeof(CreateReceitaUseCase).Assembly);
+builder.Services.AddValidatorsFromAssembly(typeof(CreateEstoqueValidator).Assembly);
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header usando o esquema Bearer.\n\n" +
+                      "Insira **apenas** o token no campo abaixo.\n\n" +
+                      "Exemplo: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'",
+        Name = "Authorization",
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+
+    c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+});
 
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionMiddleware>();
+
+app.Lifetime.ApplicationStarted.Register(() =>
+{
+    var addresses = app.Services.GetRequiredService<IServer>()
+        .Features.Get<IServerAddressesFeature>()?
+        .Addresses;
+    
+    foreach (var address in addresses ?? [])
+    {
+        Log.Information("API Iniciada! Acesse em: {Url}/swagger", address);
+    }
+});
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -119,7 +139,6 @@ app.MapControllers();
 
 try
 {
-    Log.Information("Iniciando a Api");
     app.Run();
 }
 catch (Exception ex)

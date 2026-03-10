@@ -16,6 +16,10 @@ internal class TransacaoFinanceiraMap : IEntityTypeConfiguration<TransacaoFinanc
             .IsRequired()
             .HasMaxLength(50);
 
+        builder.Property(x => x.Categoria)
+            .IsRequired()
+            .HasMaxLength(50);
+
         builder.Property(x => x.Valor)
             .IsRequired()
             .HasColumnType("decimal(10,2)");
@@ -25,6 +29,17 @@ internal class TransacaoFinanceiraMap : IEntityTypeConfiguration<TransacaoFinanc
 
         builder.Property(x => x.Descricao)
             .HasMaxLength(1000);
+
+        builder.Property(x => x.IsCancelado)
+            .IsRequired()
+            .HasDefaultValue(false);
+
+        builder.Property(x => x.DataCancelamento)
+            .IsRequired(false);
+
+        builder.Property(x => x.MotivoCancelamento)
+            .HasMaxLength(500)
+            .IsRequired(false);
 
         builder.HasOne(x => x.Pedido)
             .WithMany(p => p.Transacoes)

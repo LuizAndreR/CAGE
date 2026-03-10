@@ -18,6 +18,7 @@ public class CageContext : DbContext
     public DbSet<TransacaoFinanceira> TransacoesFinanceiras { get; set; }
     public DbSet<Usuario> Usuarios { get; set; }
     public DbSet<TokenRefresh> TokensRefresh { get; set; }
+    public DbSet<Empresa> Empresas { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

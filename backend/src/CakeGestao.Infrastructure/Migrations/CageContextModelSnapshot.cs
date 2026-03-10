@@ -35,15 +35,19 @@ namespace CakeGestao.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("NOW()");
 
+                    b.Property<string>("Endereco")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)");
+
                     b.Property<string>("Nome")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("character varying(150)");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
+                    b.Property<int>("Status")
                         .HasMaxLength(150)
-                        .HasColumnType("character varying(150)");
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -102,10 +106,19 @@ namespace CakeGestao.Infrastructure.Migrations
                         .HasColumnType("decimal(10,2)")
                         .HasDefaultValue(0m);
 
-                    b.Property<string>("UnidadeMedida")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                    b.Property<decimal>("QuantidadeMinina")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(10,2)")
+                        .HasDefaultValue(3m);
+
+                    b.Property<int>("UnidadeMedida")
+                        .HasMaxLength(5)
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("ValorMedia")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(10,2)")
+                        .HasDefaultValue(0m);
 
                     b.HasKey("Id");
 
@@ -276,7 +289,17 @@ namespace CakeGestao.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("CanceladoPorUsuarioId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Categoria")
+                        .HasMaxLength(50)
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("Data")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DataCancelamento")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Descricao")
@@ -287,13 +310,21 @@ namespace CakeGestao.Infrastructure.Migrations
                     b.Property<int>("EmpresaId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("PedidoId")
+                    b.Property<bool>("IsCancelado")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("MotivoCancelamento")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int?>("PedidoId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Tipo")
-                        .IsRequired()
+                    b.Property<int>("Tipo")
                         .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("integer");
 
                     b.Property<decimal>("Valor")
                         .HasColumnType("decimal(10,2)");
@@ -325,7 +356,7 @@ namespace CakeGestao.Infrastructure.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("character varying(150)");
 
-                    b.Property<int>("EmpresaId")
+                    b.Property<int?>("EmpresaId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Nome")
@@ -444,8 +475,7 @@ namespace CakeGestao.Infrastructure.Migrations
                     b.HasOne("CakeGestao.Domain.Entities.Pedido", "Pedido")
                         .WithMany("Transacoes")
                         .HasForeignKey("PedidoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Empresa");
 
@@ -457,8 +487,7 @@ namespace CakeGestao.Infrastructure.Migrations
                     b.HasOne("CakeGestao.Domain.Entities.Empresa", "Empresa")
                         .WithMany("Usuarios")
                         .HasForeignKey("EmpresaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Empresa");
                 });

@@ -14,6 +14,10 @@ public class EmpresaMap : IEntityTypeConfiguration<Empresa>
             .HasMaxLength(150)
             .IsRequired();
         
+        builder.Property(e => e.Endereco)
+            .HasMaxLength(250)
+            .IsRequired();
+
         builder.Property(e => e.DataCadastro)
             .IsRequired()
             .HasDefaultValueSql("NOW()");

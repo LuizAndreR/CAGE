@@ -1,6 +1,12 @@
 ﻿using CakeGestao.API.Extensions;
-using CakeGestao.Application.Dtos.Requests.Usuario;
-using CakeGestao.Application.Services.Interface;
+using CakeGestao.Application.Features.User.Command.Delete;
+using CakeGestao.Application.Features.User.Command.UpdateFuncionario;
+using CakeGestao.Application.Features.User.Command.UpdateSenhaUsuario;
+using CakeGestao.Application.Features.User.Command.UpdateUser;
+using CakeGestao.Application.Features.User.Query.Get;
+using CakeGestao.Application.Features.User.Query.GetAll;
+using CakeGestao.Application.Features.User.Query.GetFuncionario;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,98 +18,143 @@ namespace CakeGestao.API.Controllers;
 public class UserController : ApiControllerBase
 {
     private readonly ILogger<UserController> _logger;
-    private readonly IUserService _userService;
-    
-    public UserController(ILogger<UserController> logger, IUserService userService)
+    private readonly IMediator _mediator;
+    private const string ControllerLogPrefix = "[User Controller]";
+
+    public UserController(ILogger<UserController> logger, IMediator mediator)
     {
         _logger = logger;
-        _userService = userService;
+        _mediator = mediator;
     }
 
     [HttpGet("getall")]
-    [Authorize(Roles = "Admin, Dono")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetAllUsers()
     {
-        _logger.LogInformation("ecebendo requisição para obter todos os usuários cadastro no banco de dados");
+        _logger.LogInformation("{LogPrefix} Listando usuários cadastrados.", ControllerLogPrefix);
 
-        var listUserResult = await _userService.GetAllUsuarioAsync();
-        return HandleResult(listUserResult);
+        // Nota: O filtro por EmpresaId deve ser implementado na query handler
+        var userResult = await _mediator.Send(new GetAllUsuarioQuery {  });
+
+        return HandleResult(userResult, _logger, ControllerLogPrefix);
+    }
+
+    [HttpGet("getfuncionarios")]
+    [Authorize(Roles = "Dono")]
+    public async Task<IActionResult> GetFuncionarios()
+    {
+        var empresaid = User.GetEmpresaId();
+        if (empresaid.IsFailed)
+        {
+            _logger.LogWarning("{LogPrefix} Token sem ID de empresa válido.", ControllerLogPrefix);
+            return Unauthorized("Token inválido.");
+        }
+        
+        _logger.LogInformation("{LogPrefix} Listando funcionários cadastrados e viculado da empresa de id: {Id}", ControllerLogPrefix, empresaid);
+
+        var userResult = await _mediator.Send(new GetFuncionariosQuery { EmpresaId = empresaid.Value});
+        return HandleResult(userResult, _logger, ControllerLogPrefix);
     }
 
     [HttpGet("getuser")]
     public async Task<IActionResult> GetUserById()
     {
-        _logger.LogInformation("Recebendo requisição para obter o usuário");
-        
-        _logger.LogInformation("Pegando o id do usuairo meio de token");
         var id = User.GetUserId();
-
         if (id.IsFailed)
         {
-            _logger.LogWarning("Token de autorização inválido ou não contém ID.");
+            _logger.LogWarning("{LogPrefix} Token sem ID de usuário válido.", ControllerLogPrefix);
             return Unauthorized("Token inválido.");
         }
-        
-        _logger.LogInformation("Iniciando a requisição para obter o usuário com ID: {Id}", id);
-        var userResult = await _userService.GetUsuarioByIdAsync(id.Value);
+        var empresaId = User.GetEmpresaId();
 
-        return HandleResult(userResult);
+        _logger.LogInformation("{LogPrefix} Buscando dados do próprio perfil. ID: {Id}", ControllerLogPrefix, id.Value);
+
+        var userResult = await _mediator.Send(new GetUsuarioQuery { Id = id.Value , EmpresaId = empresaId.Value});
+
+        return HandleResult(userResult, _logger, ControllerLogPrefix);
     }
 
     [HttpPut("update")]
-    public async Task<IActionResult> UpdateUsuario([FromBody]UpdateUsuarioRequest request)
+    public async Task<IActionResult> UpdateUsuario([FromBody] UpdateUsuarioCommand request)
     {
-        _logger.LogInformation("Recebendo requisição para update de usuario");
-        
-        _logger.LogInformation("Pegando o id do usuairo meio de token");
         var id = User.GetUserId();
         if (id.IsFailed)
         {
-            _logger.LogWarning("Token de autorização inválido ou não contém ID.");
+            _logger.LogWarning("{LogPrefix} Tentativa de update de perfil sem ID válido.", ControllerLogPrefix);
             return Unauthorized("Token inválido.");
         }
-        
-        _logger.LogInformation("Iniciando a requisição para update do usuário com ID: {Id}", id);
-        var userResult = await _userService.UpdateUsuarioAsync(request, id.Value);
+        var empresaId = User.GetEmpresaId();
 
-        return HandleResult<object>(userResult);
+        _logger.LogInformation("{LogPrefix} Atualizando dados do perfil. ID: {Id}", ControllerLogPrefix, id.Value);
+
+        request.Id = id.Value;
+        request.EmpresaId = empresaId.Value;
+        var userResult = await _mediator.Send(request);
+
+        return HandleResult<object>(userResult, _logger, ControllerLogPrefix);
     }
 
-    [HttpPatch("updatesenha")]
-    public async Task<IActionResult> UpdateSenhaUsuario([FromBody]UpdateSenhaUsuarioRequest request)
+    [HttpPut("updatesenha")]
+    public async Task<IActionResult> UpdateSenhaUsuario([FromBody] UpdateSenhaUsuarioCommand request)
     {
-        _logger.LogInformation("Recebendo requisição para update da senha do usuario");
-        
-        _logger.LogInformation("Pegando o id do usuairo meio de token");
         var id = User.GetUserId();
         if (id.IsFailed)
         {
-            _logger.LogWarning("Token de autorização inválido ou não contém ID.");
+            _logger.LogWarning("{LogPrefix} Tentativa de alteração de senha sem ID válido.", ControllerLogPrefix);
             return Unauthorized("Token inválido.");
         }
-        
-        _logger.LogInformation("Iniciando a requisição para update da senha do usuário com ID: {Id}", id);
-        var userResult = await _userService.UpdateSenhaUsuarioAsync(request, id.Value);
+        var empresaId = User.GetEmpresaId();
+        _logger.LogInformation("{LogPrefix} Iniciando alteração de senha do usuário. ID: {Id}", ControllerLogPrefix, id.Value);
 
-        return HandleResult<object>(userResult);
+        request.Id = id.Value;
+        request.EmpresaId = empresaId.Value;
+        var userResult = await _mediator.Send(request);
+
+        return HandleResult<object>(userResult, _logger, ControllerLogPrefix);
     }
 
-    [HttpPatch("updatefuncionario")]
+    [HttpPatch("updatefuncionario/{id}")]
     [Authorize(Roles = "Admin, Dono")]
-    public async Task<IActionResult> UpdateFuncaoUsuario([FromBody] UpdateFuncionarioUsuarioRequest request)
+    public async Task<IActionResult> UpdateFuncaoUsuario([FromBody] UpdateFuncionarioCommand request, [FromRoute] int id, [FromQuery] int empresaId)
     {
-        _logger.LogInformation("Recebendo requisição para update da função do usuario");
-        var userResult = await _userService.UpdateFuncionarioAsync(request);
-        return HandleResult<object>(userResult);
+        if (empresaId <= 0)
+        {
+            var empresaidResult = User.GetEmpresaId();
+            if (empresaidResult.IsFailed)
+            {
+                _logger.LogWarning("{LogPrefix} Tentativa de alteração de cargo/função sem ID de empresa válido.", ControllerLogPrefix);
+                return Unauthorized("Token inválido.");
+            }
+            empresaId = empresaidResult.Value;
+        }
+
+        _logger.LogInformation("{LogPrefix} Alteração de cargo/função de funcionário solicitada. Solitado pelo usuario de id: {Id}", ControllerLogPrefix, id);
+        request.Id = id;
+        request.EmpresaId = empresaId;
+
+        var userResult = await _mediator.Send(request);
+
+        return HandleResult<object>(userResult, _logger, ControllerLogPrefix);
     }
 
     [HttpDelete("delete/{id}")]
     [Authorize(Roles = "Admin, Dono")]
-    public async Task<IActionResult> DeleteUsuario([FromRoute]int id)
+    public async Task<IActionResult> DeleteUsuario([FromRoute] int id, [FromQuery]int empresaid)
     {
-        _logger.LogInformation("Recebendo requisição para deletar um usuário");
-        int idValue = id;
-        var userResult = await _userService.DeleteUsuarioAsync(id);
-        return HandleResult<object>(userResult);
+        _logger.LogInformation("{LogPrefix} Solicitação de exclusão de usuário. ID Alvo: {TargetId}", ControllerLogPrefix, id);
+        if (empresaid <= 0)
+        {
+            var empresaidResult = User.GetEmpresaId();
+            if (empresaidResult.IsFailed)
+            {
+                _logger.LogWarning("{LogPrefix} Tentativa de exclusão de usuário sem ID de empresa válido.", ControllerLogPrefix);
+                return Unauthorized("Token inválido.");
+            }
+            empresaid = empresaidResult.Value;
+        }
+
+        var userResult = await _mediator.Send(new DeleteUsuarioCommand { Id = id , EmpresaId = empresaid});
+
+        return HandleResult<object>(userResult, _logger, ControllerLogPrefix);
     }
 }

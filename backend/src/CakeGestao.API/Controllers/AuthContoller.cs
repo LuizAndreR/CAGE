@@ -1,6 +1,8 @@
 ﻿using CakeGestao.API.Extensions;
-using CakeGestao.Application.Dtos.Requests.Auth;
-using CakeGestao.Application.Services.Interface;
+using CakeGestao.Application.Features.Auth.Cadastro;
+using CakeGestao.Application.Features.Auth.Login;
+using CakeGestao.Application.Features.Auth.Refresh;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,49 +12,67 @@ namespace CakeGestao.API.Controllers;
 [Route("api/auth/")]
 public class AuthContoller : ApiControllerBase
 {
-    private readonly IAuthService _authService;
+    private readonly IMediator _mediator;
     private readonly ILogger<AuthContoller> _logger;
+    private const string ControllerLogPrefix = "[Auth Controller]";
 
-    public AuthContoller(IAuthService authService, ILogger<AuthContoller> logger) 
+    public AuthContoller(IMediator mediator, ILogger<AuthContoller> logger)
     {
-        _authService = authService;
+        _mediator = mediator;
         _logger = logger;
     }
 
-    [HttpPost("cadastrodono/{empresaId}")]
+    [HttpPost("cadastro")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> CadastroDono([FromBody] CadastroRequest request, [FromRoute] int empresaId)
+    public async Task<IActionResult> CadastroDono([FromBody] CadastroCommand request, [FromQuery] int? id)
     {
-        _logger.LogInformation("Recebendo requisição para cadastro do usuário dono com email: {Email}", request.Email);
-        var result = await _authService.CreateUserAsync(request, empresaId);
-        return HandleResult<object>(result);
+        _logger.LogInformation("{LogPrefix} Recebendo requisição de cadastro administrativo (Admin/Dono). Email: {Email}", ControllerLogPrefix, request.Email);
+
+        request.EmpresaId = id >= 0 ? id.Value : 0;
+        request.AdminRole = true;
+        var result = await _mediator.Send(request);
+
+        return HandleResult<object>(result, _logger, ControllerLogPrefix);
     }
 
-    [HttpPost("cadastro")]
-    [Authorize(Roles = "Admin, Dono")]
-    public async Task<IActionResult> Cadastro([FromBody] CadastroRequest request)
+    [HttpPost("cadastrofunc")]
+    [Authorize(Roles = "Dono")]
+    public async Task<IActionResult> Cadastro([FromBody] CadastroCommand request)
     {
-        _logger.LogInformation("Recebendo requisição para cadastro de novo usuário com email: {Email}", request.Email);
+        _logger.LogInformation("{LogPrefix} Recebendo requisição de cadastro de funcionário. Email: {Email}", ControllerLogPrefix, request.Email);
+
         var empresaId = User.GetEmpresaId();
-        var result = await _authService.CreateUserAsync(request, empresaId.Value);
-        return HandleResult<object>(result);
+        if (empresaId.IsFailed)
+        {
+            _logger.LogWarning("{LogPrefix} Falha ao obter EmpresaId do token para o email: {Email}. Erro: {Error}", ControllerLogPrefix, request.Email, empresaId.Errors);
+            return Unauthorized();
+        }
+
+        request.EmpresaId = empresaId.Value;
+        var result = await _mediator.Send(request);
+
+        return HandleResult<object>(result, _logger, ControllerLogPrefix);
     }
 
     [HttpPost("login")]
     [AllowAnonymous]
-    public async Task<IActionResult> Login([FromBody] LoginRequest request)
+    public async Task<IActionResult> Login([FromBody] LoginCommand request)
     {
-        _logger.LogInformation("Recebendo requisição de login para o usuário com email: {Email}", request.Email);
-        var result = await _authService.Login(request);
-        return HandleResult(result);
+        _logger.LogInformation("{LogPrefix} Recebendo tentativa de login. Email: {Email}", ControllerLogPrefix, request.Email);
+
+        var result = await _mediator.Send(request);
+
+        return HandleResult(result, _logger, ControllerLogPrefix);
     }
 
     [HttpPost("refresh")]
-    [Authorize]
-    public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request)
+    [AllowAnonymous]
+    public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenCommand request)
     {
-        _logger.LogInformation("Recebendo requisição para refresh token.");
-        var result = await _authService.RefreshToken(request);
-        return HandleResult(result);
+        _logger.LogInformation("{LogPrefix} Recebendo requisição de Refresh Token.", ControllerLogPrefix);
+
+        var result = await _mediator.Send(request);
+
+        return HandleResult(result, _logger, ControllerLogPrefix);
     }
 }
