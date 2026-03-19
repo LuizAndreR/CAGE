@@ -10,6 +10,7 @@ public class ReceitaRepository : IReceitaRepository
 {
     private readonly CageContext _context;
     private readonly ILogger<ReceitaRepository> _logger; 
+    private const string LogPrefix = "[Receita Repository]";
 
     public ReceitaRepository(CageContext context, ILogger<ReceitaRepository> logger)
     {
@@ -19,13 +20,13 @@ public class ReceitaRepository : IReceitaRepository
 
     public async Task<Result<List<Receita>>> GetAllReceitasAsync()
     {
-        _logger.LogInformation("buscando todas as receitas do banco de dados");
+        _logger.LogInformation("{LogPrefix} buscando todas as receitas do banco de dados", LogPrefix);
         
         var receitas = await _context.Receitas.ToListAsync();
 
         if (receitas.Count == 0)
         {
-            _logger.LogInformation("Nenhuma receita foi encontrada.");
+            _logger.LogInformation("{LogPrefix} Nenhuma receita foi encontrada.",  LogPrefix);
             return Result.Fail<List<Receita>>("Nenhuma receita foi encontrada.");
         }
         
