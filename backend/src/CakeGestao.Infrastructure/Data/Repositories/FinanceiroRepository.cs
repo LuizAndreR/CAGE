@@ -1,4 +1,5 @@
 ﻿using CakeGestao.Domain.Entities;
+using CakeGestao.Domain.Enum;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
@@ -18,16 +19,32 @@ public class FinanceiroRepository : IFinanceiroRepository
         _logger = logger;
     }
 
-    public async Task<Result<List<TransacaoFinanceira>>> GetAllTransacoesAsync(int empresaId)
+    public async Task<Result<List<TransacaoFinanceira>>> GetAllTransacoesAsync(int empresaId, TipoTransacaoEnum? tipo, CategoriasEnum? categoria, int? mes, int? ano)
     {
         _logger.LogDebug("{LogPrefix} Listando financeiro. EmpresaId: {Id}", LogPrefix, empresaId);
 
-        var listTransacoes = await _context.TransacoesFinanceiras
-            .AsNoTracking()
-            .Where(i => i.EmpresaId == empresaId)
-            .OrderByDescending(x => x.Data)
-            .ToListAsync();
+        var query = _context.TransacoesFinanceiras.AsNoTracking()
+                .Where(i => i.EmpresaId == empresaId);
 
+        if (tipo.HasValue)
+        {
+            query = query.Where(x => x.Tipo == tipo);
+        }
+
+        if (categoria.HasValue)
+        {
+            query = query.Where(x => x.Categoria == categoria);
+        }
+        
+        if (mes.HasValue && ano.HasValue)
+        {
+            DateTime dataInicio = new DateTime(ano.Value, mes.Value, 1, 0, 0, 0, DateTimeKind.Utc);
+            DateTime dataFim = dataInicio.AddMonths(1);
+            query = query.Where(x => x.Data >= dataInicio && x.Data < dataFim);
+        }
+        
+        var listTransacoes = await query.OrderByDescending(x => x.Data).ToListAsync();
+        
         if (listTransacoes.Count == 0)
         {
             _logger.LogInformation("{LogPrefix} Nenhuma transação registrada.", LogPrefix);
@@ -43,7 +60,7 @@ public class FinanceiroRepository : IFinanceiroRepository
 
         var totalEntrada = await _context.TransacoesFinanceiras
             .AsNoTracking()
-            .Where(x => x.EmpresaId == empresaId && x.Tipo == Domain.Enum.TipoTransacaoEnum.Entrada && x.IsCancelado == false)
+            .Where(x => x.EmpresaId == empresaId && x.Tipo == TipoTransacaoEnum.Entrada && x.IsCancelado == false)
             .SumAsync(x => x.Valor);
 
         if (totalEntrada == 0)
@@ -61,7 +78,7 @@ public class FinanceiroRepository : IFinanceiroRepository
 
         var totalSaida = await _context.TransacoesFinanceiras
             .AsNoTracking()
-            .Where(x => x.EmpresaId == empresaId && x.Tipo == Domain.Enum.TipoTransacaoEnum.Saida && x.IsCancelado == false)
+            .Where(x => x.EmpresaId == empresaId && x.Tipo == TipoTransacaoEnum.Saida && x.IsCancelado == false)
             .SumAsync(x => x.Valor);
 
         if (totalSaida == 0)
