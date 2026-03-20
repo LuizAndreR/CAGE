@@ -36,6 +36,13 @@ public class FinanceiroRepository : IFinanceiroRepository
             query = query.Where(x => x.Categoria == categoria);
         }
         
+        if (mes.HasValue && ano.HasValue)
+        {
+            DateTime dataInicio = new DateTime(ano.Value, mes.Value, 1, 0, 0, 0, DateTimeKind.Utc);
+            DateTime dataFim = dataInicio.AddMonths(1);
+            query = query.Where(x => x.Data >= dataInicio && x.Data < dataFim);
+        }
+        
         var listTransacoes = await query.OrderByDescending(x => x.Data).ToListAsync();
         
         if (listTransacoes.Count == 0)

@@ -37,8 +37,11 @@ public class GetAllTransacaoHandler : IRequestHandler<GetAllTransacaoQuery, Resu
             return Result.Fail(new ValidationError(erros));
         }
         
-        var tipoEnum = Enum.Parse<TipoTransacaoEnum>(request.Tipo);
-        var categoriaEnum = Enum.Parse<CategoriasEnum>(request.Categoria);
+        TipoTransacaoEnum? tipoEnum = !string.IsNullOrWhiteSpace(request.Tipo) ? Enum.Parse<TipoTransacaoEnum>(request.Tipo, true) 
+            : null;
+
+        CategoriasEnum? categoriaEnum = !string.IsNullOrWhiteSpace(request.Categoria) ? Enum.Parse<CategoriasEnum>(request.Categoria, true) 
+            : null;
         
         var listTransacaoResult = await _financeiroRepository.GetAllTransacoesAsync(request.EmpresaId,  tipoEnum, categoriaEnum, request.Mes, request.Ano);
         if (listTransacaoResult.IsFailed)

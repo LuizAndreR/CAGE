@@ -26,7 +26,7 @@ public class FinanceiroController : ApiControllerBase
     }
 
     [HttpGet("getall")]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll([FromQuery]string? tipo, [FromQuery]string? categoria, [FromQuery]int? mes, [FromQuery]int? ano)
     {
         _logger.LogInformation("{LogPrefix} Solicitando extrato financeiro completo.", ControllerLogPrefix);
 
@@ -36,8 +36,8 @@ public class FinanceiroController : ApiControllerBase
             _logger.LogWarning("{LogPrefix} Falha de autorização ao buscar extrato.", ControllerLogPrefix);
             return Unauthorized("Token inválido.");
         }
-
-        var transacaoResult = await _mediator.Send(new GetAllTransacaoQuery { EmpresaId = empresaId.Value });
+        
+        var transacaoResult = await _mediator.Send(new GetAllTransacaoQuery { EmpresaId = empresaId.Value, Tipo = tipo, Categoria = categoria, Mes = mes, Ano = ano});
         return HandleResult(transacaoResult, _logger, ControllerLogPrefix);
     }
 
