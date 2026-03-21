@@ -26,7 +26,7 @@ internal class IngredienteMap : IEntityTypeConfiguration<Ingrediente>
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(x => x.Item)
-            .WithMany(i => i.Ingredientes)
+            .WithMany(i => i.Ingredientes) 
             .HasForeignKey(x => x.ItemId)
             .OnDelete(DeleteBehavior.Restrict);
     }

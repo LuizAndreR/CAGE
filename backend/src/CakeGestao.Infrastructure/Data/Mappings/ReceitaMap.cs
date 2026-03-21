@@ -24,9 +24,22 @@ internal class ReceitaMap : IEntityTypeConfiguration<Receita>
             .HasColumnType("decimal(10,2)")
             .HasDefaultValue(0);
 
+        builder.Property(x => x.CustoTotalEstimado)
+            .IsRequired()
+            .HasColumnType("decimal(10,2)")
+            .HasDefaultValue(0);
+
+        builder.Property(x => x.Ativo)
+            .IsRequired()
+            .HasDefaultValue(true);
+
         builder.HasOne(x => x.Empresa)
-            .WithMany(x => x.Receitas)
+            .WithMany(x => x.Receitas) 
             .HasForeignKey(x => x.EmpresaId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Metadata
+            .FindNavigation(nameof(Receita.Ingredientes))!
+            .SetPropertyAccessMode(PropertyAccessMode.Field);
     }
 }
