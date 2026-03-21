@@ -16,7 +16,23 @@ internal static class ExistValidator
             })
             .WithMessage("A Empresa informada não foi encontrada.");
     }
-
+    
+    public static IRuleBuilderOptions<T, int> DeveExistirItem<T>(
+        this IRuleBuilder<T, int> ruleBuilder, 
+        IEstoqueRepository itemRepo,
+        Func<T, int> getEmpresaId) 
+    {
+        return ruleBuilder
+            .MustAsync(async (command, itemId, cancellation) =>
+            {
+                var empresaId = getEmpresaId(command);
+            
+                var item = await itemRepo.GetItemEstoqueByIdAsync(itemId, empresaId);
+                return item.IsSuccess;
+            })
+            .WithMessage("O Item de estoque informado ({PropertyValue}) não foi encontrado.");
+    }
+    
     /*
     public static IRuleBuilderOptions<T, int> DeveExistirPedido<T>(
             this IRuleBuilder<T, int> ruleBuilder,

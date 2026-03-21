@@ -1,13 +1,34 @@
+using CakeGestao.Application.Common;
+using CakeGestao.Domain.Interfaces.Repositories;
 using FluentValidation;
 
 namespace CakeGestao.Application.Features.Receitas.Command.Create;
 
+public class IngredienteDtoValidator : AbstractValidator<IngredienteRequestDto>
+{
+    public IngredienteDtoValidator()
+    {
+        RuleFor(i => i.ItemId)
+            .GreaterThan(0).WithMessage("O ID do item de estoque é inválido.");
+
+        RuleFor(i => i.Quantidade)
+            .GreaterThan(0).WithMessage("A quantidade do ingrediente deve ser maior que zero.");
+
+        RuleFor(i => i.UnidadeMedida)
+            .NotEmpty().WithMessage("A unidade de medida é obrigatória (ex: g, ml, un).");
+    }
+}
+
 public class CreateReceitaValidator : AbstractValidator<CreateReceitaCommand>
 {
-    public CreateReceitaValidator()
+    public CreateReceitaValidator(IEmpresaRepository empresaRepo, IEstoqueRepository estoqueRepo)
     {
+        RuleFor(x => x.EmpresaId)
+            .GreaterThan(0).WithMessage("ID da empresa inválido.")
+            .DeveExistirEmpresa(empresaRepo);
+        
         RuleFor(r => r.Nome)
-            .NotEmpty().WithMessage("O nome e obrigatório");
+            .NotEmpty().WithMessage("O nome é obrigatório");
         
         RuleFor(r => r.ModoPreparo)
             .NotEmpty().WithMessage("O Modo de preparo é obrigatório");
@@ -16,5 +37,16 @@ public class CreateReceitaValidator : AbstractValidator<CreateReceitaCommand>
             .Cascade(CascadeMode.Stop)
             .NotEmpty().WithMessage("O preço de venda é obrigatório.")
             .GreaterThanOrEqualTo(0).WithMessage("O preço não pode ser um valor negativo.");
+
+        RuleForEach(r => r.Ingredientes)
+            .SetValidator(new IngredienteDtoValidator());
+
+        RuleForEach(r => r.Ingredientes)
+            .MustAsync(async (command, ingrediente, cancellation) =>
+            {
+                var result = await estoqueRepo.GetItemEstoqueByIdAsync(ingrediente.ItemId, command.EmpresaId);
+                return result.IsSuccess;
+            })
+            .WithMessage((command, ingrediente) => $"O Item de estoque informado (ID: {ingrediente.ItemId}) não foi encontrado.");
     }
 }
