@@ -65,6 +65,8 @@ public class ReceitaController : ApiControllerBase
             return Unauthorized("Token inválido.");
         }
 
+        request.EmpresaId = empresaId.Value;
+        
         var result = await _mediator.Send(request);
 
         return HandleResult<object>(result, _logger, ControllerLogPrefix);
