@@ -1,4 +1,3 @@
-using AutoMapper;
 using CakeGestao.Domain.Entities;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
@@ -10,47 +9,59 @@ namespace CakeGestao.Application.Features.Receitas.Command.Create;
 
 public class CreateReceitaHandler : IRequestHandler<CreateReceitaCommand, Result>
 {
-    private readonly IReceitaRepository _repository;
-    private readonly IMapper _mapper;
+    private readonly IReceitaRepository _receitaRepository;
     private readonly IValidator<CreateReceitaCommand> _validator;
+    private readonly IEstoqueRepository _estoqueRepository;
     private readonly ILogger<CreateReceitaHandler> _logger;
+    private const string LogPrefix = "[Create Receita Handler]";
 
-    public CreateReceitaHandler(IReceitaRepository repository, IMapper mapper, IValidator<CreateReceitaCommand> validator, ILogger<CreateReceitaHandler> logger)
+    public CreateReceitaHandler(IReceitaRepository receitaRepository, IValidator<CreateReceitaCommand> validator, IEstoqueRepository estoqueRepository, ILogger<CreateReceitaHandler> logger)
     {
-        _repository = repository;
-        _mapper = mapper;
+        _receitaRepository = receitaRepository;
         _validator = validator;
+        _estoqueRepository = estoqueRepository;
         _logger = logger;
     }
 
     public async Task<Result> Handle(CreateReceitaCommand request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Iniciando o processo de criação de uma nova receita de nome: {Nome}", request.Nome);
+        _logger.LogInformation("{LogPrefix} Iniciando criação de receita. Nome: {Nome} | EmpresaId: {EmpresaId}", LogPrefix, request.Nome, request.EmpresaId);
         
-        _logger.LogInformation("Iniciando o processo de verificação da request de uma nova receita de nome: {Nome}", request.Nome);
-        var resultValidato = await _validator.ValidateAsync(request, cancellationToken);
-        if (!resultValidato.IsValid)
+        var validationResult = await _validator.ValidateAsync(request, cancellationToken);
+        if (!validationResult.IsValid)
         {
-            _logger.LogInformation("A varificação da request de criação de uma nova receita de nome: {Nome} falou",  request.Nome);
-            return Result.Fail(new ValidationError(resultValidato.Errors.Select(e => e.ErrorMessage).ToList()));
+            var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+            _logger.LogWarning("{LogPrefix} Validação falhou. Nome: {Nome}. Erros: {Errors}", LogPrefix, request.Nome, string.Join(", ", errors));
+            return Result.Fail(new ValidationError(errors));
         }
-        _logger.LogInformation("Request de criação de uma nova receita de nome: {Nome} verificada com sucesso", request.Nome);
 
-        _logger.LogInformation("Iniciando o processo de verificação de existência de receita de nome: {Nome}", request.Nome);
-        var receitaExistsResult = await _repository.ExistReceitaAsync(request.Nome);
-        if (receitaExistsResult.Value is true)
+        Receita receita = new(request.Nome, request.ModoPreparo, request.PrecoVenda, request.EmpresaId);
+        
+        decimal custoTotalDaReceita = 0;
+
+        foreach (var dto in request.Ingredientes)
         {
-            _logger.LogError("Erro ao verificar existência de receita de nome: {Nome}", request.Nome);
-            return Result.Fail(new ConflictError($"Já existe uma receita cadastrada com o nome: {request.Nome}"));
+            Ingrediente ingrediente = new
+            (
+                dto.ItemId,
+                dto.Quantidade,
+                dto.UnidadeMedida
+            );
+            
+            receita.AdicionarIngrediente(ingrediente);
+            
+            var resultItem = await _estoqueRepository.GetItemEstoqueByIdAsync(dto.ItemId, request.EmpresaId);
+            var itemEstoque = resultItem.Value;
+            var custoDesseIngrediente = itemEstoque.ValorMedia * dto.Quantidade;
+            custoTotalDaReceita += custoDesseIngrediente;
+            
         }
-        _logger.LogInformation("Verificação de existência de receita de nome: {Nome} realizada com sucesso", request.Nome);
-
-        _logger.LogInformation("Iniciando o mapeamento da request para a entidade de receita");
-        var receita = _mapper.Map<Receita>(request);
-        _logger.LogInformation("Mapeamento da request para a entidade de receita realizado com sucesso");
-
-        await _repository.CreateReceitaAsync(receita);
-        _logger.LogInformation("Receita de nome: {Nome} criada com sucesso", request.Nome);
+        
+        receita.AtualizarCustoTotal(custoTotalDaReceita);
+        _logger.LogInformation("{LogPrefix} Custo da receita '{Nome}' calculado: {CustoTotal}", LogPrefix, receita.Nome, custoTotalDaReceita);
+        
+        await _receitaRepository.CreateReceitaAsync(receita);
+        _logger.LogInformation("{LogPrefix} Receita criada com sucesso. Nome: {Nome}", LogPrefix, receita.Nome);
 
         return Result.Ok();
     }

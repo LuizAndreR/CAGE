@@ -35,28 +35,18 @@ public class ReceitaRepository : IReceitaRepository
     
     public async Task<Result<Receita>> GetReceitaByIdAsync(int id)
     {
-        _logger.LogInformation("Buscando receita por ID: {Id}", id);
         var receita = await _context.Receitas.FindAsync(id);
         if (receita == null)
         {
-            _logger.LogWarning("Receita com ID: {Id} não encontrada", id);
-            return Result.Fail<Receita>($"Receita com ID {id} não encontrada.");
+            _logger.LogWarning("{LogPrefix} Receita ID: {Id} não encontrada.", LogPrefix, id);
+            return Result.Fail<Receita>("Receita não encontrada.");
         }
         return Result.Ok(receita);
     }
-
-    public async Task<Result<bool>> ExistReceitaAsync(string nome)
-    {
-        _logger.LogInformation("Verificando existência de receita de nome: {Nome}", nome);
-
-        var exists = await _context.Receitas.AnyAsync(r => r.Nome == nome);
-
-        return Result.Ok(exists);
-    }
-
+    
     public async Task<Result> CreateReceitaAsync(Receita receita)
     {
-        _logger.LogInformation("Criando receita de nome: {Nome}", receita.Nome);
+        _logger.LogInformation("{LogPrefix} Criando nova receita: {Nome}", LogPrefix, receita.Nome);
 
         _context.Receitas.Add(receita);
         await _context.SaveChangesAsync();
@@ -66,7 +56,7 @@ public class ReceitaRepository : IReceitaRepository
 
     public async Task<Result> UpdateReceitaAsync(Receita receita)
     {
-        _logger.LogInformation("Atualizando receita de ID: {Id}", receita.Id);
+        _logger.LogInformation("{LogPrefix} Atualizando receita de ID: {Id}", LogPrefix, receita.Id);
         _context.Receitas.Update(receita);
         await _context.SaveChangesAsync();
         return Result.Ok();
@@ -74,7 +64,7 @@ public class ReceitaRepository : IReceitaRepository
 
     public async Task<Result> DeleteReceitaAsync(Receita receita)
     {
-        _logger.LogInformation("Deletando receita de ID: {Id}", receita.Id);
+        _logger.LogInformation("{LogPrefix} Deletando receita de ID: {Id}", LogPrefix, receita.Id);
         _context.Receitas.Remove(receita);
         await _context.SaveChangesAsync();
         return Result.Ok();
