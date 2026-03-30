@@ -9,7 +9,11 @@ public class ItemEstoque
     public decimal QuantidadeAtual { get; private set; }
     public UnidadeMedidaEnum UnidadeMedida { get; private set; }
     public decimal QuantidadeMinina { get; private set; }
-    public decimal ValorMedia { get; private set; }    
+    public decimal ValorMedia { get; private set; }
+
+    public UnidadeMedidaEnum? UnidadeReferenciaVolume { get; private set; }
+    public decimal? PesoReferenciaEmGramas { get; private set; }
+    
 
     public virtual ICollection<Ingrediente> Ingredientes { get; set; } = new List<Ingrediente>();
 
@@ -54,5 +58,11 @@ public class ItemEstoque
     public void RemoverQuantidade(decimal quantidadeRemover)
     {
         QuantidadeAtual -= quantidadeRemover;
+    }
+    
+    public void AtualizarReferenciaDensidade(UnidadeMedidaEnum unidadeRef, decimal pesoEmGramas)
+    {
+        UnidadeReferenciaVolume = unidadeRef;
+        PesoReferenciaEmGramas = pesoEmGramas;
     }
 }

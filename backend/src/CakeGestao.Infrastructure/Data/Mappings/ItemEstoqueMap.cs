@@ -28,12 +28,20 @@ internal class ItemEstoqueMap : IEntityTypeConfiguration<ItemEstoque>
         
         builder.Property(x => x.UnidadeMedida)
             .IsRequired()
-            .HasMaxLength(5);
+            .HasMaxLength(20);
         
         builder.Property(x => x.ValorMedia)
             .IsRequired()
             .HasColumnType("decimal(10,2)")
             .HasDefaultValue(0);
+
+        builder.Property(x => x.UnidadeReferenciaVolume)
+            .IsRequired(false)
+            .HasMaxLength(20);
+        
+        builder.Property(x => x.PesoReferenciaEmGramas)
+            .HasPrecision(10, 2)
+            .IsRequired(false);
 
         builder.HasOne(x => x.Empresa)
             .WithMany(x => x.ItemEstoques)
