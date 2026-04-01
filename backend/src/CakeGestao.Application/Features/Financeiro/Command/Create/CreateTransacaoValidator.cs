@@ -25,7 +25,9 @@ public class CreateTransacaoValidator : AbstractValidator<CreateTransacaoCommand
         RuleFor(x => x.Data)
             .NotEmpty().WithMessage("A data da transação é obrigatória.")
             .Must(data => data <= DateTime.UtcNow)
-            .WithMessage("A data da transação não pode estar no futuro.");
+            .WithMessage("A data da transação não pode estar no futuro.")
+            .Must(data => data >= DateTime.UtcNow.AddYears(-1))
+            .WithMessage("Não é possível lançar transações retroativas com mais de 1 ano de atraso.");
 
         RuleFor(x => x.Descricao)
             .MaximumLength(1000).WithMessage("A descrição da transação não pode exceder 1000 caracteres.");
