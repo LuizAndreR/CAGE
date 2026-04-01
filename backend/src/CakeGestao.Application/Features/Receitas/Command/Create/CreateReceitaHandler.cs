@@ -57,7 +57,7 @@ public class CreateReceitaHandler : IRequestHandler<CreateReceitaCommand, Result
             
         }
         
-         receita.AtualizarCustoTotal(custoTotalDaReceita);
+        receita.AtualizarCustoTotal(custoTotalDaReceita);
         _logger.LogInformation("{LogPrefix} Custo da receita '{Nome}' calculado: {CustoTotal}", LogPrefix, receita.Nome, custoTotalDaReceita);
         
         await _receitaRepository.CreateReceitaAsync(receita);

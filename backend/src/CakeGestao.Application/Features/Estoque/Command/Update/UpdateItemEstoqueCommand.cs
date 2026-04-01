@@ -16,4 +16,8 @@ public class UpdateItemEstoqueCommand : IRequest<Result>
     public decimal QuantidadeAtual { get; set; }
     public decimal QuantidadeMinima { get; set; }
     public required string UnidadeMedida { get; set; }
+    
+    public decimal? PesoReferenciaEmGramas { get; set; }
+
+    public string? UnidadeMedidaReferenciaVolume { get; set; }
 }

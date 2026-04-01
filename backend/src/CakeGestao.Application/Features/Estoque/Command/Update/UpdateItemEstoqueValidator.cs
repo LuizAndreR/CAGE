@@ -28,6 +28,22 @@ public class UpdateItemEstoqueValidator : AbstractValidator<UpdateItemEstoqueCom
             .GreaterThanOrEqualTo(0).WithMessage("A quantidade minima do item não pode ser negativa.");
 
         RuleFor(x => x.UnidadeMedida)
-            .IsEnumName(typeof(UnidadeMedidaEnum), caseSensitive: false).WithMessage("Tipo de unidade de medida inválida.");
+            .IsEnumName(typeof(UnidadeMedidaEnum), caseSensitive: false)
+            .WithMessage($"Tipo de unidade de medida inválida: {string.Join(", ", Enum.GetNames(typeof(UnidadeMedidaEnum)))}.");
+        
+        RuleFor(x => x.UnidadeMedidaReferenciaVolume)
+            .IsEnumName(typeof(UnidadeMedidaEnum), caseSensitive: false)
+            .When(x => !string.IsNullOrWhiteSpace(x.UnidadeMedidaReferenciaVolume))
+            .WithMessage($"Unidade de referência inválida. Valores permitidos: {string.Join(", ", Enum.GetNames(typeof(UnidadeMedidaEnum)))}.");
+
+        RuleFor(x => x.PesoReferenciaEmGramas)
+            .GreaterThan(0).WithMessage("O peso de referência deve ser maior que zero (gramas).")
+            .When(x => x.PesoReferenciaEmGramas.HasValue);
+
+        RuleFor(x => x)
+            .Must(x =>
+                (string.IsNullOrWhiteSpace(x.UnidadeMedidaReferenciaVolume) && !x.PesoReferenciaEmGramas.HasValue) ||
+                (!string.IsNullOrWhiteSpace(x.UnidadeMedidaReferenciaVolume) && x.PesoReferenciaEmGramas.HasValue))
+            .WithMessage("Você deve informar tanto a Unidade de Referência quanto o Peso, ou deixar ambos em branco.");
     }
 }
