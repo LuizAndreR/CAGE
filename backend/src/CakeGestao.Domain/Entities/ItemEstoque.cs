@@ -22,7 +22,7 @@ public class ItemEstoque
 
     protected ItemEstoque() { }
 
-    public ItemEstoque(string nome, decimal quantidadeAtual, UnidadeMedidaEnum unidadeMedida, decimal quantidadeMinina, decimal valorMedia, int empresaId)
+    public ItemEstoque(string nome, decimal quantidadeAtual, UnidadeMedidaEnum unidadeMedida, decimal quantidadeMinina, decimal valorMedia, int empresaId, UnidadeMedidaEnum? unidadeMedidaEnum, decimal? pesoReferenciaEmGramas)
     {
         Nome = nome;
         QuantidadeAtual = quantidadeAtual;
@@ -30,14 +30,18 @@ public class ItemEstoque
         QuantidadeMinina = quantidadeMinina;
         ValorMedia = valorMedia;
         EmpresaId = empresaId;
+        UnidadeReferenciaVolume = unidadeMedidaEnum;
+        PesoReferenciaEmGramas = pesoReferenciaEmGramas;
     }
 
-    public void AtualizarDadosCadastrais(string nome, decimal quantidadeAtual, decimal quantidadeMinima, UnidadeMedidaEnum unidade)
+    public void AtualizarDadosCadastrais(string nome, decimal quantidadeAtual, decimal quantidadeMinima, UnidadeMedidaEnum unidade, UnidadeMedidaEnum? unidadeMedidaEnum, decimal? pesoReferenciaEmGramas)
     {
         Nome = nome;
         QuantidadeAtual = quantidadeAtual;
         QuantidadeMinina = quantidadeMinima;
         UnidadeMedida = unidade;
+        UnidadeReferenciaVolume = unidadeMedidaEnum;
+        PesoReferenciaEmGramas = pesoReferenciaEmGramas;
     }
 
     public void AdicionarQuantidade (decimal quantidadeEntrada, decimal valorUnitarioEntrada)
@@ -58,11 +62,5 @@ public class ItemEstoque
     public void RemoverQuantidade(decimal quantidadeRemover)
     {
         QuantidadeAtual -= quantidadeRemover;
-    }
-    
-    public void AtualizarReferenciaDensidade(UnidadeMedidaEnum unidadeRef, decimal pesoEmGramas)
-    {
-        UnidadeReferenciaVolume = unidadeRef;
-        PesoReferenciaEmGramas = pesoEmGramas;
     }
 }
