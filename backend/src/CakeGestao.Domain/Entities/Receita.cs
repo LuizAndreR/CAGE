@@ -63,4 +63,9 @@ public class Receita
     {
         CustoTotalEstimado = novoCusto;
     }
+
+    public void LimparIngredientes()
+    {
+        _ingredientes.Clear();
+    }
 }

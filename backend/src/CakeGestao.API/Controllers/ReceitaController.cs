@@ -1,5 +1,6 @@
 ﻿using CakeGestao.API.Extensions;
 using CakeGestao.Application.Features.Receitas.Command.Create;
+using CakeGestao.Application.Features.Receitas.Command.Update;
 using CakeGestao.Application.Features.Receitas.Query.GetAll;
 using CakeGestao.Application.Features.Receitas.Query.GetReceita;
 using MediatR;
@@ -68,6 +69,23 @@ public class ReceitaController : ApiControllerBase
         
         var result = await _mediator.Send(request);
 
+        return HandleResult<object>(result, _logger, ControllerLogPrefix);
+    }
+
+    [HttpPut("update/{id}")]
+    public async Task<IActionResult> UpdateReceita([FromRoute]int id, [FromBody] UpdateReceitaCommand request)
+    {
+        _logger.LogInformation("{LogPrefix} Atualizando receita ID: {Id}", ControllerLogPrefix, id);
+        var empresaId = User.GetEmpresaId();
+        if (empresaId.IsFailed)
+        {
+            _logger.LogWarning("{LogPrefix} Tentativa de atualização sem EmpresaId válido. Receita ID: {Id}", ControllerLogPrefix, id);
+            return Unauthorized("Token inválido.");
+        }
+        request.EmpresaId = empresaId.Value;
+        request.Id = id;
+
+        var result = await _mediator.Send(request);
         return HandleResult<object>(result, _logger, ControllerLogPrefix);
     }
 }
