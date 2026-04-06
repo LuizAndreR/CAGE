@@ -27,8 +27,7 @@ internal class ItemEstoqueMap : IEntityTypeConfiguration<ItemEstoque>
             .HasDefaultValue(3);
         
         builder.Property(x => x.UnidadeMedida)
-            .IsRequired()
-            .HasMaxLength(20);
+            .IsRequired();
         
         builder.Property(x => x.ValorMedia)
             .IsRequired()

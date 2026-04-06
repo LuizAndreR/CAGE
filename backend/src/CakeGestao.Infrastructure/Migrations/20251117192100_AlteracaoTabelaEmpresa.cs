@@ -10,16 +10,6 @@ namespace CakeGestao.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<int>(
-                name: "Tipo",
-                table: "TransacoesFinanceiras",
-                type: "integer",
-                maxLength: 50,
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "character varying(50)",
-                oldMaxLength: 50);
-
             migrationBuilder.AddColumn<int>(
                 name: "Categoria",
                 table: "TransacoesFinanceiras",
