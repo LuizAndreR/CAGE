@@ -26,10 +26,12 @@ public class CadastroUserValidator : AbstractValidator<CadastroCommand>
            .NotEmpty().WithMessage("O Role é obrigatório.")
            .Must(role => Enum.TryParse<UserRole>(role, true, out _)).WithMessage($"Role inválido. Valores permitidos: {string.Join(", ", Enum.GetNames(typeof(UserRole)))}.");
 
-        RuleFor(u => u.EmpresaId)
-            .NotNull()
-               .When(x => x.Role != "Admin")
-               .WithMessage("O Id da empresa é obrigatório para usuários não-administradores.")
-            .DeveExistirEmpresa(empresaRepository);
+        When(x => !string.Equals(x.Role, "Admin", StringComparison.OrdinalIgnoreCase), () =>
+        {
+            RuleFor(u => u.EmpresaId)
+                .NotEmpty().WithMessage("O Id da empresa é obrigatório para usuários não-administradores.")
+                .GreaterThan(0).WithMessage("O Id da empresa deve ser maior que zero.") 
+                .DeveExistirEmpresa(empresaRepository);
+        });
     }
 }
