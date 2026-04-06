@@ -23,23 +23,23 @@ public class ReceitaController : ApiControllerBase
     [HttpGet("get/{id}")]
     public async Task<IActionResult> GetReceitaById([FromRoute]int id)
     {
-        _logger.LogInformation("Recebendo requisição para busca de receita de ID: {Id}", id);
+        _logger.LogInformation("{LogPrefix} Recebida requisição para buscar receita. ID: {Id}", ControllerLogPrefix, id);
 
         var empresaId = User.GetEmpresaId();
         if (empresaId.IsFailed)
         {
-            _logger.LogWarning("{LogPrefix} Falha de autorização ao buscar item {Id}.", ControllerLogPrefix, id);
+            _logger.LogWarning("{LogPrefix} Falha de autorização ao buscar receita {Id}.", ControllerLogPrefix, id); 
             return Unauthorized("Token inválido.");
         }
 
-        var result = await _mediator.Send(new GetReceitaQuery{Id = id});
+        var result = await _mediator.Send(new GetReceitaQuery{Id = id, EmpresaId = empresaId.Value});
         return HandleResult(result, _logger, ControllerLogPrefix);
     }
 
     [HttpGet("getall")]
     public async Task<IActionResult> GetAllReceitas()
     {
-        _logger.LogInformation("Recebendo requisição para busca todas receita cadastradas com sucesso.");
+        _logger.LogInformation("{LogPrefix} Recebida requisição para listar receitas da empresa.", ControllerLogPrefix);
 
         var empresaId = User.GetEmpresaId();
         if (empresaId.IsFailed)
@@ -48,7 +48,7 @@ public class ReceitaController : ApiControllerBase
             return Unauthorized("Token inválido.");
         }
 
-        var result = await _mediator.Send(new GetAllReceitaQuery());
+        var result = await _mediator.Send(new GetAllReceitaQuery { EmpresaId = empresaId.Value});
         return HandleResult(result, _logger, ControllerLogPrefix);
     }
 
@@ -60,7 +60,7 @@ public class ReceitaController : ApiControllerBase
         var empresaId = User.GetEmpresaId();
         if (empresaId.IsFailed)
         {
-            _logger.LogWarning("{LogPrefix} Tentativa de criação sem EmpresaId válido. Item: {Nome}", ControllerLogPrefix, request.Nome);
+            _logger.LogWarning("{LogPrefix} Tentativa de criação sem EmpresaId válido. Receita: {Nome}", ControllerLogPrefix, request.Nome);
             return Unauthorized("Token inválido.");
         }
 

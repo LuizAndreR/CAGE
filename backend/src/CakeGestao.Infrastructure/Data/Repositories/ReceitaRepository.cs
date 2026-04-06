@@ -18,27 +18,22 @@ public class ReceitaRepository : IReceitaRepository
         _logger = logger;
     }
 
-    public async Task<Result<List<Receita>>> GetAllReceitasAsync()
+    public async Task<Result<List<Receita>>> GetAllReceitasAsync(int empresaId)
     {
         _logger.LogInformation("{LogPrefix} buscando todas as receitas do banco de dados", LogPrefix);
         
-        var receitas = await _context.Receitas.ToListAsync();
+        var receitas = await _context.Receitas.AsNoTracking().Where(r => r.EmpresaId == empresaId).Include(r => r.Ingredientes).ToListAsync();
 
-        if (receitas.Count == 0)
-        {
-            _logger.LogInformation("{LogPrefix} Nenhuma receita foi encontrada.",  LogPrefix);
-            return Result.Fail<List<Receita>>("Nenhuma receita foi encontrada.");
-        }
-        
+        _logger.LogInformation("{LogPrefix} Busca concluída. Foram encontradas {Count} receitas.", LogPrefix, receitas.Count);
         return Result.Ok(receitas);
     }
     
-    public async Task<Result<Receita>> GetReceitaByIdAsync(int id)
+    public async Task<Result<Receita>> GetReceitaByIdAsync(int id, int empresaId)
     {
-        var receita = await _context.Receitas.FindAsync(id);
+        var receita = await _context.Receitas.Include(r => r.Ingredientes).FirstOrDefaultAsync(r => r.Id == id && r.EmpresaId == empresaId);
         if (receita == null)
         {
-            _logger.LogWarning("{LogPrefix} Receita ID: {Id} não encontrada.", LogPrefix, id);
+            _logger.LogWarning("{LogPrefix} Receita ID: {Id} da Empresa: {EmpresaId} não encontrada.", LogPrefix, id, empresaId); 
             return Result.Fail<Receita>("Receita não encontrada.");
         }
         return Result.Ok(receita);

@@ -36,7 +36,7 @@ public class UpdateReceitaHandler: IRequestHandler<UpdateReceitaCommand, Result>
         _logger.LogInformation("Dados validados com sucesso para a receita: {Nome}", request.Nome);
 
         _logger.LogInformation("Varificando existência da receita: {Nome}", request.Nome);
-        var existingReceitaResult = await _receitaRepository.GetReceitaByIdAsync(request.IdReceita);
+        var existingReceitaResult = await _receitaRepository.GetReceitaByIdAsync(request.IdReceita, request.Empresa);
         if (existingReceitaResult.IsFailed)
         {
             _logger.LogWarning("Receita não encontrada para atualização: {Nome}", request.Nome);

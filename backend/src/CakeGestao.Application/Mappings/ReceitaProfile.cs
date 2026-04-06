@@ -9,5 +9,8 @@ public class ReceitaProfile : Profile
     public ReceitaProfile()
     {
         CreateMap<Receita, ReceitaResponse>();
+        CreateMap<Ingrediente, IngredienteResponse>();
+
+        CreateMap<Receita, ReceitaResponseAll>();
     }
 }
