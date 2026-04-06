@@ -2,7 +2,6 @@
 using CakeGestao.Application.Features.Receitas.Command.Create;
 using CakeGestao.Application.Features.Receitas.Query.GetAll;
 using CakeGestao.Application.Features.Receitas.Query.GetReceita;
-using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 namespace CakeGestao.API.Controllers;
@@ -56,7 +55,7 @@ public class ReceitaController : ApiControllerBase
     [HttpPost("create")]
     public async Task<IActionResult> CreateReceita([FromBody]CreateReceitaCommand request)
     {
-        _logger.LogInformation("{LogPrefix} Criando novo item de estoque: {Nome}", ControllerLogPrefix, request.Nome);
+        _logger.LogInformation("{LogPrefix} Criando uma nova receita chamada: {Nome}", ControllerLogPrefix, request.Nome);
 
         var empresaId = User.GetEmpresaId();
         if (empresaId.IsFailed)

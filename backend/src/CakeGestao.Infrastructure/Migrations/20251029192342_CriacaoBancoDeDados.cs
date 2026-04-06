@@ -90,7 +90,7 @@ namespace CakeGestao.Infrastructure.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Quantidade = table.Column<decimal>(type: "numeric(10,2)", nullable: false),
-                    UnidadeMedida = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    UnidadeMedida = table.Column<int>(type: "integer", nullable: false),
                     ReceitaId = table.Column<int>(type: "integer", nullable: false),
                     ItemId = table.Column<int>(type: "integer", nullable: false)
                 },

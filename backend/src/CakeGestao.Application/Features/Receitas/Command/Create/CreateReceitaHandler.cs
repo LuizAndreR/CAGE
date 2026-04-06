@@ -1,4 +1,6 @@
+using CakeGestao.Application.Common;
 using CakeGestao.Domain.Entities;
+using CakeGestao.Domain.Enum;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
 using FluentValidation;
@@ -41,20 +43,41 @@ public class CreateReceitaHandler : IRequestHandler<CreateReceitaCommand, Result
 
         foreach (var dto in request.Ingredientes)
         {
-            Ingrediente ingrediente = new
+            var resultItem = await _estoqueRepository.GetItemEstoqueByIdAsync(dto.ItemId, request.EmpresaId);
+
+            if (resultItem.IsFailed)
+                return Result.Fail($"Item de estoque ID {dto.ItemId} não encontrado.");
+
+            ItemEstoque itemEstoque = resultItem.Value;
+
+            UnidadeMedidaEnum origemEnum = Enum.Parse<UnidadeMedidaEnum>(dto.UnidadeMedida, ignoreCase: true);
+            var resultadoConversao = ConversorUnidade.Converter(
+                quantidade: dto.Quantidade,
+                origem: origemEnum, 
+                destino: itemEstoque.UnidadeMedida,
+                unidadeReferenciaVolume: itemEstoque.UnidadeReferenciaVolume,
+                pesoReferenciaEmGramas: itemEstoque.PesoReferenciaEmGramas
+            );
+            if (resultadoConversao.IsFailed)
+            {
+                _logger.LogWarning("{LogPrefix} Erro de conversão para o item {ItemId}: {Erro}", LogPrefix, dto.ItemId, resultadoConversao.Errors.First().Message);
+                return Result.Fail(resultadoConversao.Errors);
+            }
+
+            decimal quantidadeConvertidaParaEstoque = resultadoConversao.Value;
+
+            Ingrediente ingrediente = new Ingrediente
             (
                 dto.ItemId,
-                dto.Quantidade,
-                dto.UnidadeMedida
+                quantidadeConvertidaParaEstoque,
+                itemEstoque.UnidadeMedida
             );
-            
+
             receita.AdicionarIngrediente(ingrediente);
-            
-            var resultItem = await _estoqueRepository.GetItemEstoqueByIdAsync(dto.ItemId, request.EmpresaId);
-            var itemEstoque = resultItem.Value;
-            var custoDesseIngrediente = itemEstoque.ValorMedia * dto.Quantidade;
+
+            decimal custoDesseIngrediente = itemEstoque.ValorMedia * quantidadeConvertidaParaEstoque;
             custoTotalDaReceita += custoDesseIngrediente;
-            
+
         }
         
         receita.AtualizarCustoTotal(custoTotalDaReceita);
