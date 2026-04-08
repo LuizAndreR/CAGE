@@ -1,4 +1,5 @@
 using CakeGestao.Application.Common;
+using CakeGestao.Domain.Enum;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentValidation;
 
@@ -15,7 +16,8 @@ public class IngredienteDtoValidator : AbstractValidator<IngredienteRequestDto>
             .GreaterThan(0).WithMessage("A quantidade do ingrediente deve ser maior que zero.");
 
         RuleFor(i => i.UnidadeMedida)
-            .NotEmpty().WithMessage("A unidade de medida é obrigatória (ex: g, ml, un).");
+            .IsEnumName(typeof(UnidadeMedidaEnum), caseSensitive: false)
+            .WithMessage($"Tipo de unidade de medida inválida. Valores permitidos: {string.Join(", ", Enum.GetNames(typeof(UnidadeMedidaEnum)))}.");
     }
 }
 

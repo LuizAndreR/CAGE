@@ -20,9 +20,9 @@ public class ReceitaRepository : IReceitaRepository
 
     public async Task<Result<List<Receita>>> GetAllReceitasAsync(int empresaId)
     {
-        _logger.LogInformation("{LogPrefix} buscando todas as receitas do banco de dados", LogPrefix);
+        _logger.LogInformation("{LogPrefix} buscando todas as receitas do banco de dados da empresa: {EmpresaId} ", LogPrefix, empresaId);
         
-        var receitas = await _context.Receitas.AsNoTracking().Where(r => r.EmpresaId == empresaId).Include(r => r.Ingredientes).ToListAsync();
+        var receitas = await _context.Receitas.AsNoTracking().Where(r => r.EmpresaId == empresaId).ToListAsync();
 
         _logger.LogInformation("{LogPrefix} Busca concluída. Foram encontradas {Count} receitas.", LogPrefix, receitas.Count);
         return Result.Ok(receitas);

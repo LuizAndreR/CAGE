@@ -5,4 +5,5 @@ public class ReceitaResponseAll
     public int Id { get; set; }
     public required string Nome { get; set; }
     public decimal PrecoVenda { get; set; }
+    public bool Status { get; set; }
 }

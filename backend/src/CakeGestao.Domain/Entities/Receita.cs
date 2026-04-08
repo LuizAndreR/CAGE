@@ -8,7 +8,7 @@ public class Receita
     public decimal PrecoVenda { get; private set; }
 
     public decimal CustoTotalEstimado { get; private set; }
-    public bool Ativo { get; private set; }
+    public bool Status { get; private set; }
     
     public int EmpresaId { get; private set; }
     public virtual Empresa Empresa { get; private set; } = null!;
@@ -24,7 +24,7 @@ public class Receita
         ModoPreparo = modoPreparo;
         PrecoVenda = precoVenda;
         EmpresaId = empresaId;
-        Ativo = true; 
+        Status = true; 
         CustoTotalEstimado = 0;
     }
 
@@ -35,14 +35,9 @@ public class Receita
         PrecoVenda = precoVenda;
     }
 
-    public void Inativar()
+    public void AlteraStatus(bool status)
     {
-        Ativo = false;
-    }
-
-    public void Ativar()
-    {
-        Ativo = true;
+        this.Status = status;
     }
     
     public void AdicionarIngrediente(Ingrediente ingrediente)

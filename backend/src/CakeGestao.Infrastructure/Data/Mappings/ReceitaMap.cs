@@ -29,7 +29,7 @@ internal class ReceitaMap : IEntityTypeConfiguration<Receita>
             .HasColumnType("decimal(10,2)")
             .HasDefaultValue(0);
 
-        builder.Property(x => x.Ativo)
+        builder.Property(x => x.Status)
             .IsRequired()
             .HasDefaultValue(true);
 

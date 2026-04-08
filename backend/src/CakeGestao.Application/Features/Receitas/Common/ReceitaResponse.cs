@@ -6,6 +6,7 @@ public class ReceitaResponse
     public required string Nome { get; set; }
     public required string ModoPreparo { get; set; }
     public decimal PrecoVenda { get; set; }
+    public bool Status { get; set; }
 
     public List<IngredienteResponse> Ingredientes { get; set; } = new();
 
