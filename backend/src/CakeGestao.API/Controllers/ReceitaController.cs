@@ -1,5 +1,6 @@
 ﻿using CakeGestao.API.Extensions;
 using CakeGestao.Application.Features.Receitas.Command.Create;
+using CakeGestao.Application.Features.Receitas.Command.Delete;
 using CakeGestao.Application.Features.Receitas.Command.Status;
 using CakeGestao.Application.Features.Receitas.Command.Update;
 using CakeGestao.Application.Features.Receitas.Query.GetAll;
@@ -103,6 +104,23 @@ public class ReceitaController : ApiControllerBase
 
         request.EmpresaId = empresaId.Value;
         request.ReceitaId = id;
+        
+        var result = await _mediator.Send(request);
+        return HandleResult<object>(result, _logger, ControllerLogPrefix);
+    }
+
+    [HttpDelete("delete/{id}")]
+    public async Task<IActionResult> DeleteReceita([FromRoute] int id)
+    {
+        _logger.LogInformation("{LogPrefix} Delete status da receita ID: {Id}", ControllerLogPrefix, id);
+        var empresaId = User.GetEmpresaId();
+        if (empresaId.IsFailed)
+        {
+            _logger.LogWarning("{LogPrefix} Tentativa de atualização de status sem EmpresaId válido. Receita ID: {Id}", ControllerLogPrefix, id);
+            return Unauthorized("Token inválido");
+        }
+        
+        var request = new DeleteReceitaCommand{EmpresaId = empresaId.Value, ReceitaId = id};
         
         var result = await _mediator.Send(request);
         return HandleResult<object>(result, _logger, ControllerLogPrefix);
