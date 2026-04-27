@@ -6,8 +6,10 @@ public class Receita
     public string Nome { get; private set; }
     public string ModoPreparo { get; private set; }
     public decimal PrecoVenda { get; private set; }
+    public decimal PercentualCustoExtra { get; private set; }
+    public decimal PercentualMargemLucro { get; private set; }
+    public decimal CustoTotal { get; private set; }
 
-    public decimal CustoTotalEstimado { get; private set; }
     public bool Status { get; private set; }
     
     public int EmpresaId { get; private set; }
@@ -24,8 +26,8 @@ public class Receita
         ModoPreparo = modoPreparo;
         PrecoVenda = precoVenda;
         EmpresaId = empresaId;
-        Status = true; 
-        CustoTotalEstimado = 0;
+        Status = true;
+        CustoTotal = 0;
     }
 
     public void AtualizarReceita(string nome, string modoPreparo, decimal precoVenda)
@@ -45,22 +47,30 @@ public class Receita
         _ingredientes.Add(ingrediente);
     }
 
-    public void RemoverIngrediente(int ingredienteId)
+    public void CalcularPrecificacao(decimal custoIngredientes, decimal percCustoExtra, decimal percMargemLucro, decimal precoVendaInformado)
     {
-        var ingrediente = _ingredientes.FirstOrDefault(i => i.Id == ingredienteId);
-        if (ingrediente != null)
-        {
-            _ingredientes.Remove(ingrediente);
-        }
-    }
+        PercentualCustoExtra = percCustoExtra;
+        decimal valorCustoExtra = custoIngredientes * (PercentualCustoExtra / 100);
+        CustoTotal = custoIngredientes + valorCustoExtra;
 
-    public void AtualizarCustoTotal(decimal novoCusto)
-    {
-        CustoTotalEstimado = novoCusto;
+        PrecoVenda = precoVendaInformado;
+        if (CustoTotal > 0)
+        {
+            PercentualMargemLucro = ((PrecoVenda / CustoTotal) - 1) * 100;
+        }
+        else
+        {
+            PercentualMargemLucro = percMargemLucro;
+        }
     }
 
     public void LimparIngredientes()
     {
         _ingredientes.Clear();
+    }
+
+    public void AtualizarCustoTotal(decimal novoCusto)
+    {
+        CustoTotal = novoCusto;
     }
 }

@@ -1,4 +1,5 @@
 using CakeGestao.Application.Common;
+using CakeGestao.Application.Features.Auth.Login;
 using CakeGestao.Domain.Entities;
 using CakeGestao.Domain.Enum;
 using CakeGestao.Domain.Interfaces.Repositories;
@@ -79,8 +80,16 @@ public class CreateReceitaHandler : IRequestHandler<CreateReceitaCommand, Result
             custoTotalDaReceita += custoDesseIngrediente;
 
         }
-        
-        receita.AtualizarCustoTotal(custoTotalDaReceita);
+
+        _logger.LogInformation("{Custo}", custoTotalDaReceita);
+
+        receita.CalcularPrecificacao(
+            custoIngredientes: custoTotalDaReceita,
+            percCustoExtra: request.PercentualCustoExtra,
+            percMargemLucro: request.PercentualMargemLucro,
+            precoVendaInformado: request.PrecoVenda
+        );
+
         _logger.LogInformation("{LogPrefix} Custo da receita '{Nome}' calculado: {CustoTotal}", LogPrefix, receita.Nome, custoTotalDaReceita);
         
         await _receitaRepository.CreateReceitaAsync(receita);

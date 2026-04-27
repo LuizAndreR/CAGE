@@ -24,9 +24,19 @@ internal class ReceitaMap : IEntityTypeConfiguration<Receita>
             .HasColumnType("decimal(10,2)")
             .HasDefaultValue(0);
 
-        builder.Property(x => x.CustoTotalEstimado)
+        builder.Property(x => x.CustoTotal)
             .IsRequired()
             .HasColumnType("decimal(10,2)")
+            .HasDefaultValue(0);
+
+        builder.Property(x => x.PercentualCustoExtra)
+            .IsRequired()
+            .HasColumnType("decimal(5,2)")
+            .HasDefaultValue(0);
+
+        builder.Property(x => x.PercentualMargemLucro)
+            .IsRequired()
+            .HasColumnType("decimal(5,2)")
             .HasDefaultValue(0);
 
         builder.Property(x => x.Status)

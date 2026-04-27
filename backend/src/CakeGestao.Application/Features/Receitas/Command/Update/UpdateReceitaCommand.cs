@@ -15,6 +15,8 @@ public class UpdateReceitaCommand : IRequest<Result>
     public required string Nome { get; set; }
     public required string ModoPreparo { get; set; }
     public decimal PrecoVenda { get; set; }
+    public decimal PercentualCustoExtra { get; set; }
+    public decimal PercentualMargemLucro { get; set; }
 
     public List<UpdateIngredienteDto> Ingredientes { get; set; } = new();
 }

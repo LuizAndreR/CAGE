@@ -47,16 +47,22 @@ public class UpdateReceitaHandler: IRequestHandler<UpdateReceitaCommand, Result>
         Receita receita = existingReceitaResult.Value;
 
         receita.AtualizarReceita(request.Nome, request.ModoPreparo, request.PrecoVenda);
+
+        decimal custoIngredientesParaCalculo = 0;
+
         if (request.Ingredientes != null && request.Ingredientes.Any())
         {
             receita.LimparIngredientes();
-            decimal novoCustoTotalDaReceita = 0;
 
             foreach (var dto in request.Ingredientes)
             {
                 var resultItem = await _estoqueRepository.GetItemEstoqueByIdAsync(dto.ItemId, request.EmpresaId);
-                if (resultItem.IsFailed) return Result.Fail($"Item ID {dto.ItemId} não encontrado.");
-
+                if (resultItem.IsFailed)
+                {
+                    _logger.LogWarning("{LogPrefix} Item ID {ItemId} não encontrado para empresa {EmpresaId}.", LogPrefix, dto.ItemId, request.EmpresaId);
+                    return Result.Fail(new NotFoundError($"Item ID {dto.ItemId} não encontrado."));
+                }
+                    
                 var itemEstoque = resultItem.Value;
                 var origemEnum = Enum.Parse<UnidadeMedidaEnum>(dto.UnidadeMedida, ignoreCase: true);
 
@@ -64,22 +70,44 @@ public class UpdateReceitaHandler: IRequestHandler<UpdateReceitaCommand, Result>
                     dto.Quantidade, origemEnum, itemEstoque.UnidadeMedida,
                     itemEstoque.UnidadeReferenciaVolume, itemEstoque.PesoReferenciaEmGramas
                 );
-
-                if (resultadoConversao.IsFailed) return Result.Fail(resultadoConversao.Errors);
-
+                
+                
+                if (resultadoConversao.IsFailed)
+                {
+                    _logger.LogWarning("{LogPrefix} Falha na conversão de unidade para Item ID {ItemId}. Erro: {Erro}", LogPrefix, dto.ItemId, resultadoConversao.Errors.FirstOrDefault()?.Message);
+                    string erroMsg = resultadoConversao.Errors.FirstOrDefault()?.Message!;
+                    return Result.Fail(new ValidationError(erroMsg));
+                }
+                    
                 var quantidadeConvertida = resultadoConversao.Value;
                 receita.AdicionarIngrediente(new Ingrediente(dto.ItemId, quantidadeConvertida, itemEstoque.UnidadeMedida));
 
-                novoCustoTotalDaReceita += itemEstoque.ValorMedia * quantidadeConvertida;
+                custoIngredientesParaCalculo += itemEstoque.ValorMedia * quantidadeConvertida;
             }
-
-            receita.AtualizarCustoTotal(novoCustoTotalDaReceita);
-            _logger.LogInformation("{LogPrefix} Ingredientes e custo atualizados. Novo Custo: {Custo}", LogPrefix, novoCustoTotalDaReceita);
+            _logger.LogInformation("{LogPrefix} Ingredientes e custo atualizados. Novo Custo: {Custo}", LogPrefix, custoIngredientesParaCalculo);
         }
         else
         {
             _logger.LogInformation("{LogPrefix} Front-end não enviou ingredientes. Atualizando apenas textos.", LogPrefix);
+            if (receita.Ingredientes != null)
+            {
+                foreach (var ing in receita.Ingredientes)
+                {
+                    var itemResult = await _estoqueRepository.GetItemEstoqueByIdAsync(ing.ItemId, request.EmpresaId);
+                    if (itemResult.IsSuccess)
+                    {
+                        custoIngredientesParaCalculo += itemResult.Value.ValorMedia * ing.Quantidade;
+                    }
+                }
+            }
         }
+
+        receita.CalcularPrecificacao(
+            custoIngredientes: custoIngredientesParaCalculo,
+            percCustoExtra: request.PercentualCustoExtra,
+            percMargemLucro: request.PercentualMargemLucro,
+            precoVendaInformado: request.PrecoVenda
+        );
 
         await _receitaRepository.UpdateReceitaAsync(receita);
         _logger.LogInformation("{LogPrefix} Receita '{Nome}' atualizada com sucesso.", LogPrefix, receita.Nome);
