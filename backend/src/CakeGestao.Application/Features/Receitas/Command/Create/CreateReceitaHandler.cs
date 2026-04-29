@@ -1,5 +1,4 @@
 using CakeGestao.Application.Common;
-using CakeGestao.Application.Features.Auth.Login;
 using CakeGestao.Domain.Entities;
 using CakeGestao.Domain.Enum;
 using CakeGestao.Domain.Interfaces.Repositories;
@@ -38,9 +37,9 @@ public class CreateReceitaHandler : IRequestHandler<CreateReceitaCommand, Result
             return Result.Fail(new ValidationError(errors));
         }
 
-        Receita receita = new(request.Nome, request.ModoPreparo, request.PrecoVenda, request.EmpresaId);
+        Receita receita = new(request.Nome, request.ModoPreparo, request.EmpresaId);
         
-        decimal custoTotalDaReceita = 0;
+        decimal custoDaReceitaIngrediente = 0;
 
         foreach (var dto in request.Ingredientes)
         {
@@ -77,20 +76,22 @@ public class CreateReceitaHandler : IRequestHandler<CreateReceitaCommand, Result
             receita.AdicionarIngrediente(ingrediente);
 
             decimal custoDesseIngrediente = itemEstoque.ValorMedia * quantidadeConvertidaParaEstoque;
-            custoTotalDaReceita += custoDesseIngrediente;
+            custoDaReceitaIngrediente += custoDesseIngrediente;
 
         }
 
-        _logger.LogInformation("{Custo}", custoTotalDaReceita);
+        _logger.LogInformation("{Custo}, {Magem}, {extra}", custoDaReceitaIngrediente, request.PercentualMargemLucro, request.PercentualCustoExtra);
 
         receita.CalcularPrecificacao(
-            custoIngredientes: custoTotalDaReceita,
+            custoIngredientes: custoDaReceitaIngrediente,
             percCustoExtra: request.PercentualCustoExtra,
             percMargemLucro: request.PercentualMargemLucro,
             precoVendaInformado: request.PrecoVenda
         );
 
-        _logger.LogInformation("{LogPrefix} Custo da receita '{Nome}' calculado: {CustoTotal}", LogPrefix, receita.Nome, custoTotalDaReceita);
+        _logger.LogInformation("{Preco}, {Magem}, {extra}", receita.PrecoVenda, receita.PercentualMargemLucro, receita.CustoTotal);
+        
+        _logger.LogInformation("{LogPrefix} Custo da receita '{Nome}' calculado: {CustoTotal}", LogPrefix, receita.Nome, custoDaReceitaIngrediente);
         
         await _receitaRepository.CreateReceitaAsync(receita);
         _logger.LogInformation("{LogPrefix} Receita criada com sucesso. Nome: {Nome}", LogPrefix, receita.Nome);

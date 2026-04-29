@@ -36,7 +36,6 @@ public class CreateReceitaValidator : AbstractValidator<CreateReceitaCommand>
             .NotEmpty().WithMessage("O Modo de preparo é obrigatório");
         
         RuleFor(r => r.PrecoVenda)
-            .Cascade(CascadeMode.Stop)
             .GreaterThanOrEqualTo(0).WithMessage("O preço não pode ser um valor negativo.");
 
         RuleForEach(r => r.Ingredientes)
