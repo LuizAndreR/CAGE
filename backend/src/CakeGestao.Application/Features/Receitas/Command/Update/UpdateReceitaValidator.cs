@@ -24,6 +24,12 @@ public class UpdateReceitaValidator : AbstractValidator<UpdateReceitaCommand>
         RuleFor(x => x.PrecoVenda)
             .GreaterThanOrEqualTo(0).WithMessage("O preço não pode ser um valor negativo.");
 
+        RuleFor(x => x.PercentualCustoExtra)
+           .GreaterThanOrEqualTo(0).WithMessage("O percentual de custo extra não pode ser negativo.");
+
+        RuleFor(x => x.PercentualMargemLucro)
+            .GreaterThanOrEqualTo(0).WithMessage("O percentual de margem de lucro não pode ser negativo.");
+
         RuleForEach(x => x.Ingredientes).ChildRules(ingrediente =>
         {
             ingrediente.RuleFor(i => i.ItemId)
