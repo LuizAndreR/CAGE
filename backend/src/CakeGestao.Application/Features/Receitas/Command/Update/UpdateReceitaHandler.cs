@@ -46,7 +46,7 @@ public class UpdateReceitaHandler: IRequestHandler<UpdateReceitaCommand, Result>
         }
         Receita receita = existingReceitaResult.Value;
 
-        receita.AtualizarReceita(request.Nome, request.ModoPreparo, request.PrecoVenda);
+        receita.AtualizarReceita(request.Nome, request.ModoPreparo);
 
         decimal custoIngredientesParaCalculo = 0;
 

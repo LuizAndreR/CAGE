@@ -20,21 +20,18 @@ public class Receita
     
     public ICollection<ItemPedido> ItemPedidos { get; set; } = new List<ItemPedido>();
     
-    public Receita(string nome, string modoPreparo, decimal precoVenda, int empresaId)
+    public Receita(string nome, string modoPreparo, int empresaId)
     {
         Nome = nome;
         ModoPreparo = modoPreparo;
-        PrecoVenda = precoVenda;
         EmpresaId = empresaId;
         Status = true;
-        CustoTotal = 0;
     }
 
-    public void AtualizarReceita(string nome, string modoPreparo, decimal precoVenda)
+    public void AtualizarReceita(string nome, string modoPreparo)
     {
         Nome = nome;
         ModoPreparo = modoPreparo;
-        PrecoVenda = precoVenda;
     }
 
     public void AlteraStatus(bool status)
@@ -50,18 +47,36 @@ public class Receita
     public void CalcularPrecificacao(decimal custoIngredientes, decimal percCustoExtra, decimal percMargemLucro, decimal precoVendaInformado)
     {
         PercentualCustoExtra = percCustoExtra;
+        
         decimal valorCustoExtra = custoIngredientes * (PercentualCustoExtra / 100);
         CustoTotal = custoIngredientes + valorCustoExtra;
 
-        PrecoVenda = precoVendaInformado;
-        if (CustoTotal > 0)
+        if (precoVendaInformado > 0)
         {
-            PercentualMargemLucro = ((PrecoVenda / CustoTotal) - 1) * 100;
+            PrecoVenda = precoVendaInformado;
+            if (CustoTotal > 0)
+            {
+                PercentualMargemLucro = ((PrecoVenda / CustoTotal) - 1) * 100;
+            }
+            else
+            {
+                PercentualMargemLucro = percMargemLucro;
+            }
         }
         else
         {
             PercentualMargemLucro = percMargemLucro;
+
+            if (CustoTotal > 0)
+            {
+                PrecoVenda = CustoTotal + (CustoTotal * (PercentualMargemLucro / 100));
+            }
+            else
+            {
+                PrecoVenda = 0;
+            }
         }
+        
     }
 
     public void LimparIngredientes()
