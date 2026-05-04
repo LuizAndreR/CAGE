@@ -10,8 +10,16 @@ public class CreateEstoqueCommand : IRequest<Result>
     public int EmpresaId { get; set; }
 
     public required string Nome { get; set; }
+    public required string Marca { get; set; }
+
     public decimal QuantidadeAtual { get; set; }
-    public decimal QunatidadeMinina { get; set; }
-    public required string UnidadeMedida { get; set; }
     public decimal Valor { get; set; }
+
+    public required string UnidadeMedida { get; set; }
+
+    public decimal QuantidadeMinima { get; set; }
+
+    public decimal? PesoReferenciaEmGramas { get; set; }
+
+    public string? UnidadeMedidaReferenciaVolume { get; set; }
 }

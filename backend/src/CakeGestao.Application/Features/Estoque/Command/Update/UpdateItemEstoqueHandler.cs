@@ -41,8 +41,15 @@ public class UpdateItemEstoqueHandler : IRequestHandler<UpdateItemEstoqueCommand
         }
         var itemEstoque = itemEstoqueResult.Value;        
 
-        var unidadeMedidaAlterada = Enum.Parse<UnidadeMedidaEnum>(request.UnidadeMedida);
-        itemEstoque.AtualizarDadosCadastrais(request.Nome, request.QuantidadeAtual, request.QuantidadeMinima, unidadeMedidaAlterada);
+        itemEstoque.AtualizarDadosCadastrais(
+            request.Nome,
+            request.Marca,
+            request.QuantidadeAtual,
+            request.QuantidadeMinima,
+            request.UnidadeMedida != null ? Enum.Parse<UnidadeMedidaEnum>(request.UnidadeMedida, ignoreCase: true) : throw new ArgumentException("Unidade de medida é obrigatória."),
+            request.UnidadeMedidaReferenciaVolume != null ? Enum.Parse<UnidadeMedidaEnum>(request.UnidadeMedidaReferenciaVolume, ignoreCase: true) : null,
+            request.PesoReferenciaEmGramas
+        );
 
         await _estoqueRepository.UpdateItemEstoqueAsync(itemEstoque);
 

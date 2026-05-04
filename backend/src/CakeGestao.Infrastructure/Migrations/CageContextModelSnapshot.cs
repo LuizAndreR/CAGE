@@ -30,6 +30,10 @@ namespace CakeGestao.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("CNPJ")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
                     b.Property<DateTime>("DataCadastro")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
@@ -54,6 +58,60 @@ namespace CakeGestao.Infrastructure.Migrations
                     b.ToTable("Empresa", (string)null);
                 });
 
+            modelBuilder.Entity("CakeGestao.Domain.Entities.Estoque", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("EmpresaId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Marca")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<decimal?>("PesoReferenciaEmGramas")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("numeric(10,2)");
+
+                    b.Property<decimal>("QuantidadeAtual")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(10,2)")
+                        .HasDefaultValue(0m);
+
+                    b.Property<decimal>("QuantidadeMinina")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(10,2)")
+                        .HasDefaultValue(3m);
+
+                    b.Property<int>("UnidadeMedida")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("UnidadeReferenciaVolume")
+                        .HasMaxLength(20)
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("ValorMedia")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(10,2)")
+                        .HasDefaultValue(0m);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmpresaId");
+
+                    b.ToTable("Estoque", (string)null);
+                });
+
             modelBuilder.Entity("CakeGestao.Domain.Entities.Ingrediente", b =>
                 {
                     b.Property<int>("Id")
@@ -71,10 +129,8 @@ namespace CakeGestao.Infrastructure.Migrations
                     b.Property<int>("ReceitaId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("UnidadeMedida")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                    b.Property<int>("UnidadeMedida")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -83,48 +139,6 @@ namespace CakeGestao.Infrastructure.Migrations
                     b.HasIndex("ReceitaId");
 
                     b.ToTable("Ingredientes", (string)null);
-                });
-
-            modelBuilder.Entity("CakeGestao.Domain.Entities.ItemEstoque", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("EmpresaId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Nome")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<decimal>("QuantidadeAtual")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(10,2)")
-                        .HasDefaultValue(0m);
-
-                    b.Property<decimal>("QuantidadeMinina")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(10,2)")
-                        .HasDefaultValue(3m);
-
-                    b.Property<int>("UnidadeMedida")
-                        .HasMaxLength(5)
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("ValorMedia")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(10,2)")
-                        .HasDefaultValue(0m);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmpresaId");
-
-                    b.ToTable("ItensEstoque", (string)null);
                 });
 
             modelBuilder.Entity("CakeGestao.Domain.Entities.ItemPedido", b =>
@@ -145,7 +159,7 @@ namespace CakeGestao.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.Property<decimal>("ValorUnitario")
-                        .HasColumnType("numeric");
+                        .HasColumnType("decimal(10,2)");
 
                     b.HasKey("Id");
 
@@ -169,27 +183,38 @@ namespace CakeGestao.Infrastructure.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
-                    b.Property<DateTime>("DataEntrega")
+                    b.Property<DateTime>("DataCriacao")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("DataPedido")
+                    b.Property<DateTime?>("DataEntrega")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("DataPagamento")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Descricao")
-                        .IsRequired()
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)");
 
                     b.Property<int>("EmpresaId")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                    b.Property<bool>("Pago")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<int>("StatusPedido")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TelefoneCliente")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
 
                     b.Property<decimal>("ValorTotal")
-                        .HasColumnType("decimal(10,2)");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(10,2)")
+                        .HasDefaultValue(0m);
 
                     b.HasKey("Id");
 
@@ -206,12 +231,7 @@ namespace CakeGestao.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("Ativo")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true);
-
-                    b.Property<decimal>("CustoTotalEstimado")
+                    b.Property<decimal>("CustoTotal")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("decimal(10,2)")
                         .HasDefaultValue(0m);
@@ -229,10 +249,25 @@ namespace CakeGestao.Infrastructure.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
+                    b.Property<decimal>("PercentualCustoExtra")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(5,2)")
+                        .HasDefaultValue(0m);
+
+                    b.Property<decimal>("PercentualMargemLucro")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(5,2)")
+                        .HasDefaultValue(0m);
+
                     b.Property<decimal>("PrecoVenda")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("decimal(10,2)")
                         .HasDefaultValue(0m);
+
+                    b.Property<bool>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true);
 
                     b.HasKey("Id");
 
@@ -333,7 +368,6 @@ namespace CakeGestao.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.Property<int>("Tipo")
-                        .HasMaxLength(50)
                         .HasColumnType("integer");
 
                     b.Property<decimal>("Valor")
@@ -392,9 +426,20 @@ namespace CakeGestao.Infrastructure.Migrations
                     b.ToTable("Usuarios", (string)null);
                 });
 
+            modelBuilder.Entity("CakeGestao.Domain.Entities.Estoque", b =>
+                {
+                    b.HasOne("CakeGestao.Domain.Entities.Empresa", "Empresa")
+                        .WithMany("ItemEstoques")
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Empresa");
+                });
+
             modelBuilder.Entity("CakeGestao.Domain.Entities.Ingrediente", b =>
                 {
-                    b.HasOne("CakeGestao.Domain.Entities.ItemEstoque", "Item")
+                    b.HasOne("CakeGestao.Domain.Entities.Estoque", "Item")
                         .WithMany("Ingredientes")
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -409,17 +454,6 @@ namespace CakeGestao.Infrastructure.Migrations
                     b.Navigation("Item");
 
                     b.Navigation("Receita");
-                });
-
-            modelBuilder.Entity("CakeGestao.Domain.Entities.ItemEstoque", b =>
-                {
-                    b.HasOne("CakeGestao.Domain.Entities.Empresa", "Empresa")
-                        .WithMany("ItemEstoques")
-                        .HasForeignKey("EmpresaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Empresa");
                 });
 
             modelBuilder.Entity("CakeGestao.Domain.Entities.ItemPedido", b =>
@@ -515,7 +549,7 @@ namespace CakeGestao.Infrastructure.Migrations
                     b.Navigation("Usuarios");
                 });
 
-            modelBuilder.Entity("CakeGestao.Domain.Entities.ItemEstoque", b =>
+            modelBuilder.Entity("CakeGestao.Domain.Entities.Estoque", b =>
                 {
                     b.Navigation("Ingredientes");
                 });

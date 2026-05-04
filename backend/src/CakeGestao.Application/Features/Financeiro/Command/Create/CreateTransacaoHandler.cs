@@ -26,7 +26,7 @@ public class CreateTransacaoHandler : IRequestHandler<CreateTransacaoCommand, Re
     public async Task<Result> Handle(CreateTransacaoCommand request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("{LogPrefix} Iniciando registro financeiro. Tipo: {Tipo} | Valor: {Valor} | EmpresaId: {EmpresaId}", LogPrefix, request.Tipo, request.Valor, request.EmpresaId);
-
+        
         ValidationResult validationResult = await _validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
         {

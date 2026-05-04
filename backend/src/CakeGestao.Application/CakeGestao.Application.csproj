@@ -12,11 +12,19 @@
     <PackageReference Include="FluentResults" Version="4.0.0" />
     <PackageReference Include="FluentValidation" Version="12.0.0" />
     <PackageReference Include="MediatR" Version="14.0.0" />
+    <PackageReference Include="UnitsNet" Version="5.75.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\CakeGestao.Domain\CakeGestao.Domain.csproj" />
     <ProjectReference Include="..\CakeGestao.Infrastructure\CakeGestao.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Features\Financeiro\Query\NovaPasta\" />
+    <Folder Include="Features\Pedido\Command\" />
+    <Folder Include="Features\Pedido\Common\" />
+    <Folder Include="Features\Pedido\Query\" />
   </ItemGroup>
 
 </Project>

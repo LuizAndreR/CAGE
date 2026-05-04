@@ -18,7 +18,7 @@ public class EstoqueRepository : IEstoqueRepository
         _logger = logger;
     }
 
-    public async Task<Result<ItemEstoque>> GetItemEstoqueByIdAsync(int itemId, int? empresaId)
+    public async Task<Result<Estoque>> GetItemEstoqueByIdAsync(int itemId, int? empresaId)
     {
         _logger.LogDebug("{LogPrefix} Buscando ItemEstoque com ID: {Id} (Filtro Empresa: {Empresa}).", LogPrefix, itemId, empresaId);
         var query = _context.ItensEstoque.AsQueryable();
@@ -32,26 +32,26 @@ public class EstoqueRepository : IEstoqueRepository
         if (itemEstoque == null)
         {
             _logger.LogWarning("{LogPrefix} Item ID {Id} não encontrado (Filtro Empresa: {Empresa}).", LogPrefix, itemId, empresaId);
-            return Result.Fail<ItemEstoque>("ItemEstoque não encontrado.");
+            return Result.Fail<Estoque>("ItemEstoque não encontrado.");
         }
 
         return Result.Ok(itemEstoque);
     }
 
-    public async Task<Result<List<ItemEstoque>>> GetAllItemEstoqueByEmpresaIdAsync(int empresaId)
+    public async Task<Result<List<Estoque>>> GetAllItemEstoqueByEmpresaIdAsync(int empresaId)
     {
         _logger.LogDebug("{LogPrefix} Listando estoque. EmpresaId: {Id}", LogPrefix, empresaId);
         var listItemEstoque = await _context.ItensEstoque.AsNoTracking().Where(i => i.EmpresaId == empresaId).ToListAsync();
         if (listItemEstoque.Count == 0)
         {
             _logger.LogInformation("{LogPrefix} Nenhum item cadastrado para esta empresa.", LogPrefix);
-            return Result.Fail<List<ItemEstoque>>("ItemEstoque não encontrado.");
+            return Result.Fail<List<Estoque>>("ItemEstoque não encontrado.");
         }
 
         return Result.Ok(listItemEstoque);
     }
 
-    public async Task<Result<List<ItemEstoque>>> GetAlertaEstoqueByEmpresaIdAsync(int empresaId, int quantidadeMinima)
+    public async Task<Result<List<Estoque>>> GetAlertaEstoqueByEmpresaIdAsync(int empresaId, int quantidadeMinima)
     {
         _logger.LogDebug("{LogPrefix} Verificando alertas. Limite Global: {Qtd}", LogPrefix, quantidadeMinima);
 
@@ -60,7 +60,7 @@ public class EstoqueRepository : IEstoqueRepository
         if (alertaEstoque.Count == 0)
         {
             _logger.LogInformation("{LogPrefix} Estoque saudável. Nenhum item abaixo do limite.", LogPrefix);
-            return Result.Fail<List<ItemEstoque>>("Nenhum item com alerta de estoque encontrado.");
+            return Result.Fail<List<Estoque>>("Nenhum item com alerta de estoque encontrado.");
         }
         else
         {
@@ -87,21 +87,21 @@ public class EstoqueRepository : IEstoqueRepository
         return Result.Fail("ItemEstoque não encontrado.");
     }   
 
-    public async Task CreateItemEstoqueAsync(ItemEstoque itemEstoque)
+    public async Task CreateItemEstoqueAsync(Estoque itemEstoque)
     {
         _logger.LogInformation("{LogPrefix} Criando item: {Nome}", LogPrefix, itemEstoque.Nome);
         _context.ItensEstoque.Add(itemEstoque);
         await _context.SaveChangesAsync();
     }
 
-    public async Task UpdateItemEstoqueAsync(ItemEstoque itemEstoque)
+    public async Task UpdateItemEstoqueAsync(Estoque itemEstoque)
     {
         _logger.LogInformation("{LogPrefix} Atualizando item ID: {Id}", LogPrefix, itemEstoque.Id);
         _context.ItensEstoque.Update(itemEstoque);
         await _context.SaveChangesAsync();
     }
 
-    public async Task DeleteItemEstoqueAsync(ItemEstoque itemEstoque)
+    public async Task DeleteItemEstoqueAsync(Estoque itemEstoque)
     {
         _logger.LogInformation("{LogPrefix} Excluindo item ID: {Id}", LogPrefix, itemEstoque.Id);
         _context.ItensEstoque.Remove(itemEstoque);

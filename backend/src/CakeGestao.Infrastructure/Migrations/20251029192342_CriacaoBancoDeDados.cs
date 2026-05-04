@@ -20,7 +20,7 @@ namespace CakeGestao.Infrastructure.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Nome = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false),
                     QuantidadeAtual = table.Column<decimal>(type: "numeric(10,2)", nullable: false, defaultValue: 0m),
-                    UnidadeMedida = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false)
+                    UnidadeMedida = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -38,7 +38,7 @@ namespace CakeGestao.Infrastructure.Migrations
                     DataPedido = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     DataEntrega = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     ValorTotal = table.Column<decimal>(type: "numeric(10,2)", nullable: false),
-                    Status = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false)
+                    Status = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -66,7 +66,7 @@ namespace CakeGestao.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Tipo = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Tipo = table.Column<int>(type: "integer", nullable: false),
                     Valor = table.Column<decimal>(type: "numeric(10,2)", nullable: false),
                     Data = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Descricao = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
@@ -90,7 +90,7 @@ namespace CakeGestao.Infrastructure.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Quantidade = table.Column<decimal>(type: "numeric(10,2)", nullable: false),
-                    UnidadeMedida = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    UnidadeMedida = table.Column<int>(type: "integer", nullable: false),
                     ReceitaId = table.Column<int>(type: "integer", nullable: false),
                     ItemId = table.Column<int>(type: "integer", nullable: false)
                 },

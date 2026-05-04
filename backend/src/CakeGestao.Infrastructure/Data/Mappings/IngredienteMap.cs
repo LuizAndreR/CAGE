@@ -17,8 +17,7 @@ internal class IngredienteMap : IEntityTypeConfiguration<Ingrediente>
             .HasColumnType("decimal(10,2)");
 
         builder.Property(x => x.UnidadeMedida)
-            .IsRequired()
-            .HasMaxLength(50);
+            .IsRequired();
 
         builder.HasOne(x => x.Receita)
             .WithMany(r => r.Ingredientes)

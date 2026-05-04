@@ -2,7 +2,6 @@
 using CakeGestao.Domain.Enum;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentValidation;
-using System.Linq;
 
 namespace CakeGestao.Application.Features.Estoque.Command.Create;
 
@@ -21,10 +20,26 @@ public class CreateEstoqueValidator : AbstractValidator<CreateEstoqueCommand>
         RuleFor(x => x.QuantidadeAtual)
             .GreaterThanOrEqualTo(0).WithMessage("A quantidade atual não pode ser negativa.");
         
-        RuleFor(x => x.QunatidadeMinina)
-            .GreaterThanOrEqualTo(0).WithMessage("A quantidade minina deve ser negativa.");
+        RuleFor(x => x.QuantidadeMinima)
+            .GreaterThanOrEqualTo(0).WithMessage("A quantidade mínima não pode ser negativa.");
 
         RuleFor(x => x.UnidadeMedida)
-            .IsEnumName(typeof(UnidadeMedidaEnum), caseSensitive: false).WithMessage($"Tipo de unidade de medida inválida. Valores permitidos: {string.Join(", ", Enum.GetNames(typeof(UnidadeMedidaEnum)))}.");
+            .IsEnumName(typeof(UnidadeMedidaEnum), caseSensitive: false)
+            .WithMessage($"Tipo de unidade de medida inválida. Valores permitidos: {string.Join(", ", Enum.GetNames(typeof(UnidadeMedidaEnum)))}.");
+
+        RuleFor(x => x.UnidadeMedidaReferenciaVolume)
+            .IsEnumName(typeof(UnidadeMedidaEnum), caseSensitive: false)
+            .When(x => !string.IsNullOrWhiteSpace(x.UnidadeMedidaReferenciaVolume))
+            .WithMessage($"Unidade de referência inválida. Valores permitidos: {string.Join(", ", Enum.GetNames(typeof(UnidadeMedidaEnum)))}.");
+
+        RuleFor(x => x.PesoReferenciaEmGramas)
+            .GreaterThan(0).WithMessage("O peso de referência deve ser maior que zero (gramas).")
+            .When(x => x.PesoReferenciaEmGramas.HasValue);
+
+        RuleFor(x => x)
+            .Must(x =>
+                (string.IsNullOrWhiteSpace(x.UnidadeMedidaReferenciaVolume) && !x.PesoReferenciaEmGramas.HasValue) ||
+                (!string.IsNullOrWhiteSpace(x.UnidadeMedidaReferenciaVolume) && x.PesoReferenciaEmGramas.HasValue))
+            .WithMessage("Você deve informar tanto a Unidade de Referência quanto o Peso, ou deixar ambos em branco.");
     }
 }

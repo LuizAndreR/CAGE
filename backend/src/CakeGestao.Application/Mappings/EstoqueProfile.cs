@@ -8,6 +8,6 @@ public class EstoqueProfile : Profile
 {
     public EstoqueProfile()
     {
-        CreateMap<ItemEstoque, ItemEstoqueResponse>();
+        CreateMap<Estoque, ItemEstoqueResponse>();
     }
 }
