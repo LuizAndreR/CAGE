@@ -25,5 +25,9 @@ public class EmpresaMap : IEntityTypeConfiguration<Empresa>
         builder.Property(e => e.Status)
             .HasMaxLength(150)
             .IsRequired();
+
+        builder.Property(e => e.CNPJ)
+            .HasMaxLength(20)
+            .IsRequired(false);
     }
 }

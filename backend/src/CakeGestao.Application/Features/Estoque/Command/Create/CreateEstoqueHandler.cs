@@ -1,5 +1,4 @@
 ﻿using CakeGestao.Application.Features.Financeiro.Command.Create;
-using CakeGestao.Domain.Entities;
 using CakeGestao.Domain.Enum;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
@@ -45,14 +44,15 @@ public class CreateEstoqueHandler : IRequestHandler<CreateEstoqueCommand, Result
             return Result.Fail(new ConflictError("Já existe um item de estoque com o nome fornecido."));
         }
         
-        var itemEstoque = new ItemEstoque(
+        var itemEstoque = new Domain.Entities.Estoque(
                 request.Nome,
+                request.Marca,
                 request.QuantidadeAtual,
                 request.UnidadeMedida != null ? Enum.Parse<UnidadeMedidaEnum>(request.UnidadeMedida, ignoreCase: true) : throw new ArgumentException("Unidade de medida é obrigatória."),
                 request.QuantidadeMinima,
                 request.Valor,
                 request.EmpresaId,
-                request.UnidadeMedidaReferenciaVolume != null ? Enum.Parse<UnidadeMedidaEnum>(request.UnidadeMedidaReferenciaVolume, ignoreCase: true) : null,
+                request.UnidadeMedidaReferenciaVolume != null ? global::System.Enum.Parse<global::CakeGestao.Domain.Enum.UnidadeMedidaEnum>(request.UnidadeMedidaReferenciaVolume, ignoreCase: true) : null,
                 request.PesoReferenciaEmGramas
         );
 

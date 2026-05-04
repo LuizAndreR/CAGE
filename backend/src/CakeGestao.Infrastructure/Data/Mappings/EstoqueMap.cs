@@ -4,17 +4,21 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CakeGestao.Infrastructure.Data.Mappings;
 
-internal class ItemEstoqueMap : IEntityTypeConfiguration<ItemEstoque>
+internal class EstoqueMap : IEntityTypeConfiguration<Estoque>
 {
-    public void Configure(EntityTypeBuilder<ItemEstoque> builder)
+    public void Configure(EntityTypeBuilder<Estoque> builder)
     {
-        builder.ToTable("ItensEstoque");
+        builder.ToTable("Estoque");
 
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Nome)
             .IsRequired()
             .HasMaxLength(200);
+
+        builder.Property(x => x.Marca)
+            .IsRequired()
+            .HasMaxLength(100);
 
         builder.Property(x => x.QuantidadeAtual)
             .IsRequired()

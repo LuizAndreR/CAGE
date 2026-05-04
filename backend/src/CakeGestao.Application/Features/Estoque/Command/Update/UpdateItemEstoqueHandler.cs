@@ -43,6 +43,7 @@ public class UpdateItemEstoqueHandler : IRequestHandler<UpdateItemEstoqueCommand
 
         itemEstoque.AtualizarDadosCadastrais(
             request.Nome,
+            request.Marca,
             request.QuantidadeAtual,
             request.QuantidadeMinima,
             request.UnidadeMedida != null ? Enum.Parse<UnidadeMedidaEnum>(request.UnidadeMedida, ignoreCase: true) : throw new ArgumentException("Unidade de medida é obrigatória."),

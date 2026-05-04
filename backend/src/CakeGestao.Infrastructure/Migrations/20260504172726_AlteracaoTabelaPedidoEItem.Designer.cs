@@ -3,6 +3,7 @@ using System;
 using CakeGestao.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CakeGestao.Infrastructure.Migrations
 {
     [DbContext(typeof(CageContext))]
-    partial class CageContextModelSnapshot : ModelSnapshot
+    [Migration("20260504172726_AlteracaoTabelaPedidoEItem")]
+    partial class AlteracaoTabelaPedidoEItem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,10 +32,6 @@ namespace CakeGestao.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CNPJ")
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
 
                     b.Property<DateTime>("DataCadastro")
                         .ValueGeneratedOnAdd()
@@ -68,11 +67,6 @@ namespace CakeGestao.Infrastructure.Migrations
 
                     b.Property<int>("EmpresaId")
                         .HasColumnType("integer");
-
-                    b.Property<string>("Marca")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("Nome")
                         .IsRequired()

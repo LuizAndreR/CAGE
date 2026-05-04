@@ -48,7 +48,7 @@ public class CreateReceitaHandler : IRequestHandler<CreateReceitaCommand, Result
             if (resultItem.IsFailed)
                 return Result.Fail($"Item de estoque ID {dto.ItemId} não encontrado.");
 
-            ItemEstoque itemEstoque = resultItem.Value;
+            Domain.Entities.Estoque itemEstoque = resultItem.Value;
 
             UnidadeMedidaEnum origemEnum = Enum.Parse<UnidadeMedidaEnum>(dto.UnidadeMedida, ignoreCase: true);
             var resultadoConversao = ConversorUnidade.Converter(

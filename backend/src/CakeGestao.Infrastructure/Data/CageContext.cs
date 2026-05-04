@@ -12,7 +12,7 @@ public class CageContext : DbContext
 
     public DbSet<Pedido> Pedidos { get; set; }
     public DbSet<Receita> Receitas { get; set; }
-    public DbSet<ItemEstoque> ItensEstoque { get; set; }
+    public DbSet<Estoque> ItensEstoque { get; set; }
     public DbSet<ItemPedido> ItensPedido { get; set; }
     public DbSet<Ingrediente> Ingredientes { get; set; }
     public DbSet<TransacaoFinanceira> TransacoesFinanceiras { get; set; }

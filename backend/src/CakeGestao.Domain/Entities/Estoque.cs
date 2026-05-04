@@ -2,10 +2,11 @@
 
 namespace CakeGestao.Domain.Entities;
 
-public class ItemEstoque
+public class Estoque
 {
     public int Id { get;  set; }
     public string Nome { get; private set; } = null!;
+    public string Marca { get; set; }
     public decimal QuantidadeAtual { get; private set; }
     public UnidadeMedidaEnum UnidadeMedida { get; private set; }
     public decimal QuantidadeMinina { get; private set; }
@@ -20,11 +21,12 @@ public class ItemEstoque
     public int EmpresaId { get; set; }
     public virtual Empresa Empresa{ get; set; } = null!;
 
-    protected ItemEstoque() { }
+    public Estoque() { }
 
-    public ItemEstoque(string nome, decimal quantidadeAtual, UnidadeMedidaEnum unidadeMedida, decimal quantidadeMinina, decimal valorMedia, int empresaId, UnidadeMedidaEnum? unidadeMedidaEnum, decimal? pesoReferenciaEmGramas)
+    public Estoque(string nome, string marca, decimal quantidadeAtual, UnidadeMedidaEnum unidadeMedida, decimal quantidadeMinina, decimal valorMedia, int empresaId, UnidadeMedidaEnum? unidadeMedidaEnum, decimal? pesoReferenciaEmGramas)
     {
         Nome = nome;
+        Marca = marca;
         QuantidadeAtual = quantidadeAtual;
         UnidadeMedida = unidadeMedida;
         QuantidadeMinina = quantidadeMinina;
@@ -34,9 +36,10 @@ public class ItemEstoque
         PesoReferenciaEmGramas = pesoReferenciaEmGramas;
     }
 
-    public void AtualizarDadosCadastrais(string nome, decimal quantidadeAtual, decimal quantidadeMinima, UnidadeMedidaEnum unidade, UnidadeMedidaEnum? unidadeMedidaEnum, decimal? pesoReferenciaEmGramas)
+    public void AtualizarDadosCadastrais(string nome, string marca, decimal quantidadeAtual, decimal quantidadeMinima, UnidadeMedidaEnum unidade, UnidadeMedidaEnum? unidadeMedidaEnum, decimal? pesoReferenciaEmGramas)
     {
         Nome = nome;
+        Marca = marca;
         QuantidadeAtual = quantidadeAtual;
         QuantidadeMinina = quantidadeMinima;
         UnidadeMedida = unidade;

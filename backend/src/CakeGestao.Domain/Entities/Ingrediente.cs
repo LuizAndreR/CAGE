@@ -12,7 +12,7 @@ public class Ingrediente
     public virtual Receita Receita { get; private set; } = null!;
 
     public int ItemId { get; private set; }
-    public virtual ItemEstoque Item { get; private set; } = null!;
+    public virtual Estoque Item { get; private set; } = null!;
 
     
     public Ingrediente(int itemId, decimal quantidade, UnidadeMedidaEnum unidadeMedida)

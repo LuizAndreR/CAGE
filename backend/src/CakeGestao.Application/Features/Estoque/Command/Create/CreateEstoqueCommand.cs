@@ -10,6 +10,7 @@ public class CreateEstoqueCommand : IRequest<Result>
     public int EmpresaId { get; set; }
 
     public required string Nome { get; set; }
+    public required string Marca { get; set; }
 
     public decimal QuantidadeAtual { get; set; }
     public decimal Valor { get; set; }

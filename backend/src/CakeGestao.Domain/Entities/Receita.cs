@@ -36,7 +36,7 @@ public class Receita
 
     public void AlteraStatus(bool status)
     {
-        this.Status = status;
+        Status = status;
     }
     
     public void AdicionarIngrediente(Ingrediente ingrediente)
@@ -82,10 +82,5 @@ public class Receita
     public void LimparIngredientes()
     {
         _ingredientes.Clear();
-    }
-
-    public void AtualizarCustoTotal(decimal novoCusto)
-    {
-        CustoTotal = novoCusto;
     }
 }
