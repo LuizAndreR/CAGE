@@ -1,4 +1,5 @@
 using CakeGestao.Domain.Entities;
+using CakeGestao.Domain.Exceptions;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
 using FluentValidation;

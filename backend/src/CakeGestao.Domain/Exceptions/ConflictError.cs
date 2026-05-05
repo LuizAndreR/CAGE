@@ -1,5 +1,7 @@
 ﻿using FluentResults;
 
+namespace CakeGestao.Domain.Exceptions;
+
 public class ConflictError : Error
 {
     public string Errors { get; }

@@ -1,6 +1,7 @@
 using AutoMapper;
 using CakeGestao.Application.Features.Financeiro.Common;
 using CakeGestao.Domain.Enum;
+using CakeGestao.Domain.Exceptions;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
 using FluentValidation;

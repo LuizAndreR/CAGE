@@ -9,10 +9,10 @@ public class ItemPedido
     public decimal Subtotal => Quantidade * ValorUnitario;
 
     public int PedidoId { get; set; }
-    public int ReceitaId { get; set; } 
+    public int ReceitaId { get; set; }
 
-    public required virtual Pedido Pedido { get; set; }
-    public required virtual Receita Receita { get; set; }
+    public virtual Pedido Pedido { get; set; } = null!;
+    public virtual Receita Receita { get; set; } = null!;
 
     public ItemPedido(int receitaId, int quantidade, decimal valorUnitario)
     {

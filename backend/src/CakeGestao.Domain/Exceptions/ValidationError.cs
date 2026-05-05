@@ -1,5 +1,7 @@
 ﻿using FluentResults;
 
+namespace CakeGestao.Domain.Exceptions;
+
 public class ValidationError : Error
 {
     public List<string> Errors { get; }

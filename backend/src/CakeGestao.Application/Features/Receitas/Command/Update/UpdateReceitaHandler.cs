@@ -2,6 +2,7 @@
 using CakeGestao.Application.Common;
 using CakeGestao.Domain.Entities;
 using CakeGestao.Domain.Enum;
+using CakeGestao.Domain.Exceptions;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
 using FluentValidation;

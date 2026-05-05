@@ -1,6 +1,7 @@
 using CakeGestao.Application.Common;
 using CakeGestao.Domain.Entities;
 using CakeGestao.Domain.Enum;
+using CakeGestao.Domain.Exceptions;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
 using FluentValidation;
@@ -60,8 +61,9 @@ public class CreateReceitaHandler : IRequestHandler<CreateReceitaCommand, Result
             );
             if (resultadoConversao.IsFailed)
             {
-                _logger.LogWarning("{LogPrefix} Erro de conversão para o item {ItemId}: {Erro}", LogPrefix, dto.ItemId, resultadoConversao.Errors.First().Message);
-                return Result.Fail(resultadoConversao.Errors);
+                string mensagemErro = resultadoConversao.Errors.First().Message;
+                _logger.LogWarning("{LogPrefix} Erro de conversão para o item {ItemId}: {Erro}", LogPrefix, dto.ItemId, mensagemErro);
+                return Result.Fail(new ValidationError(mensagemErro));
             }
 
             decimal quantidadeConvertidaParaEstoque = resultadoConversao.Value;

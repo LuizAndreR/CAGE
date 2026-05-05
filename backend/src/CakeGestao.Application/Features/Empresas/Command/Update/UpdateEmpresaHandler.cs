@@ -1,4 +1,5 @@
-﻿using CakeGestao.Domain.Interfaces.Repositories;
+﻿using CakeGestao.Domain.Exceptions;
+using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
 using FluentValidation;
 using MediatR;
