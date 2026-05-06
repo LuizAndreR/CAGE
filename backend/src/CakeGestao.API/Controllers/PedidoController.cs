@@ -1,5 +1,6 @@
 using CakeGestao.API.Extensions;
 using CakeGestao.Application.Features.Pedidos.Command.Create;
+using CakeGestao.Application.Features.Pedidos.Query.GetAll;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CakeGestao.API.Controllers;
 
 [ApiController]
-[Route("api/pedido/")]
+[Route("api/pedido")]
 [Authorize(Roles = "Admin, Dono")]
 public class PedidoController : ApiControllerBase
 {
@@ -21,16 +22,34 @@ public class PedidoController : ApiControllerBase
         _mediator = mediator;
     }
 
-    [HttpPost("create")]
-    public async Task<IActionResult> CreatePedido([FromBody] CreatePedidoCommand request)
+    [HttpGet("getall")]
+    public async Task<IActionResult> GetAll()
     {
-        _logger.LogInformation("");
-
+        _logger.LogInformation("{LogPrefix} Recebida requisição para listar pedidos.", ControllerLogPrefix);
+        
         var empresaId = User.GetEmpresaId();
         if (empresaId.IsFailed)
         {
-            _logger.LogWarning("{LogPrefix} Tentativa de registro financeiro sem autorização válida.", ControllerLogPrefix);
-            return Unauthorized("Token inválido.");
+            _logger.LogWarning("{LogPrefix} Falha de autorização: Token sem EmpresaId válido.", ControllerLogPrefix);
+            return Unauthorized();
+        }
+
+        GetAllPedidoQuery request = new GetAllPedidoQuery{ EmpresaId = empresaId.Value};
+        
+        var pedidoResult = await _mediator.Send(request);
+        return HandleResult(pedidoResult, _logger, ControllerLogPrefix);
+    }
+    
+    [HttpPost("create")]
+    public async Task<IActionResult> CreatePedido([FromBody] CreatePedidoCommand request)
+    {
+        _logger.LogInformation("{LogPrefix} Recebida requisição para criar um novo pedido.", ControllerLogPrefix);
+        
+        var empresaId = User.GetEmpresaId();
+        if (empresaId.IsFailed)
+        {
+            _logger.LogWarning("{LogPrefix} Falha de autorização ao tentar criar pedido.", ControllerLogPrefix);
+            return Unauthorized();
         }
         
         request.EmpresaId = empresaId.Value;

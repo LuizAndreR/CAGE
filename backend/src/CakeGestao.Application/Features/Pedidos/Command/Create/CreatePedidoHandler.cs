@@ -26,13 +26,13 @@ public class CreatePedidoHandler : IRequestHandler<CreatePedidoCommand, Result>
     
     public async Task<Result> Handle(CreatePedidoCommand request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("");
+        _logger.LogInformation("{LogPrefix} Iniciando criação de pedido. Cliente: {ClienteNome} | EmpresaId: {EmpresaId}", LogPrefix, request.ClienteNome, request.EmpresaId);
         
         var validatorResult = await _validator.ValidateAsync(request);
         if (!validatorResult.IsValid)
         {
             var errors = validatorResult.Errors.Select(x => x.ErrorMessage).ToList();
-            _logger.LogWarning("{LogPrefix} Validação falhou. Nome: {Nome}. Erros: {Errors}", LogPrefix, request.ClienteNome, string.Join(", ", errors));
+            _logger.LogWarning("{LogPrefix} Validação falhou. Cliente: {ClienteNome}. Erros: {Errors}", LogPrefix, request.ClienteNome, string.Join(", ", errors));
             return Result.Fail(new ValidationError(errors));
         }
         
@@ -51,7 +51,9 @@ public class CreatePedidoHandler : IRequestHandler<CreatePedidoCommand, Result>
             
             if (receitaResult.IsFailed)
             {
-                _logger.LogWarning("{LogPrefix} Produto/Receita ID {ReceitaId} não encontrado.", LogPrefix, dto.ReceitaId);
+                _logger.LogWarning(
+                    "{LogPrefix} Receita ID {ReceitaId} não encontrada ou não pertence à empresa {EmpresaId}.",
+                    LogPrefix, dto.ReceitaId, request.EmpresaId);
                 return Result.Fail(new NotFoundError($"Receita de id: {dto.ReceitaId} não encontrado."));
             }
 
@@ -61,10 +63,11 @@ public class CreatePedidoHandler : IRequestHandler<CreatePedidoCommand, Result>
             
             pedido.AdicionarItem(itemPedido);
         }
-        _logger.LogInformation("{LogPrefix} Itens processados. Valor Total do Pedido: {ValorTotal}", LogPrefix, pedido.ValorTotal);
+        _logger.LogInformation("{LogPrefix} Itens processados. Total do Pedido calculado: {ValorTotal}", LogPrefix, pedido.ValorTotal);
         
         await _pedidoRepository.CreatePedidoAsync(pedido);
-        _logger.LogInformation("{LogPrefix} Pedido criado com sucesso! ID: {PedidoId}", LogPrefix, pedido.Id);
+            
+        _logger.LogInformation("{LogPrefix} Pedido criado com sucesso. ID: {PedidoId}", LogPrefix, pedido.Id);
 
         return Result.Ok();
     }

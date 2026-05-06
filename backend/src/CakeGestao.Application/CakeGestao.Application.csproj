@@ -23,8 +23,7 @@
   <ItemGroup>
     <Folder Include="Features\Financeiro\Query\NovaPasta\" />
     <Folder Include="Features\Pedidos\Command\Update\" />
-    <Folder Include="Features\Pedidos\Common\" />
-    <Folder Include="Features\Pedidos\Query\" />
+    <Folder Include="Features\Pedidos\Query\Get\" />
   </ItemGroup>
 
 </Project>

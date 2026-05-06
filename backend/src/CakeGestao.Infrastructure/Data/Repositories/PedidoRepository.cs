@@ -1,6 +1,7 @@
 using CakeGestao.Domain.Entities;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace CakeGestao.Infrastructure.Data.Repositories;
@@ -17,13 +18,35 @@ public class PedidoRepository : IPedidoRepository
         _logger = logger;
     }
 
+    public async Task<Result<List<Pedido>>> GetAllByEmpresaIdAsync(int empresaId)
+    {
+        var listPedido =  await _context.Pedidos
+            .AsNoTracking() 
+            .Where(p => p.EmpresaId == empresaId)
+            .OrderByDescending(p => p.DataCriacao) 
+            .ToListAsync();
+
+        if (listPedido.Count <= 0)
+        {
+            return Result.Fail<List<Pedido>>("Nenhum pedido encontrado");
+        }
+        
+        return Result.Ok(listPedido);
+    }
+    public async Task<Pedido?> GetByIdAsync(int id, int empresaId)
+    {
+        return await _context.Pedidos
+            .Include(p => p.Itens)
+            .FirstOrDefaultAsync(p => p.Id == id && p.EmpresaId == empresaId); 
+    }
+    
     public async Task<Result> CreatePedidoAsync(Pedido pedido)
     {
         _logger.LogInformation("{LogPrefix} Criando pedido de id: {Id}", LogPrefix, pedido.Id);
-        
+
         _context.Pedidos.Add(pedido);
         await _context.SaveChangesAsync();
-        
+
         return Result.Ok();
     }
 }

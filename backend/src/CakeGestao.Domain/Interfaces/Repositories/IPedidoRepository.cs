@@ -6,4 +6,6 @@ namespace CakeGestao.Domain.Interfaces.Repositories;
 public interface IPedidoRepository
 {
     public Task<Result> CreatePedidoAsync(Pedido pedido);
+    public Task<Result<List<Pedido>>> GetAllByEmpresaIdAsync(int empresaId);
+    public Task<Pedido?> GetByIdAsync(int id, int empresaId);
 }
