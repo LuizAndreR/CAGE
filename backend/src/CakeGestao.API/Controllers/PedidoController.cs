@@ -1,5 +1,6 @@
 using CakeGestao.API.Extensions;
 using CakeGestao.Application.Features.Pedidos.Command.Create;
+using CakeGestao.Application.Features.Pedidos.Query.Get;
 using CakeGestao.Application.Features.Pedidos.Query.GetAll;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -35,6 +36,24 @@ public class PedidoController : ApiControllerBase
         }
 
         GetAllPedidoQuery request = new GetAllPedidoQuery{ EmpresaId = empresaId.Value};
+        
+        var pedidoResult = await _mediator.Send(request);
+        return HandleResult(pedidoResult, _logger, ControllerLogPrefix);
+    }
+
+    [HttpGet("get/{pedidoId}")]
+    public async Task<IActionResult> GetPedidoById([FromRoute] int pedidoId)
+    {
+        _logger.LogInformation("{LogPrefix} Recebida requisição para busca o pedido de Id: {Id}.", ControllerLogPrefix, pedidoId);
+        
+        var empresaId = User.GetEmpresaId();
+        if (empresaId.IsFailed)
+        {
+            _logger.LogWarning("{LogPrefix} Falha de autorização: Token sem EmpresaId válido.", ControllerLogPrefix);
+            return Unauthorized();
+        }
+        
+        GetPedidoByIdQuery request = new GetPedidoByIdQuery{ EmpresaId = empresaId.Value, Id = pedidoId};
         
         var pedidoResult = await _mediator.Send(request);
         return HandleResult(pedidoResult, _logger, ControllerLogPrefix);

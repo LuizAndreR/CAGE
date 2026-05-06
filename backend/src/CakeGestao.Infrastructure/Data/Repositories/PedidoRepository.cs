@@ -33,11 +33,18 @@ public class PedidoRepository : IPedidoRepository
         
         return Result.Ok(listPedido);
     }
-    public async Task<Pedido?> GetByIdAsync(int id, int empresaId)
+    public async Task<Result<Pedido>> GetByIdAsync(int id, int empresaId)
     {
-        return await _context.Pedidos
+        var pedido = await _context.Pedidos
             .Include(p => p.Itens)
-            .FirstOrDefaultAsync(p => p.Id == id && p.EmpresaId == empresaId); 
+            .FirstOrDefaultAsync(p => p.Id == id && p.EmpresaId == empresaId);
+
+        if (pedido == null)
+        {
+            return Result.Fail($"Pedido de Id {id} não encontrado");
+        }
+        
+        return Result.Ok(pedido);
     }
     
     public async Task<Result> CreatePedidoAsync(Pedido pedido)

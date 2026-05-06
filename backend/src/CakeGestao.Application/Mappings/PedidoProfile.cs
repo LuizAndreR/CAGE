@@ -9,5 +9,10 @@ public class PedidoProfile : Profile
     public PedidoProfile()
     {
         CreateMap<Pedido, GetAllPedidosResponse>();
+        CreateMap<Pedido, GetPedidoResponse>()
+            .ForMember(dest => dest.StatusPedido, opt => opt.MapFrom(src => src.StatusPedido.ToString()))
+            .ForMember(dest => dest.Itens, opt => opt.MapFrom(src => src.Itens));
+        
+        CreateMap<ItemPedido, ItemPedidoDetailDto>();
     }
 }

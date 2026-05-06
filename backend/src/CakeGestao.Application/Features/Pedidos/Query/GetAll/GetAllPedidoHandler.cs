@@ -37,15 +37,15 @@ public class GetAllPedidoHandler : IRequestHandler<GetAllPedidoQuery, Result<Lis
             return Result.Fail(new ValidationError(errors));
         }
         
-        var pedidosResut = await _pedidoRepository.GetAllByEmpresaIdAsync(request.EmpresaId);
-        if (pedidosResut.IsFailed)
+        var pedidoResult = await _pedidoRepository.GetAllByEmpresaIdAsync(request.EmpresaId);
+        if (pedidoResult.IsFailed)
         {
             _logger.LogWarning("{LogPrefix} Não encontrado pedidos da empresa {EmpresaId} cadastrado.", LogPrefix, request.EmpresaId);
-            string erro = pedidosResut.Errors.Select(e => e.Message.ToString()).FirstOrDefault()!;
+            string erro = pedidoResult.Errors.Select(e => e.Message.ToString()).FirstOrDefault()!;
             return Result.Fail(new NotFoundError(erro));
         }
         
-        var response = _mapper.Map<List<GetAllPedidosResponse>>(pedidosResut.Value);
+        var response = _mapper.Map<List<GetAllPedidosResponse>>(pedidoResult.Value);
         
         _logger.LogInformation("{LogPrefix} Listagem concluída. Total de pedidos retornados: {Count}", LogPrefix, response.Count);
         return Result.Ok(response);
