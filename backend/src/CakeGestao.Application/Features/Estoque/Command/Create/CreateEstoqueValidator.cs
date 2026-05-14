@@ -17,6 +17,10 @@ public class CreateEstoqueValidator : AbstractValidator<CreateEstoqueCommand>
             .NotEmpty().WithMessage("O nome do estoque é obrigatório.")
             .MaximumLength(100).WithMessage("O nome do estoque deve ter no máximo 100 caracteres.");
 
+        RuleFor(x => x.Marca)
+            .NotEmpty().WithMessage("A marca do estoque é obrigatória.")
+            .MaximumLength(50).WithMessage("A marca do estoque deve ter no máximo 50 caracteres.");
+
         RuleFor(x => x.QuantidadeAtual)
             .GreaterThanOrEqualTo(0).WithMessage("A quantidade atual não pode ser negativa.");
         

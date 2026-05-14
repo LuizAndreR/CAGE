@@ -37,7 +37,7 @@ public class CreateEstoqueHandler : IRequestHandler<CreateEstoqueCommand, Result
             return Result.Fail(new ValidationError(errors));
         }
         
-        var existingItemResult = await _estoqueRepository.ExistItemByNome(request.Nome, request.EmpresaId);
+        var existingItemResult = await _estoqueRepository.ExistItemByNome(request.Nome, request.EmpresaId, request.Marca);
         if(existingItemResult.IsSuccess)
         {
             _logger.LogWarning("{LogPrefix} Item já cadastrado. EmpresaId: {EmpresaId} | Nome: {Nome}", LogPrefix, request.EmpresaId, request.Nome);

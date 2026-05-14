@@ -8,7 +8,7 @@ public interface IEstoqueRepository
     public Task<Result<Estoque>> GetItemEstoqueByIdAsync(int id, int? empresaId);
     public Task<Result<List<Estoque>>> GetAllItemEstoqueByEmpresaIdAsync(int empresaId);
     public Task<Result<List<Estoque>>> GetAlertaEstoqueByEmpresaIdAsync(int empresaId, int QuantidadeMinima);
-    public Task<Result> ExistItemByNome(string nome, int empresaId);
+    public Task<Result> ExistItemByNome(string nome, int empresaId, string marca);
     public Task CreateItemEstoqueAsync(Estoque itemEstoque);
     public Task UpdateItemEstoqueAsync(Estoque itemEstoque);
     public Task DeleteItemEstoqueAsync(Estoque itemEstoque);

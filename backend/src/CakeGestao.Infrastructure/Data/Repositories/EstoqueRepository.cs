@@ -71,12 +71,13 @@ public class EstoqueRepository : IEstoqueRepository
     }
 
 
-    public async Task<Result> ExistItemByNome(string nome, int empresaId)
+    public async Task<Result> ExistItemByNome(string nome, int empresaId, string marca)
     {
-        _logger.LogDebug("{LogPrefix} Verificando existência de ItemEstoque com nome: {Nome}", LogPrefix, nome);
+        _logger.LogDebug("{LogPrefix} Verificando existência de ItemEstoque com nome: {Nome} e marca: {Marca}", LogPrefix, nome, marca);
 
         var nomeNormalizado = nome.Trim().ToLower();
-        var exists = await _context.ItensEstoque.AnyAsync(e => e.Nome.ToLower() == nomeNormalizado && e.EmpresaId == empresaId);
+        var marcaNormalizada = marca.Trim().ToLower();
+        var exists = await _context.ItensEstoque.AnyAsync(e => e.Nome.ToLower() == nomeNormalizado && e.Marca.ToLower() == marcaNormalizada && e.EmpresaId == empresaId);
 
         if (exists)
         {
