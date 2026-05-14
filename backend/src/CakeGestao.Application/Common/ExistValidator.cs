@@ -18,8 +18,7 @@ internal static class ExistValidator
     }
     
     public static IRuleBuilderOptions<T, int> DeveExistirItem<T>(
-        this IRuleBuilder<T, int> ruleBuilder, 
-        IEstoqueRepository itemRepo,
+        this IRuleBuilder<T, int> ruleBuilder, IEstoqueRepository itemRepo,
         Func<T, int> getEmpresaId) 
     {
         return ruleBuilder
@@ -32,6 +31,8 @@ internal static class ExistValidator
             })
             .WithMessage("O Item de estoque informado ({PropertyValue}) não foi encontrado.");
     }
+    
+    
     
     /*
     public static IRuleBuilderOptions<T, int> DeveExistirPedido<T>(
