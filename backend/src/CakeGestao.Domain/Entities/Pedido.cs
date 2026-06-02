@@ -39,6 +39,21 @@ public class Pedido
         ValorTotal = 0;
     }
     
+    public void Atualizar(string clienteNome, string? telefoneCliente, string? descricao, DateTime? dataEntrega)
+    {
+        ClienteNome = clienteNome;
+        TelefoneCliente = telefoneCliente;
+        Descricao = descricao;
+        DataEntrega = dataEntrega;
+    }
+    
+    public void LimparItens()
+    {
+        Itens.Clear();
+        ValorTotal = 0;
+        Pago = false;
+    }
+    
     public void AdicionarItem(ItemPedido item)
     {
         Itens.Add(item);

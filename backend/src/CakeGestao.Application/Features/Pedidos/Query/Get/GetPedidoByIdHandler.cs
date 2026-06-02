@@ -34,8 +34,8 @@ public class GetPedidoByIdHandler : IRequestHandler<GetPedidoByIdQuery, Result<G
         {
             var errors = validatorResult.Errors.Select(x => x.ErrorMessage).ToList();
             _logger.LogWarning("{LogPrefix} Pedido ID {Id} não encontrado ou acesso negado para a EmpresaId {EmpresaId}.", LogPrefix, request.Id, request.EmpresaId);
-            return Result.Fail(new ValidationError(errors));
-        } 
+            return Result.Fail(new ValidationError(errors)); 
+        }
         
         var pedidoResult = await _pedidoRepository.GetByIdAsync(request.Id, request.EmpresaId);
 

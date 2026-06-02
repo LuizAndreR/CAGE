@@ -56,4 +56,14 @@ public class PedidoRepository : IPedidoRepository
 
         return Result.Ok();
     }
+
+    public async Task<Result> UpdatePedidoAsync(Pedido pedido)
+    {
+        _logger.LogInformation("{LogPrefix} Atualizando o pedido de id: {Id}", LogPrefix, pedido.Id);
+        
+        _context.Pedidos.Update(pedido);
+        await _context.SaveChangesAsync();
+        
+        return Result.Ok(); 
+    }
 }

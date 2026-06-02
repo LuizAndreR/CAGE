@@ -1,5 +1,6 @@
 using CakeGestao.API.Extensions;
 using CakeGestao.Application.Features.Pedidos.Command.Create;
+using CakeGestao.Application.Features.Pedidos.Command.Update;
 using CakeGestao.Application.Features.Pedidos.Query.Get;
 using CakeGestao.Application.Features.Pedidos.Query.GetAll;
 using MediatR;
@@ -72,6 +73,25 @@ public class PedidoController : ApiControllerBase
         }
         
         request.EmpresaId = empresaId.Value;
+        
+        var pedidoResult = await _mediator.Send(request);
+        return HandleResult<object>(pedidoResult, _logger, ControllerLogPrefix);
+    }
+
+    [HttpPut("update/{pedidoId}")]
+    public async Task<IActionResult> UpdatePedido([FromBody] UpdatePedidoCommand request, [FromRoute] int pedidoId)
+    {
+        _logger.LogInformation("{LogPrefix} Recebida requisição para atulizar o pedido de id: {PedidoId}.", ControllerLogPrefix, pedidoId);
+        
+        var empresaId = User.GetEmpresaId();
+        if (empresaId.IsFailed)
+        {
+            _logger.LogWarning("{LogPrefix} Falha de autorização ao tentar criar pedido.", ControllerLogPrefix);
+            return Unauthorized();
+        }
+        
+        request.EmpresaId = empresaId.Value;
+        request.Id = pedidoId;
         
         var pedidoResult = await _mediator.Send(request);
         return HandleResult<object>(pedidoResult, _logger, ControllerLogPrefix);
