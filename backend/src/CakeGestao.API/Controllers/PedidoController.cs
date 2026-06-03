@@ -1,6 +1,7 @@
 using CakeGestao.API.Extensions;
 using CakeGestao.Application.Features.Pedidos.Command.Create;
 using CakeGestao.Application.Features.Pedidos.Command.Update;
+using CakeGestao.Application.Features.Pedidos.Command.UpdatePagemento;
 using CakeGestao.Application.Features.Pedidos.Query.Get;
 using CakeGestao.Application.Features.Pedidos.Query.GetAll;
 using MediatR;
@@ -81,7 +82,7 @@ public class PedidoController : ApiControllerBase
     [HttpPut("update/{pedidoId}")]
     public async Task<IActionResult> UpdatePedido([FromBody] UpdatePedidoCommand request, [FromRoute] int pedidoId)
     {
-        _logger.LogInformation("{LogPrefix} Recebida requisição para atulizar o pedido de id: {PedidoId}.", ControllerLogPrefix, pedidoId);
+        _logger.LogInformation("{LogPrefix} Recebida requisição para atualizar o pedido de id: {PedidoId}.", ControllerLogPrefix, pedidoId);
         
         var empresaId = User.GetEmpresaId();
         if (empresaId.IsFailed)
@@ -92,6 +93,27 @@ public class PedidoController : ApiControllerBase
         
         request.EmpresaId = empresaId.Value;
         request.Id = pedidoId;
+        
+        var pedidoResult = await _mediator.Send(request);
+        return HandleResult<object>(pedidoResult, _logger, ControllerLogPrefix);
+    }
+
+        [HttpPatch("updatepagamento/{pedidoId}")]
+    public async Task<IActionResult> UpdatePagamento([FromBody] UpdatePagamentoPedidoCommand request,[FromRoute] int pedidoId)
+    {
+        _logger.LogInformation("{LogPrefix} Recebida requisição para atualizar o pagamento do pedido de id: {PedidoId}.", ControllerLogPrefix, pedidoId);
+        
+        var empresaId = User.GetEmpresaId();
+        var usuarioId = User.GetUserId();
+        if (empresaId.IsFailed)
+        {
+            _logger.LogWarning("{LogPrefix} Falha de autorização ao tentar criar pedido.", ControllerLogPrefix);
+            return Unauthorized();
+        }
+        
+        request.EmpresaId = empresaId.Value;
+        request.UsuarioId = usuarioId.Value;
+        request.PedidoId = pedidoId;
         
         var pedidoResult = await _mediator.Send(request);
         return HandleResult<object>(pedidoResult, _logger, ControllerLogPrefix);

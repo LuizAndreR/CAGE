@@ -14,7 +14,7 @@ public class UpdatePedidoHandler : IRequestHandler<UpdatePedidoCommand, Result>
     private readonly ILogger<UpdatePedidoHandler> _logger;
     private readonly IPedidoRepository _pedidoRepository;
     private readonly IReceitaRepository _receitaRepository;
-    private const string LogPrefix = "[Update Receita Handler]";
+    private const string LogPrefix = "[Update Pedido Handler]";
     
     public UpdatePedidoHandler(IValidator<UpdatePedidoCommand> validator, ILogger<UpdatePedidoHandler> logger, IPedidoRepository pedidoRepository, IReceitaRepository receitaRepository)
     {
@@ -32,14 +32,14 @@ public class UpdatePedidoHandler : IRequestHandler<UpdatePedidoCommand, Result>
         if (!validatorResult.IsValid)
         {
             var errors = validatorResult.Errors.Select(x => x.ErrorMessage).ToList();
-            _logger.LogWarning("{LogPrefix} Validação falhou. Cliente: {ClienteNome}. Erros: {Errors}", LogPrefix, request.ClienteNome, string.Join(", ", errors));
+            _logger.LogWarning("{LogPrefix} Validação falhou. Pedido: {PedidoId}. Erros: {Errors}", LogPrefix, request.Id, string.Join(", ", errors));
             return Result.Fail(new ValidationError(errors));
         }      
         
         var pedidoResult = await _pedidoRepository.GetByIdAsync(request.Id, request.EmpresaId);
         if (pedidoResult.IsFailed)
         {
-            _logger.LogWarning("[Update Pedido] Pedido {PedidoId} não encontrado.", request.Id);
+            _logger.LogWarning("{LogPrefix} Pedido {PedidoId} não encontrado.", LogPrefix, request.Id);
             return Result.Fail(new NotFoundError("Pedido não encontrado."));
         }
         Pedido pedido = pedidoResult.Value;
@@ -49,7 +49,7 @@ public class UpdatePedidoHandler : IRequestHandler<UpdatePedidoCommand, Result>
 
         if (itensMudados)
         {
-            _logger.LogInformation("[Update Pedido] Os itens foram alterados. Recalculando carrinho e reiniciando pagamento.");
+            _logger.LogInformation("{LogPrefix} Os itens foram alterados. Recalculando carrinho e reiniciando pagamento.", LogPrefix);
             
             pedido.LimparItens();
             

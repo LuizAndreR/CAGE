@@ -52,6 +52,7 @@ public class Pedido
         Itens.Clear();
         ValorTotal = 0;
         Pago = false;
+        DataPagamento = null;
     }
     
     public void AdicionarItem(ItemPedido item)
@@ -74,5 +75,11 @@ public class Pedido
     {
         Pago = true;
         DataPagamento = DateTime.UtcNow;
+    }
+
+    public void EstornarPagamento()
+    {
+        Pago = false;
+        DataPagamento = null;
     }
 }
