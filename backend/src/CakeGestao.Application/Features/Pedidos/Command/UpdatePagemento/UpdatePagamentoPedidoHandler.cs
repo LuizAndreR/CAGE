@@ -67,11 +67,11 @@ public class UpdatePagamentoPedidoHandler : IRequestHandler<UpdatePagamentoPedid
 
             if (transacaoResult.IsFailed)
             {
-                _logger.LogWarning("[Pagamento] Falha ao gerar transação financeira para o pedido {Id}.", pedido.Id);
+                _logger.LogWarning("{LogPrefix}  Falha ao gerar transação financeira para o pedido {Id}.", LogPrefix, pedido.Id);
                 return Result.Fail("Não foi possível gerar a transação financeira.").WithErrors(transacaoResult.Errors);
             }
 
-            _logger.LogInformation("[Pagamento] Pedido {Id} pago. Transação gerada com sucesso.", pedido.Id);
+            _logger.LogInformation("{LogPrefix}  Pedido {Id} pago. Transação gerada com sucesso.", LogPrefix, pedido.Id);
         }
         else if (!request.Pagamento && pedido.Pago)
         {
@@ -94,11 +94,11 @@ public class UpdatePagamentoPedidoHandler : IRequestHandler<UpdatePagamentoPedid
 
                 if (cancelResult.IsFailed)
                 {
-                    _logger.LogWarning("[Pagamento] Falha ao cancelar a transação financeira {TransacaoId} para o pedido {PedidoId}.", transacao.Id, pedido.Id);
+                    _logger.LogWarning("{LogPrefix}  Falha ao cancelar a transação financeira {TransacaoId} para o pedido {PedidoId}.", LogPrefix, transacao.Id, pedido.Id);
                     return Result.Fail("Não foi possível estornar a transação financeira no caixa.").WithErrors(cancelResult.Errors);
                 }
 
-                _logger.LogInformation("[Pagamento] Pagamento do pedido {Id} estornado. Transação financeira cancelada com sucesso.", pedido.Id);
+                _logger.LogInformation("{LogPrefix}  Pagamento do pedido {Id} estornado. Transação financeira cancelada com sucesso.", LogPrefix, pedido.Id);
             }
         }
         await _pedidoRepository.UpdatePedidoAsync(pedido); 
