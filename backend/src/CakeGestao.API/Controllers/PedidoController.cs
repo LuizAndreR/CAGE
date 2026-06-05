@@ -1,5 +1,6 @@
 using CakeGestao.API.Extensions;
 using CakeGestao.Application.Features.Pedidos.Command.Create;
+using CakeGestao.Application.Features.Pedidos.Command.Delete;
 using CakeGestao.Application.Features.Pedidos.Command.Update;
 using CakeGestao.Application.Features.Pedidos.Command.UpdatePagemento;
 using CakeGestao.Application.Features.Pedidos.Query.Get;
@@ -69,7 +70,7 @@ public class PedidoController : ApiControllerBase
         var empresaId = User.GetEmpresaId();
         if (empresaId.IsFailed)
         {
-            _logger.LogWarning("{LogPrefix} Falha de autorização ao tentar criar pedido.", ControllerLogPrefix);
+            _logger.LogWarning("{LogPrefix} Falha de autorização: Token sem EmpresaId válido.", ControllerLogPrefix);
             return Unauthorized();
         }
         
@@ -87,7 +88,7 @@ public class PedidoController : ApiControllerBase
         var empresaId = User.GetEmpresaId();
         if (empresaId.IsFailed)
         {
-            _logger.LogWarning("{LogPrefix} Falha de autorização ao tentar criar pedido.", ControllerLogPrefix);
+            _logger.LogWarning("{LogPrefix} Falha de autorização: Token sem EmpresaId válido.", ControllerLogPrefix);
             return Unauthorized();
         }
         
@@ -98,7 +99,7 @@ public class PedidoController : ApiControllerBase
         return HandleResult<object>(pedidoResult, _logger, ControllerLogPrefix);
     }
 
-        [HttpPatch("updatepagamento/{pedidoId}")]
+    [HttpPatch("updatepagamento/{pedidoId}")]
     public async Task<IActionResult> UpdatePagamento([FromBody] UpdatePagamentoPedidoCommand request,[FromRoute] int pedidoId)
     {
         _logger.LogInformation("{LogPrefix} Recebida requisição para atualizar o pagamento do pedido de id: {PedidoId}.", ControllerLogPrefix, pedidoId);
@@ -107,13 +108,31 @@ public class PedidoController : ApiControllerBase
         var usuarioId = User.GetUserId();
         if (empresaId.IsFailed)
         {
-            _logger.LogWarning("{LogPrefix} Falha de autorização ao tentar criar pedido.", ControllerLogPrefix);
+            _logger.LogWarning("{LogPrefix} Falha de autorização: Token sem EmpresaId válido.", ControllerLogPrefix);
             return Unauthorized();
         }
         
         request.EmpresaId = empresaId.Value;
         request.UsuarioId = usuarioId.Value;
         request.PedidoId = pedidoId;
+        
+        var pedidoResult = await _mediator.Send(request);
+        return HandleResult<object>(pedidoResult, _logger, ControllerLogPrefix);
+    }
+
+    [HttpDelete("delete/{pedidoId}")]
+    public async Task<IActionResult> DeletePedido([FromRoute] int pedidoId)
+    {
+        _logger.LogInformation("{LogPrefix} Recebida requisição para deletar o pedido de id: {PedidoId}.", ControllerLogPrefix, pedidoId);
+        
+        var empresaId = User.GetEmpresaId();
+        if (empresaId.IsFailed)
+        {
+            _logger.LogWarning("{LogPrefix} Falha de autorização: Token sem EmpresaId válido.", ControllerLogPrefix);
+            return Unauthorized();
+        }
+        
+        DeletePedidoCommand request = new DeletePedidoCommand() { EmpresaId = empresaId.Value, PedidoId = pedidoId };
         
         var pedidoResult = await _mediator.Send(request);
         return HandleResult<object>(pedidoResult, _logger, ControllerLogPrefix);
