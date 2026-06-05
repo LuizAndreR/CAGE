@@ -3,6 +3,7 @@ using CakeGestao.Application.Features.Pedidos.Command.Create;
 using CakeGestao.Application.Features.Pedidos.Command.Delete;
 using CakeGestao.Application.Features.Pedidos.Command.Update;
 using CakeGestao.Application.Features.Pedidos.Command.UpdatePagemento;
+using CakeGestao.Application.Features.Pedidos.Command.UpdateStatus;
 using CakeGestao.Application.Features.Pedidos.Query.Get;
 using CakeGestao.Application.Features.Pedidos.Query.GetAll;
 using MediatR;
@@ -114,6 +115,25 @@ public class PedidoController : ApiControllerBase
         
         request.EmpresaId = empresaId.Value;
         request.UsuarioId = usuarioId.Value;
+        request.PedidoId = pedidoId;
+        
+        var pedidoResult = await _mediator.Send(request);
+        return HandleResult<object>(pedidoResult, _logger, ControllerLogPrefix);
+    }
+
+    [HttpPatch("updatestatus/{pedidoId}")]
+    public async Task<IActionResult> UpdateStatus([FromBody] UpdateStatusPedidoCommand request, [FromRoute] int pedidoId)
+    {
+        _logger.LogInformation("{LogPrefix} Recebida requisição para atualizar o status do pedido de id: {PedidoId}.", ControllerLogPrefix, pedidoId);
+        
+        var empresaId = User.GetEmpresaId();
+        if (empresaId.IsFailed)
+        {
+            _logger.LogWarning("{LogPrefix} Falha de autorização: Token sem EmpresaId válido.", ControllerLogPrefix);
+            return Unauthorized();
+        }
+        
+        request.EmpresaId = empresaId.Value;
         request.PedidoId = pedidoId;
         
         var pedidoResult = await _mediator.Send(request);

@@ -1,4 +1,5 @@
 using CakeGestao.Domain.Entities;
+using CakeGestao.Domain.Enum;
 using CakeGestao.Domain.Exceptions;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
@@ -6,27 +7,27 @@ using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace CakeGestao.Application.Features.Pedidos.Command.Delete;
+namespace CakeGestao.Application.Features.Pedidos.Command.UpdateStatus;
 
-public class DeletePedidoHandler : IRequestHandler<DeletePedidoCommand, Result>
+public class UpdateStatusPedidoHandler : IRequestHandler<UpdateStatusPedidoCommand, Result>
 {
     private readonly IPedidoRepository _pedidoRepository;
-    private readonly IValidator<DeletePedidoCommand> _deletePedidoValidator;
-    private readonly ILogger<DeletePedidoHandler> _logger;
-    private const string LogPrefix = "[Delete Pedido Handler]";
+    private readonly ILogger<UpdateStatusPedidoHandler> _logger;
+    private readonly IValidator<UpdateStatusPedidoCommand> _validator;
+    private const string LogPrefix = "[Update Status Pedido Handler]";
 
-    public DeletePedidoHandler(IPedidoRepository pedidoRepository, IValidator<DeletePedidoCommand> deletePedidoValidator, ILogger<DeletePedidoHandler> logger)
+    public UpdateStatusPedidoHandler(IPedidoRepository pedidoRepository, ILogger<UpdateStatusPedidoHandler> logger, IValidator<UpdateStatusPedidoCommand> validator)
     {
         _pedidoRepository = pedidoRepository;
-        _deletePedidoValidator = deletePedidoValidator;
         _logger = logger;
+        _validator = validator;
     }
 
-    public async Task<Result> Handle(DeletePedidoCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(UpdateStatusPedidoCommand request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("{LogPrefix} Iniciando delete do pedido {PedidoId} da empresa {EmpresaId}", LogPrefix, request.PedidoId, request.EmpresaId);
-
-        var validatorResult = await _deletePedidoValidator.ValidateAsync(request);
+        _logger.LogInformation("{LogPrefix} Iniciando atualização do status do pedido {PedidoId} da empresa {EmpresaId}", LogPrefix, request.PedidoId, request.EmpresaId);
+        
+        var validatorResult = await _validator.ValidateAsync(request);
         if (!validatorResult.IsValid)
         {
             var errors = validatorResult.Errors.Select(x => x.ErrorMessage).ToList();
@@ -42,7 +43,10 @@ public class DeletePedidoHandler : IRequestHandler<DeletePedidoCommand, Result>
         }
         Pedido pedido = pedidoResult.Value;
         
-        await _pedidoRepository.DeletePedidoAsync(pedido);
+        StatusPedidoEnum statusPedido = Enum.Parse<StatusPedidoEnum>(request.Status);
+        pedido.AlterarStatus(statusPedido);
+        
+        await _pedidoRepository.UpdatePedidoAsync(pedido);
         
         return Result.Ok();
     }

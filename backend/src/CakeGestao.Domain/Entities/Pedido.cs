@@ -10,7 +10,6 @@ public class Pedido
     public string? Descricao { get; private set; }
     public DateTime DataCriacao { get; private set; }
     public DateTime? DataEntrega { get; private set; }
-
     public decimal ValorTotal { get; private set; }
     public StatusPedidoEnum StatusPedido { get; private set; }
 
