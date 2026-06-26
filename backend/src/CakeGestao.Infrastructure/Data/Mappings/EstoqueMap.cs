@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CakeGestao.Infrastructure.Data.Mappings;
 
-internal class EstoqueMap : IEntityTypeConfiguration<Estoque>
+public class EstoqueMap : IEntityTypeConfiguration<Estoque>
 {
     public void Configure(EntityTypeBuilder<Estoque> builder)
     {
