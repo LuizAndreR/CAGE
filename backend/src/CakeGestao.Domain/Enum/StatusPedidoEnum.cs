@@ -3,7 +3,7 @@
 public enum StatusPedidoEnum
 {
     Pendente,
-    EmAndamento,
-    Concluido,
-    Cancelado
+    EmProducao,
+    ProntoEntregue,
+    Concluido
 }

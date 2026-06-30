@@ -8,6 +8,7 @@ public class Receita
     public decimal PrecoVenda { get; private set; }
     public decimal PercentualCustoExtra { get; private set; }
     public decimal PercentualMargemLucro { get; private set; }
+    public decimal PrecoIngredientes { get; private set; }
     public decimal CustoTotal { get; private set; }
 
     public bool Status { get; private set; }
@@ -47,6 +48,7 @@ public class Receita
     public void CalcularPrecificacao(decimal custoIngredientes, decimal percCustoExtra, decimal percMargemLucro, decimal precoVendaInformado)
     {
         PercentualCustoExtra = percCustoExtra;
+        PrecoIngredientes = custoIngredientes;
         
         decimal valorCustoExtra = custoIngredientes * (PercentualCustoExtra / 100);
         CustoTotal = custoIngredientes + valorCustoExtra;

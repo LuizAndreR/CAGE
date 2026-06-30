@@ -1,4 +1,5 @@
 ﻿using CakeGestao.Domain.Enum;
+using CakeGestao.Domain.Exceptions;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
 using FluentValidation;
@@ -39,7 +40,14 @@ public class UpdateItemEstoqueHandler : IRequestHandler<UpdateItemEstoqueCommand
             _logger.LogWarning("{LogPrefix} Item não encontrado. ID: {ItemId}", LogPrefix, request.ItemId);
             return Result.Fail(new NotFoundError("Item de estoque não encontrado para atualização."));
         }
-        var itemEstoque = itemEstoqueResult.Value;        
+        var itemEstoque = itemEstoqueResult.Value;
+
+        var existingItemResult = await _estoqueRepository.ExistItemByNome(request.Nome, request.EmpresaId, request.Marca);
+        if (existingItemResult.IsSuccess)
+        {
+            _logger.LogWarning("{LogPrefix} Item já cadastrado. EmpresaId: {EmpresaId} | Nome: {Nome}", LogPrefix, request.EmpresaId, request.Nome);
+            return Result.Fail(new ConflictError("Já existe um item de estoque com o nome fornecido."));
+        }
 
         itemEstoque.AtualizarDadosCadastrais(
             request.Nome,

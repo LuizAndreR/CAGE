@@ -28,6 +28,10 @@ internal class ReceitaMap : IEntityTypeConfiguration<Receita>
             .IsRequired()
             .HasColumnType("decimal(10,2)")
             .HasDefaultValue(0);
+        
+        builder.Property(x => x.PrecoIngredientes)
+            .HasColumnType("decimal(5,2)")
+            .HasDefaultValue(0);
 
         builder.Property(x => x.PercentualCustoExtra)
             .IsRequired()

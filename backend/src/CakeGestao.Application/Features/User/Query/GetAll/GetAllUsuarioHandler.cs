@@ -1,5 +1,6 @@
 using AutoMapper;
 using CakeGestao.Application.Features.User.Common;
+using CakeGestao.Domain.Exceptions;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
 using MediatR;

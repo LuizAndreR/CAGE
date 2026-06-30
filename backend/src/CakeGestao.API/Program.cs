@@ -72,6 +72,7 @@ builder.Services.AddScoped<IEmpresaRepository, EmpresaRepository>();
 builder.Services.AddScoped<IEstoqueRepository, EstoqueRepository>();
 builder.Services.AddScoped<IFinanceiroRepository, FinanceiroRepository>();
 builder.Services.AddScoped<IReceitaRepository, ReceitaRepository>();
+builder.Services.AddScoped<IPedidoRepository, PedidoRepository>();
 
 builder.Services.AddValidatorsFromAssembly(typeof(CreateEstoqueValidator).Assembly);
 
@@ -117,7 +118,7 @@ app.Lifetime.ApplicationStarted.Register(() =>
     
     foreach (var address in addresses ?? [])
     {
-        Log.Information("API Iniciada! Acesse em: {Url}/swagger", address);
+        Log.Information("API Iniciada! cesse em: {Url}/swagger", address);
     }
 });
 

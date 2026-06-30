@@ -259,6 +259,11 @@ namespace CakeGestao.Infrastructure.Migrations
                         .HasColumnType("decimal(5,2)")
                         .HasDefaultValue(0m);
 
+                    b.Property<decimal>("PrecoIngredientes")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(5,2)")
+                        .HasDefaultValue(0m);
+
                     b.Property<decimal>("PrecoVenda")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("decimal(10,2)")

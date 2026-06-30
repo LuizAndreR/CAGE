@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CakeGestao.Application.Features.Estoque.Common;
 using CakeGestao.Application.UseCases.Estoque.Common;
 using CakeGestao.Domain.Entities;
 
@@ -9,5 +10,6 @@ public class EstoqueProfile : Profile
     public EstoqueProfile()
     {
         CreateMap<Estoque, ItemEstoqueResponse>();
+        CreateMap<Estoque, ItemEstoqueResponseAlert>();
     }
 }

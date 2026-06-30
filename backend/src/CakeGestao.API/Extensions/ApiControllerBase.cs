@@ -1,4 +1,5 @@
-﻿using FluentResults;
+﻿using CakeGestao.Domain.Exceptions;
+using FluentResults;
 using Microsoft.AspNetCore.Mvc;
 
 public abstract class ApiControllerBase : ControllerBase
