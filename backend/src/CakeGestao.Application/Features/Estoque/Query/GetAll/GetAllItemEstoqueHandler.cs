@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CakeGestao.Application.UseCases.Estoque.Common;
+using CakeGestao.Domain.Exceptions;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
 using FluentValidation;

@@ -1,3 +1,4 @@
+using CakeGestao.Domain.Exceptions;
 using CakeGestao.Domain.Interfaces.Repositories;
 using CakeGestao.Infrastructure.Data.Repositories;
 using FluentResults;

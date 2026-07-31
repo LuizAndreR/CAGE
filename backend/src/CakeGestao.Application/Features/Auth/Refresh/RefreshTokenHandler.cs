@@ -1,4 +1,5 @@
 ﻿using CakeGestao.Application.Features.Auth.Common;
+using CakeGestao.Domain.Exceptions;
 using CakeGestao.Domain.Interfaces.Repositories;
 using CakeGestao.Domain.Interfaces.Security;
 using FluentResults;

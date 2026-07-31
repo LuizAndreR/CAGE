@@ -21,7 +21,7 @@ public class EstoqueRepository : IEstoqueRepository
     public async Task<Result<Estoque>> GetItemEstoqueByIdAsync(int itemId, int? empresaId)
     {
         _logger.LogDebug("{LogPrefix} Buscando ItemEstoque com ID: {Id} (Filtro Empresa: {Empresa}).", LogPrefix, itemId, empresaId);
-        var query = _context.ItensEstoque.AsQueryable();
+        var query = _context.Estoque.AsQueryable();
         if (empresaId.HasValue)
         {
             query = query.Where(x => x.EmpresaId == empresaId.Value);
@@ -38,10 +38,21 @@ public class EstoqueRepository : IEstoqueRepository
         return Result.Ok(itemEstoque);
     }
 
+    public async Task<Result<List<Estoque>>> GetItensByIdsAsync(IEnumerable<int> ids, int empresaId)
+    {
+        _logger.LogInformation("{LogPrefix} Buscando uma lista de itens cadastrados no banco de dados para a EmpresaId: {EmpresaId}", LogPrefix, empresaId);
+        
+        var listaItens = await _context.Estoque
+            .Where(i => i.EmpresaId == empresaId && ids.Contains(i.Id))
+            .ToListAsync();
+        
+        return Result.Ok(listaItens);
+    }
+
     public async Task<Result<List<Estoque>>> GetAllItemEstoqueByEmpresaIdAsync(int empresaId)
     {
         _logger.LogDebug("{LogPrefix} Listando estoque. EmpresaId: {Id}", LogPrefix, empresaId);
-        var listItemEstoque = await _context.ItensEstoque.AsNoTracking().Where(i => i.EmpresaId == empresaId).ToListAsync();
+        var listItemEstoque = await _context.Estoque.AsNoTracking().Where(i => i.EmpresaId == empresaId).ToListAsync();
         if (listItemEstoque.Count == 0)
         {
             _logger.LogInformation("{LogPrefix} Nenhum item cadastrado para esta empresa.", LogPrefix);
@@ -55,7 +66,7 @@ public class EstoqueRepository : IEstoqueRepository
     {
         _logger.LogDebug("{LogPrefix} Verificando alertas. Limite Global: {Qtd}", LogPrefix, quantidadeMinima);
 
-        var alertaEstoque = await _context.ItensEstoque.AsNoTracking().Where(i => i.EmpresaId == empresaId && i.QuantidadeAtual <= quantidadeMinima).ToListAsync();
+        var alertaEstoque = await _context.Estoque.AsNoTracking().Where(i => i.EmpresaId == empresaId && i.QuantidadeAtual <= quantidadeMinima).ToListAsync();
         _logger.LogInformation("Lista de alerta {list}", alertaEstoque);
         if (alertaEstoque.Count == 0)
         {
@@ -70,13 +81,13 @@ public class EstoqueRepository : IEstoqueRepository
         return Result.Ok(alertaEstoque);
     }
 
-
-    public async Task<Result> ExistItemByNome(string nome, int empresaId)
+    public async Task<Result> ExistItemByNome(string nome, int empresaId, string marca)
     {
-        _logger.LogDebug("{LogPrefix} Verificando existência de ItemEstoque com nome: {Nome}", LogPrefix, nome);
+        _logger.LogDebug("{LogPrefix} Verificando existência de ItemEstoque com nome: {Nome} e marca: {Marca}", LogPrefix, nome, marca);
 
         var nomeNormalizado = nome.Trim().ToLower();
-        var exists = await _context.ItensEstoque.AnyAsync(e => e.Nome.ToLower() == nomeNormalizado && e.EmpresaId == empresaId);
+        var marcaNormalizada = marca.Trim().ToLower();
+        var exists = await _context.Estoque.AnyAsync(e => e.Nome.ToLower() == nomeNormalizado && e.Marca.ToLower() == marcaNormalizada && e.EmpresaId == empresaId);
 
         if (exists)
         {
@@ -86,25 +97,25 @@ public class EstoqueRepository : IEstoqueRepository
 
         return Result.Fail("ItemEstoque não encontrado.");
     }   
-
+    
     public async Task CreateItemEstoqueAsync(Estoque itemEstoque)
     {
         _logger.LogInformation("{LogPrefix} Criando item: {Nome}", LogPrefix, itemEstoque.Nome);
-        _context.ItensEstoque.Add(itemEstoque);
+        _context.Estoque.Add(itemEstoque);
         await _context.SaveChangesAsync();
     }
 
     public async Task UpdateItemEstoqueAsync(Estoque itemEstoque)
     {
         _logger.LogInformation("{LogPrefix} Atualizando item ID: {Id}", LogPrefix, itemEstoque.Id);
-        _context.ItensEstoque.Update(itemEstoque);
+        _context.Estoque.Update(itemEstoque);
         await _context.SaveChangesAsync();
     }
 
     public async Task DeleteItemEstoqueAsync(Estoque itemEstoque)
     {
         _logger.LogInformation("{LogPrefix} Excluindo item ID: {Id}", LogPrefix, itemEstoque.Id);
-        _context.ItensEstoque.Remove(itemEstoque);
+        _context.Estoque.Remove(itemEstoque);
         await _context.SaveChangesAsync();
     }
 }

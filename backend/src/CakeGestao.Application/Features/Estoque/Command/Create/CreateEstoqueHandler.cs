@@ -1,5 +1,6 @@
 ﻿using CakeGestao.Application.Features.Financeiro.Command.Create;
 using CakeGestao.Domain.Enum;
+using CakeGestao.Domain.Exceptions;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
 using FluentValidation;
@@ -37,7 +38,7 @@ public class CreateEstoqueHandler : IRequestHandler<CreateEstoqueCommand, Result
             return Result.Fail(new ValidationError(errors));
         }
         
-        var existingItemResult = await _estoqueRepository.ExistItemByNome(request.Nome, request.EmpresaId);
+        var existingItemResult = await _estoqueRepository.ExistItemByNome(request.Nome, request.EmpresaId, request.Marca);
         if(existingItemResult.IsSuccess)
         {
             _logger.LogWarning("{LogPrefix} Item já cadastrado. EmpresaId: {EmpresaId} | Nome: {Nome}", LogPrefix, request.EmpresaId, request.Nome);
@@ -52,7 +53,7 @@ public class CreateEstoqueHandler : IRequestHandler<CreateEstoqueCommand, Result
                 request.QuantidadeMinima,
                 request.Valor,
                 request.EmpresaId,
-                request.UnidadeMedidaReferenciaVolume != null ? global::System.Enum.Parse<global::CakeGestao.Domain.Enum.UnidadeMedidaEnum>(request.UnidadeMedidaReferenciaVolume, ignoreCase: true) : null,
+                request.UnidadeMedidaReferenciaVolume != null ? Enum.Parse<UnidadeMedidaEnum>(request.UnidadeMedidaReferenciaVolume, ignoreCase: true) : null,
                 request.PesoReferenciaEmGramas
         );
 

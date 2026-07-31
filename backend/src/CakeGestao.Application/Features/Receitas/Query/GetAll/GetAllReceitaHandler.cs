@@ -1,5 +1,6 @@
 using AutoMapper;
 using CakeGestao.Application.Features.Receitas.Common;
+using CakeGestao.Domain.Exceptions;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
 using FluentValidation;
@@ -31,9 +32,9 @@ public class GetAllReceitaHandler : IRequestHandler<GetAllReceitaQuery, Result<L
         var validationResult = await _validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
         {
-            _logger.LogWarning("{LogPrefix} Validação falhou para a requisição. Erros: {Errors}", LogPrefix, string.Join(", ", validationResult.Errors.Select(e => e.ErrorMessage)));
-            var errors = validationResult.Errors.Select(e => new ValidationError(e.ErrorMessage)).ToList();
-            return Result.Fail(errors);
+            var errors = validationResult.Errors.Select(x => x.ErrorMessage).ToList();
+            _logger.LogWarning("{LogPrefix} Requisição inválida. EmpresaId: {EmpresaId}. Erros: {Errors}", LogPrefix, request.EmpresaId, string.Join(", ", errors));
+            return Result.Fail(new ValidationError(errors));
         }
 
         var receitasResult = await _receitaRepository.GetAllReceitasAsync(request.EmpresaId);

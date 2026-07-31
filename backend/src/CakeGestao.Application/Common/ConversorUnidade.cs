@@ -26,10 +26,12 @@ public static class ConversorUnidade
                 ? Result.Ok((decimal)new Mass(qtd, ObterUnidadeMassa(origem)).As(ObterUnidadeMassa(destino)))
                 : Result.Ok((decimal)new Volume(qtd, ObterUnidadeVolume(origem)).As(ObterUnidadeVolume(destino)));
         }
-
-        if (unidadeReferenciaVolume is null || pesoReferenciaEmGramas is null)
-            return Result.Fail($"Para converter {origem} em {destino}, o ingrediente precisa ter o peso de referência configurado no estoque.");
-
+    
+        if (unidadeReferenciaVolume is null || pesoReferenciaEmGramas is null || pesoReferenciaEmGramas <= 0)
+        {
+            return Result.Fail($"Para usar medidas de volume (como Xícara, Colher ou ml) neste ingrediente, você precisa editar o cadastro dele no Estoque e informar a Referência de Peso (Ex: 1 CUP = 120g).");
+        }
+        
         double densidadeGramaPorMl = (double)pesoReferenciaEmGramas.Value / new Volume(1, ObterUnidadeVolume(unidadeReferenciaVolume.Value)).Milliliters;
 
         if (origemEMassa)

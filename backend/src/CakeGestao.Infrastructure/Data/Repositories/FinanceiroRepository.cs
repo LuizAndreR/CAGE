@@ -90,6 +90,22 @@ public class FinanceiroRepository : IFinanceiroRepository
         return Result.Ok(totalSaida);
     }
 
+    public async Task<Result<TransacaoFinanceira>> GetTransacaoByPedidoId(int pedidoId, int empresaId)
+    {
+        _logger.LogDebug("{LogPrefix} Buscando transação pelo pedido de id: {Id}. EmpresaId: {EmpresaId}", LogPrefix, pedidoId, empresaId);
+        
+        var query = _context.TransacoesFinanceiras.AsQueryable();
+        var transacao = await query.FirstOrDefaultAsync(x => x.PedidoId == pedidoId);
+
+        if (transacao == null)
+        {
+            _logger.LogWarning("{LogPrefix} Transação relacionado com o pedido de id: {Id} não encontrada.", LogPrefix, pedidoId);
+            return Result.Fail("Transação não encontrado no banco de dados");
+        }
+
+        return Result.Ok(transacao);
+    }
+    
     public async Task<Result<TransacaoFinanceira>> GetTransacaoAsync(int id, int? empresaId)
     {
         _logger.LogDebug("{LogPrefix} Buscando transação ID {Id}. EmpresaId: {EmpresaId}", LogPrefix, id, empresaId);

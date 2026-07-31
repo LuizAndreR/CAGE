@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using CakeGestao.Application.Features.Estoque.Common;
 using CakeGestao.Application.UseCases.Estoque.Common;
+using CakeGestao.Domain.Exceptions;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
 using FluentValidation;
@@ -8,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace CakeGestao.Application.Features.Estoque.Query.Alerta;
 
-public class GetAlertaEstoqueHandler : IRequestHandler<GetAlertaEstoqueQuery, Result<List<ItemEstoqueResponse>>>
+public class GetAlertaEstoqueHandler : IRequestHandler<GetAlertaEstoqueQuery, Result<List<ItemEstoqueResponseAlert>>>
 {
     private readonly IEstoqueRepository _estoqueRepository;
     private readonly ILogger<GetAlertaEstoqueHandler> _logger;
@@ -24,7 +26,7 @@ public class GetAlertaEstoqueHandler : IRequestHandler<GetAlertaEstoqueQuery, Re
         _mapper = mapper;
     }
 
-    public async Task<Result<List<ItemEstoqueResponse>>> Handle(GetAlertaEstoqueQuery request, CancellationToken cancellationToken)
+    public async Task<Result<List<ItemEstoqueResponseAlert>>> Handle(GetAlertaEstoqueQuery request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("{LogPrefix} Verificando alertas de estoque baixo. EmpresaID: {EmpresaId}", LogPrefix, request.EmpresaId);
 
@@ -40,10 +42,10 @@ public class GetAlertaEstoqueHandler : IRequestHandler<GetAlertaEstoqueQuery, Re
         if (itensEstoqueResult.IsFailed)
         {
             _logger.LogInformation("{LogPrefix} Nenhum item em estado de alerta no momento.", LogPrefix);
-            return Result.Ok(new List<ItemEstoqueResponse>());
+            return Result.Ok(new List<ItemEstoqueResponseAlert>());
         }
 
-        var itensEstoqueResponse = _mapper.Map<List<ItemEstoqueResponse>>(itensEstoqueResult.Value);
+        var itensEstoqueResponse = _mapper.Map<List<ItemEstoqueResponseAlert>>(itensEstoqueResult.Value);
 
         _logger.LogInformation("{LogPrefix} Alertas encontrados. Total de itens críticos: {Count}", LogPrefix, itensEstoqueResponse.Count);
         return Result.Ok(itensEstoqueResponse);

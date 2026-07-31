@@ -2,6 +2,7 @@
 using CakeGestao.Application.Features.Empresas.Command.Create;
 using CakeGestao.Domain.Entities;
 using CakeGestao.Domain.Enum;
+using CakeGestao.Domain.Exceptions;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
 using FluentValidation;
@@ -40,7 +41,7 @@ public class CreateEmpresaHandler : IRequestHandler<CreateEmpresaCommand, Result
         if (existingEmpresaResult.IsFailed)
         {
             _logger.LogWarning("{LogPrefix} Tentativa de cadastro duplicado. Empresa já existe: {Nome}", LogPrefix, request.Nome);
-            return Result.Fail(existingEmpresaResult.Errors);
+            return Result.Fail(new ConflictError("Empresa com mesmo nome ja cadastrada"));
         }
 
         StatusEmpresaEnum status = StatusEmpresaEnum.Ativa;
