@@ -5,6 +5,7 @@ namespace CakeGestao.Domain.Interfaces.Repositories;
 
 public interface IEstoqueRepository
 {
+    public Task<int> GetTotalItensEstoqueAsync(int empresaId, CancellationToken cancellationToken);
     public Task<Result<Estoque>> GetItemEstoqueByIdAsync(int id, int? empresaId);
     public Task<Result<List<Estoque>>> GetItensByIdsAsync(IEnumerable<int> ids, int empresaId);
     public Task<Result<List<Estoque>>> GetAllItemEstoqueByEmpresaIdAsync(int empresaId);

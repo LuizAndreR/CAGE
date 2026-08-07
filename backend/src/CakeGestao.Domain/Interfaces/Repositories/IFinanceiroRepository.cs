@@ -6,6 +6,8 @@ namespace CakeGestao.Domain.Interfaces.Repositories;
 
 public interface IFinanceiroRepository
 {
+    public Task<decimal> GetTotalPorTipoMesAtualAsync(TipoTransacaoEnum tipo, int empresaId,
+        CancellationToken cancellationToken);
     public Task<Result<List<TransacaoFinanceira>>> GetAllTransacoesAsync(int empresaId, TipoTransacaoEnum? tipo,
         CategoriasEnum? categoria, int? mes, int? ano);
     public Task<Result<decimal>> GetEntradaAsync(int empresaId);
