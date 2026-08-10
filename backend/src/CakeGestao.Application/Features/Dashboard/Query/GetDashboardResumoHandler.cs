@@ -36,6 +36,7 @@ public class GetDashboardResumoHandler : IRequestHandler<GetDashboardResumoQuery
         var ultimosPedidos = await _pedidoRepository.GetUltimosPedidosAsync(request.EmpresaId, 5, cancellationToken);
         
         var response = ConstruirDtoDeResposta(
+            request.NomeUsuario,
             totalEstoque, 
             totalEntradas, 
             totalSaidas, 
@@ -49,10 +50,11 @@ public class GetDashboardResumoHandler : IRequestHandler<GetDashboardResumoQuery
         return Result.Ok(response);
     }
 
-    private DashboardResponseDto ConstruirDtoDeResposta(int totalEstoque, decimal totalEntradas, decimal totalSaidas, IEnumerable<Domain.Entities.Receita> ultimasReceitas, IEnumerable<Domain.Entities.Pedido> ultimosPedidos)
+    private DashboardResponseDto ConstruirDtoDeResposta(string nomeUsuario, int totalEstoque, decimal totalEntradas, decimal totalSaidas, IEnumerable<Domain.Entities.Receita> ultimasReceitas, IEnumerable<Domain.Entities.Pedido> ultimosPedidos)
     {
         return new DashboardResponseDto
         {
+            NomeUsuario = nomeUsuario,
             TotalItensEstoque = totalEstoque,
             Financeiro = new FinanceiroResumoDto
             {

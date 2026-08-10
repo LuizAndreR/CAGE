@@ -23,7 +23,10 @@ public class RefreshTokenHandler : IRequestHandler<RefreshTokenCommand, Result<T
         _usuarioRepository = usuarioRepository;
         _jwtTokenService = jwtTokenService;
     }
-
+    
+    // O token já foi usado, isso pode indicar roubo de token (Replay Attack)
+    // O ideal seria invalidar todos os tokens desse usuário, mas por hora vamos apenas negar.
+    //Fazer depois
     public async Task<Result<TokensResponse>> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
     {
         _logger.LogInformation("{LogPrefix} Iniciando renovação de sessão (Refresh Token).", LogPrefix);
@@ -31,8 +34,6 @@ public class RefreshTokenHandler : IRequestHandler<RefreshTokenCommand, Result<T
         var tokenResult = await _tokenRepository.GetRefreshTokenAsync(request.RefreshToken);
         if (tokenResult.IsFailed || tokenResult.Value.IsRevoked || tokenResult.Value.IsUsed || tokenResult.Value.ExpiresAt < DateTime.UtcNow)
         {
-            // O token já foi usado, isso pode indicar roubo de token (Replay Attack)
-            // O ideal seria invalidar todos os tokens desse usuário, mas por hora vamos apenas negar.
             _logger.LogWarning("{LogPrefix} Falha na renovação: Token inválido, expirado ou reutilizado.", LogPrefix);
             return Result.Fail(new ValidationError(new List<string> { "Refresh token inválido ou expirado" }));
         };
@@ -49,7 +50,7 @@ public class RefreshTokenHandler : IRequestHandler<RefreshTokenCommand, Result<T
             return Result.Fail(new NotFoundError("Usuario associado ao refresh token não encontrado"));
         }
         var usuario = usuarioResult.Value;
-        var tokens = await _jwtTokenService.TokenService(usuario.Id, usuario.Email, usuario.Role.ToString(), usuario.EmpresaId);
+        var tokens = await _jwtTokenService.TokenService(usuario.Id, usuario.Nome, usuario.Email, usuario.Role.ToString(), usuario.EmpresaId);
         var tokenResponse = new TokensResponse
         {
             AccessToken = tokens.accessToken,

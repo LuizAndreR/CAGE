@@ -9,4 +9,7 @@ public class GetDashboardResumoQuery : IRequest<Result<DashboardResponseDto>>
 {
     [JsonIgnore]
     public int EmpresaId { get; set; }
+    
+    [JsonIgnore]
+    public string NomeUsuario { get; set; } = string.Empty;
 }

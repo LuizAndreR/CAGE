@@ -25,18 +25,18 @@ public class JwtTokenService : IJwtTokenService
         _tokenRepository = tokenRepository;
     }
 
-    public async Task<(string accessToken, string refreshToken)> TokenService(int usuarioId, string email, string role, int? empresaId)
+    public async Task<(string accessToken, string refreshToken)> TokenService(int usuarioId, string nome, string email, string role, int? empresaId)
     {
         _logger.LogInformation("{LogPrefix} Gerando par de tokens (Access + Refresh). Usuário ID: {Id} | Role: {Role}", LogPrefix, usuarioId, role);
 
-        var accessToken = GenerateToken(usuarioId, email, role, empresaId);
+        var accessToken = GenerateToken(usuarioId, nome, email, role, empresaId);
 
         var refreshToken = await GenerateRefreshToken(usuarioId);
 
         return (accessToken, refreshToken);
     }
 
-    private string GenerateToken(int usuarioId, string email, string role, int? empresaId)
+    private string GenerateToken(int usuarioId, string nome, string email, string role, int? empresaId)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -45,6 +45,7 @@ public class JwtTokenService : IJwtTokenService
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.NameIdentifier, usuarioId.ToString()),
+            new Claim(ClaimTypes.Name, nome),
             new Claim(ClaimTypes.Email, email),
             new Claim(ClaimTypes.Role, role)
         };

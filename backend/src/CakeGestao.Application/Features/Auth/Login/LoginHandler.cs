@@ -50,7 +50,7 @@ public class LoginHandler : IRequestHandler<LoginCommand, Result<TokensResponse>
             return Result.Fail(new ValidationError(new List<string> { "Email ou senha inválidos" }));
         }
 
-        var tokens = await _jwtTokenService.TokenService(usuario.Id, usuario.Email, usuario.Role.ToString(), usuario.EmpresaId);
+        var tokens = await _jwtTokenService.TokenService(usuario.Id, usuario.Nome, usuario.Email, usuario.Role.ToString(), usuario.EmpresaId);
         usuario.AtualizarUltimoLogin(DateTime.UtcNow);
         await _usuarioRepository.UpdateUsuarioAsync(usuario);
 

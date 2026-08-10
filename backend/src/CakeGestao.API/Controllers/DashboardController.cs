@@ -25,8 +25,9 @@ public class DashboardController : ApiControllerBase
     public async Task<IActionResult> GetResumoAsync()
     {
         var empresaId = User.GetEmpresaId();
+        var nomeUsuarioClaim = User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value ?? User.FindFirst("Nome")?.Value ?? "Usuário";
 
-        var result = await _mediator.Send(new GetDashboardResumoQuery { EmpresaId = empresaId.Value });
+        var result = await _mediator.Send(new GetDashboardResumoQuery { EmpresaId = empresaId.Value , NomeUsuario = nomeUsuarioClaim });
 
         return HandleResult(result, _logger, ControllerLogPrefix);
     }

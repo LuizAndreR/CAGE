@@ -2,6 +2,7 @@ namespace CakeGestao.Application.Features.Dashboard.Common;
 
 public class DashboardResponseDto
 {
+    public string NomeUsuario { get; set; } = string.Empty;
     public int TotalItensEstoque { get; set; }
     public FinanceiroResumoDto Financeiro { get; set; } = new();
     public List<UltimaReceitaDto> UltimasReceitas { get; set; } = new();
