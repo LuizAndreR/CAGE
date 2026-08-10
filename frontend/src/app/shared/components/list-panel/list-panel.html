@@ -1,0 +1,16 @@
+<div class="list-panel">
+  <div class="panel-header">
+    <div class="title-group">
+      <div class="panel-icon" [ngClass]="iconClass">
+        <mat-icon>{{ iconName }}</mat-icon>
+      </div>
+      <h2>{{ title }}</h2>
+    </div>
+    <a [routerLink]="linkPath" class="link-ver-todos">
+      {{ linkText }} <mat-icon>chevron_right</mat-icon>
+    </a>
+  </div>
+  
+  <ng-content></ng-content>
+  
+</div>
