@@ -434,3 +434,7 @@ Thumbs.db
 
 #.env
 .env
+
+# Ignorar configurações locais sensíveis
+appsettings.Development.json
+appsettings.Local.json
