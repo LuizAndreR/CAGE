@@ -1,8 +1,23 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { SummaryCard } from '../../shared/components/summary-card/summary-card';
 import { ListPanel } from '../../shared/components/list-panel/list-panel';
+import { DashboardResumo, DashboardService } from './dashboard.service';
+
+// Tipagens locais para espelhar o HTML (Clean Code)
+export interface ReceitaView {
+  name: string;
+  price: string;
+}
+
+export interface PedidoView {
+  id: string;
+  cliente: string;
+  valor: string;
+  date: string;
+  status: string;
+}
 
 @Component({
   selector: 'app-dashboard',
@@ -11,29 +26,13 @@ import { ListPanel } from '../../shared/components/list-panel/list-panel';
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
+export class Dashboard implements OnInit {
+  private dashboardService = inject(DashboardService);
+  private cdr = inject(ChangeDetectorRef); // Injeção do detector de mudanças
 
-export class Dashboard {
-  nomeUsuario: string = 'Ana Maria';
-  
-  cardsConfig = [
-    { label: "Estoque Total", icon: "inventory_2", colorClass: "card-blue", id: "estoque" },
-    { label: "Receita (Mês)", icon: "trending_up", colorClass: "card-emerald", id: "receita" },
-    { label: "Despesas (Mês)", icon: "trending_down", colorClass: "card-rose", id: "despesas" },
-    { label: "Lucro Líquido", icon: "account_balance_wallet", colorClass: "card-indigo", id: "lucro" }
-  ];
-
-  recentOrders = [
-    { id: "1042", cliente: "Maria Oliveira", valor: "R$ 450,00", status: "Em Preparo", date: "Hoje, 14:30" },
-    { id: "1041", cliente: "João Pedro", valor: "R$ 120,00", status: "Entregue", date: "Hoje, 10:15" },
-    { id: "1040", cliente: "Casamento Ana", valor: "R$ 2.400,00", status: "Aguardando", date: "Ontem, 16:40" },
-    { id: "1039", cliente: "Empresa XPTO", valor: "R$ 300,00", status: "Entregue", date: "Ontem, 09:20" }
-  ];
-
-  recentRecipes = [
-    { name: "Bolo de Cenoura c/ Chocolate", type: "Bolo Inteiro", cost: "R$ 15,20", price: "R$ 45,00" },
-    { name: "Brigadeiro Gourmet (100un)", type: "Docinhos", cost: "R$ 32,00", price: "R$ 120,00" },
-    { name: "Torta de Limão", type: "Sobremesa", cost: "R$ 18,50", price: "R$ 60,00" }
-  ];
+  nomeUsuario: string = '';
+  recentOrders: PedidoView[] = [];
+  recentRecipes: ReceitaView[] = [];
 
   dashboardData = {
     estoque: "0",
@@ -42,4 +41,49 @@ export class Dashboard {
     lucro: "R$ 0,00"
   };
 
+  ngOnInit(): void {
+    this.carregarDadosApi();
+  }
+
+  private carregarDadosApi(): void {
+    this.dashboardService.getResumo().subscribe({
+      next: (dadosDaApi: DashboardResumo) => {
+        
+        console.log('DADOS REAIS DA API:', dadosDaApi);
+
+        // Preenchimento dos dados do painel[cite: 1]
+        this.nomeUsuario = dadosDaApi.nomeUsuario;
+
+        this.dashboardData = {
+          estoque: dadosDaApi.totalItensEstoque.toString(),
+          receita: this.formatarMoeda(dadosDaApi.financeiro.totalEntradas),
+          despesas: this.formatarMoeda(dadosDaApi.financeiro.totalSaidas),
+          lucro: this.formatarMoeda(dadosDaApi.financeiro.saldoAtual)
+        };
+
+        this.recentRecipes = dadosDaApi.ultimasReceitas.map(receita => ({
+          name: receita.nome,
+          price: this.formatarMoeda(receita.precoVenda)
+        }));
+
+        this.recentOrders = dadosDaApi.ultimosPedidos.map(pedido => ({
+          id: pedido.pedidoId.toString(),
+          cliente: pedido.clienteNome,
+          valor: this.formatarMoeda(pedido.valorTotal),
+          date: new Date(pedido.dataCriacao).toLocaleDateString('pt-BR'),
+          status: pedido.status
+        }));
+
+        // Força a atualização da interface no momento exato em que os dados são mapeados
+        this.cdr.detectChanges();
+      },
+      error: (erro) => {
+        console.error('Falha de conexão com a API do Cake Gestão:', erro);
+      }
+    });
+  }
+
+  private formatarMoeda(valor: number): string {
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
+  }
 }

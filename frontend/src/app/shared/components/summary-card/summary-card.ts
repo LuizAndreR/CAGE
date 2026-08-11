@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
@@ -9,8 +9,8 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrl: './summary-card.css',
 })
 export class SummaryCard {
-  @Input() label!: string;
-  @Input() value!: string | number;
-  @Input() icon!: string;
-  @Input() colorClass!: string;
+  label = input.required<string>();
+  value = input.required<string | number>();
+  icon = input.required<string>();
+  colorClass = input.required<string>();
 }

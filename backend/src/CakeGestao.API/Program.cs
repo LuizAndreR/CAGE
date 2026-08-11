@@ -106,6 +106,19 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+var politicaCors = "_permitirFrontendAngular";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: politicaCors,
+                      policy =>
+                      {
+                          policy.WithOrigins("http://localhost:35009") // A porta do seu frontend
+                                .AllowAnyHeader()
+                                .AllowAnyMethod();
+                      });
+});
+
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionMiddleware>();
@@ -122,6 +135,10 @@ app.Lifetime.ApplicationStarted.Register(() =>
     }
 });
 
+app.UseRouting();
+
+app.UseCors(politicaCors);
+
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -133,8 +150,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-app.UseAuthorization();
 
 app.MapControllers();
 

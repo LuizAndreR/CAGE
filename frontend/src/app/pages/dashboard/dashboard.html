@@ -2,7 +2,7 @@
   
   <header class="dashboard-header">
     <div>
-      <h1>Olá, {{ nomeUsuario }} </h1>
+      <h1>Olá, {{ nomeUsuario }}</h1>
       <p>Aqui está o resumo da sua confeitaria hoje.</p>
     </div>
     <button class="btn-novo-pedido">
@@ -11,70 +11,49 @@
     </button>
   </header>
 
+  <!-- Clean Code: Cards declarados de forma explícita e legível -->
   <section class="summary-grid">
-  @for (card of cardsConfig; track card.id) {
-    <app-summary-card 
-      [label]="card.label"
-      [icon]="card.icon"
-      [colorClass]="card.colorClass"
-      [value]="card.id === 'estoque' ? dashboardData.estoque :
-               card.id === 'receita' ? dashboardData.receita :
-               card.id === 'despesas' ? dashboardData.despesas :
-               dashboardData.lucro">
-    </app-summary-card>
-  }
-</section>
+    <app-summary-card label="Estoque Total" icon="inventory_2" colorClass="card-blue" [value]="dashboardData.estoque"></app-summary-card>
+    <app-summary-card label="Receita (Mês)" icon="trending_up" colorClass="card-emerald" [value]="dashboardData.receita"></app-summary-card>
+    <app-summary-card label="Despesas (Mês)" icon="trending_down" colorClass="card-rose" [value]="dashboardData.despesas"></app-summary-card>
+    <app-summary-card label="Lucro Líquido" icon="account_balance_wallet" colorClass="card-indigo" [value]="dashboardData.lucro"></app-summary-card>
+  </section>
 
-  <!-- Listas (Pedidos e Receitas) -->
   <section class="lists-grid">
-    
-    <app-list-panel 
-    title="Últimos Pedidos" 
-    iconName="shopping_bag" 
-    iconClass="icon-rose" 
-    linkPath="/pedidos" 
-    linkText="Ver todos">
-    
-    <!-- O conteúdo abaixo será projetado no <ng-content> -->
+    <!-- Últimos Pedidos[cite: 1] -->
+    <app-list-panel title="Últimos Pedidos" iconName="shopping_bag" iconClass="icon-rose" linkPath="/pedidos" linkText="Ver todos">
       <ul class="list-group">
-      @for (order of recentOrders; track order.id) {
-        <li class="list-item">
-          <div class="item-info">
-            <strong>#{{ order.id }} - {{ order.cliente }}</strong>
-            <span>{{ order.date }}</span>
-          </div>
-          <div class="item-actions">
-            <span class="badge" [class.badge-emerald]="order.status === 'Entregue'" [class.badge-amber]="order.status === 'Em Preparo'" [class]="order.status !== 'Entregue' && order.status !== 'Em Preparo' ? 'badge badge-default' : 'badge'">
-              {{ order.status }}
-            </span>
-            <span class="item-price">{{ order.valor }}</span>
-          </div>
-        </li>
-      }
+        @for (order of recentOrders; track order.id) {
+          <li class="list-item">
+            <div class="item-info">
+              <strong>#{{ order.id }} - {{ order.cliente }}</strong>
+              <span>{{ order.date }}</span>
+            </div>
+            <div class="item-actions">
+              <!-- Proteção adicionada: se não houver status, exibe 'Novo' -->
+              <span class="badge" [class.badge-emerald]="order.status === 'Entregue'" [class.badge-amber]="order.status === 'Em Preparo'">
+                {{ order.status || 'Novo' }}
+              </span>
+              <span class="item-price">{{ order.valor }}</span>
+            </div>
+          </li>
+        }
       </ul>
     </app-list-panel>
 
-    <!-- Últimas Receitas -->
-    <app-list-panel 
-    title="Últimas Receitas" 
-    iconName="cake" 
-    iconClass="icon-rose" 
-    linkPath="/receitas" 
-    linkText="Ver todas">
-    
-    <!-- O conteúdo abaixo será projetado no <ng-content> -->
+    <!-- Últimas Receitas[cite: 1] -->
+    <app-list-panel title="Últimas Receitas" iconName="cake" iconClass="icon-rose" linkPath="/receitas" linkText="Ver todas">
       <ul class="list-group">
-      @for (recipe of recentRecipes; track recipe.name) {
-        <li class="list-item recipe-item">
-          <div class="recipe-icon">
-            <mat-icon>cake</mat-icon>
-          </div>
-          <span class="recipe-name">{{ recipe.name }}</span>
-          <span class="item-price">{{ recipe.price }}</span>
-        </li>
-      }
+        @for (recipe of recentRecipes; track recipe.name) {
+          <li class="list-item recipe-item">
+            <div class="recipe-icon">
+              <mat-icon>cake</mat-icon>
+            </div>
+            <span class="recipe-name">{{ recipe.name }}</span>
+            <span class="item-price">{{ recipe.price }}</span>
+          </li>
+        }
       </ul>
     </app-list-panel>
-
   </section>
 </div>
