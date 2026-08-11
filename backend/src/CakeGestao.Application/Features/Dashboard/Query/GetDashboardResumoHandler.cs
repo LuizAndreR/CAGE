@@ -1,4 +1,5 @@
 using CakeGestao.Application.Features.Dashboard.Common;
+using CakeGestao.Domain.Entities;
 using CakeGestao.Domain.Enum;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
@@ -50,7 +51,7 @@ public class GetDashboardResumoHandler : IRequestHandler<GetDashboardResumoQuery
         return Result.Ok(response);
     }
 
-    private DashboardResponseDto ConstruirDtoDeResposta(string nomeUsuario, int totalEstoque, decimal totalEntradas, decimal totalSaidas, IEnumerable<Domain.Entities.Receita> ultimasReceitas, IEnumerable<Domain.Entities.Pedido> ultimosPedidos)
+    private DashboardResponseDto ConstruirDtoDeResposta(string nomeUsuario, int totalEstoque, decimal totalEntradas, decimal totalSaidas, IEnumerable<Receita> ultimasReceitas, IEnumerable<Pedido> ultimosPedidos)
     {
         return new DashboardResponseDto
         {
@@ -73,7 +74,8 @@ public class GetDashboardResumoHandler : IRequestHandler<GetDashboardResumoQuery
                 PedidoId = p.Id,
                 ClienteNome = p.ClienteNome,
                 ValorTotal = p.ValorTotal,
-                DataCriacao = p.DataCriacao 
+                DataCriacao = p.DataCriacao,
+                Status = p.StatusPedido.ToString()
             }).ToList()
         };
     }

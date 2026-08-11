@@ -28,5 +28,6 @@ public class UltimoPedidoDto
     public int PedidoId { get; set; }
     public string ClienteNome { get; set; } = string.Empty;
     public decimal ValorTotal { get; set; }
+    public required string Status { get; set; }
     public DateTime DataCriacao { get; set; }
 }
