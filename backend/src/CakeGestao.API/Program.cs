@@ -107,15 +107,19 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var politicaCors = "_permitirFrontendAngular";
+var rotaDoFrontend = builder.Configuration["ROTA_DO_FRONTEND"];
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: politicaCors,
                       policy =>
                       {
-                          policy.WithOrigins("http://localhost:35009") // A porta do seu frontend
-                                .AllowAnyHeader()
-                                .AllowAnyMethod();
+                          if (!string.IsNullOrEmpty(rotaDoFrontend))
+                          {
+                              policy.WithOrigins(rotaDoFrontend) 
+                                    .AllowAnyHeader()
+                                    .AllowAnyMethod();
+                          }
                       });
 });
 
