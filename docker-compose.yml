@@ -30,5 +30,15 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
 
+  frontend:
+    build:
+      context: ./frontend  
+      dockerfile: Dockerfile
+    container_name: CAGE_FRONT
+    ports:
+      - "4200:80"          
+    depends_on:
+      - api            
+
 volumes:
   db_data:
