@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
@@ -36,17 +36,10 @@ export interface DashboardResumo {
 })
 export class DashboardService {
   private http = inject(HttpClient);
+  
   private apiUrl = `${environment.apiUrl}/dashboard/resumo`;
 
   getResumo(): Observable<DashboardResumo> {
-    // Truque temporário: Cole aqui o token JWT gerado pelo seu backend
-    // Quando a tela de Login for criada, substituiremos isso pela leitura do LocalStorage
-    const tokenTemporario = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjIiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiVGVzdGUgMDIiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJ0ZXN0ZTAyQGdtYWlsLmNvbSIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkRvbm8iLCJFbXByZXNhSWQiOiIxIiwiZXhwIjoxNzg2NDkyNTQxLCJpc3MiOiJDYWtlR2VzdGFvIiwiYXVkIjoiQ2FrZUdlc3Rhb1VzZXJzIn0.ZwIMh9ewNugzdse4fBEGzorlFRU-16uSREFnMhuXkHg'; 
-    
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${tokenTemporario}`
-    });
-
-    return this.http.get<DashboardResumo>(this.apiUrl, { headers });
+    return this.http.get<DashboardResumo>(this.apiUrl);
   }
 }
