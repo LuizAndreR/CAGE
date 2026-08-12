@@ -5,7 +5,6 @@ import { SummaryCard } from '../../shared/components/summary-card/summary-card';
 import { ListPanel } from '../../shared/components/list-panel/list-panel';
 import { DashboardResumo, DashboardService } from './dashboard.service';
 
-// Tipagens locais para espelhar o HTML (Clean Code)
 export interface ReceitaView {
   name: string;
   price: string;
@@ -28,7 +27,7 @@ export interface PedidoView {
 })
 export class Dashboard implements OnInit {
   private dashboardService = inject(DashboardService);
-  private cdr = inject(ChangeDetectorRef); // Injeção do detector de mudanças
+  private cdr = inject(ChangeDetectorRef); 
 
   nomeUsuario: string = '';
   recentOrders: PedidoView[] = [];
@@ -48,10 +47,7 @@ export class Dashboard implements OnInit {
   private carregarDadosApi(): void {
     this.dashboardService.getResumo().subscribe({
       next: (dadosDaApi: DashboardResumo) => {
-        
-        console.log('DADOS REAIS DA API:', dadosDaApi);
 
-        // Preenchimento dos dados do painel[cite: 1]
         this.nomeUsuario = dadosDaApi.nomeUsuario;
 
         this.dashboardData = {
@@ -74,7 +70,6 @@ export class Dashboard implements OnInit {
           status: pedido.status
         }));
 
-        // Força a atualização da interface no momento exato em que os dados são mapeados
         this.cdr.detectChanges();
       },
       error: (erro) => {
