@@ -1,0 +1,51 @@
+<aside class="sidebar">
+  
+  <!-- Parte de Cima (Brand) -->
+  <div class="sidebar-header">
+    <div class="logo-icon">C</div>
+    <div class="logo-text">
+      <span class="title">Cake Gestão</span>
+      <span class="subtitle">CAGE ERP</span>
+    </div>
+  </div>
+
+  <!-- Navegação -->
+  <nav class="sidebar-nav">
+    @for (item of navItems; track item.path) {
+      <a 
+        [routerLink]="item.path" 
+        routerLinkActive="active" 
+        class="nav-link"
+      >
+        <span class="material-symbols-outlined nav-icon">{{ item.icon }}</span>
+        <span class="nav-label">{{ item.label }}</span>
+      </a>
+    }
+  </nav>
+
+    <!-- Parte de Baixo (Perfil do Usuário) -->
+  <div class="sidebar-footer">
+    <div class="user-profile">
+      
+      <!-- Se o usuário já carregou da API, mostramos os dados reais -->
+      @if (usuario()) {
+        <div class="user-avatar">{{ iniciais() }}</div>
+        <div class="user-info">
+          <!-- Renderiza o Nome dinâmico -->
+          <span class="user-name">{{ usuario()?.nome }}</span>
+          <!-- Renderiza a Role dinâmica (ex: 'Admin' ou 'Dono') -->
+          <span class="user-role">{{ usuario()?.role }}</span>
+        </div>
+      } @else {
+        <!-- Skeleton Loading elegante enquanto a API não responde -->
+        <div class="user-avatar loading-pulse"></div>
+        <div class="user-info">
+          <span class="user-name loading-pulse" style="width: 80px; height: 12px; border-radius: 4px;"></span>
+          <span class="user-role loading-pulse" style="width: 50px; height: 10px; border-radius: 4px; margin-top: 4px;"></span>
+        </div>
+      }
+      
+    </div>
+  </div>
+
+</aside>

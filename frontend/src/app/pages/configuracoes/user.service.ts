@@ -2,17 +2,16 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { DashboardResumo } from '../../core/models/dashboard.interface';
+import { UsuarioResponse } from '../../core/models/usuario.interface';
 
 @Injectable({
   providedIn: 'root'
 })
-export class DashboardService {
+export class UserService {
   private http = inject(HttpClient);
-  
-  private apiUrl = `${environment.apiUrl}/dashboard/resumo`;
+  private apiUrl = `${environment.apiUrl}/user`;
 
-  getResumo(): Observable<DashboardResumo> {
-    return this.http.get<DashboardResumo>(this.apiUrl);
+  getPerfil(): Observable<UsuarioResponse> {
+    return this.http.get<UsuarioResponse>(`${this.apiUrl}/getuser`);
   }
 }

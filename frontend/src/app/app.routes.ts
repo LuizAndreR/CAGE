@@ -7,39 +7,40 @@ export const routes: Routes = [
         redirectTo: 'login', 
         pathMatch: 'full'   
     },
+    // 2. Rota Pública
     {
         path: 'login',
-        loadComponent: () => import('./pages/login/login').then(c => c.Login)
+        loadComponent: () => import('./pages/login/login') 
     },
     {
-        path: 'dashboard',
+        path: '',
         canActivate: [authGuard], 
-        loadComponent: () => import('./pages/dashboard/dashboard').then(c => c.Dashboard)
-    },
-    {
-        path: 'estoque',
-        canActivate: [authGuard],
-        loadComponent: () => import('./pages/estoque/estoque').then(c => c.Estoque)
-    },
-    {
-        path: 'financeiro',
-        canActivate: [authGuard],
-        loadComponent: () => import('./pages/financeiro/financeiro').then(c => c.Financeiro)
-    },
-    {
-        path: 'pedidos',
-        canActivate: [authGuard],
-        loadComponent: () => import('./pages/pedidos/pedidos').then(c => c.Pedidos)
-    },
-    {   
-        path: 'receitas',
-        canActivate: [authGuard],
-        loadComponent: () => import('./pages/receitas/receitas').then(c => c.Receitas)
-    },
-    {
-        path: 'configuracoes',
-        canActivate: [authGuard],
-        loadComponent: () => import('./pages/configuracoes/configuracoes').then(c => c.Configuracoes)
+        children: [
+            {
+                path: 'dashboard',
+                loadComponent: () => import('./pages/dashboard/dashboard')
+            },
+            {
+                path: 'estoque',
+                loadComponent: () => import('./pages/estoque/estoque')
+            },
+            {
+                path: 'financeiro',
+                loadComponent: () => import('./pages/financeiro/financeiro')
+            },
+            {
+                path: 'pedidos',
+                loadComponent: () => import('./pages/pedidos/pedidos')
+            },
+            {   
+                path: 'receitas',
+                loadComponent: () => import('./pages/receitas/receitas')
+            },
+            {
+                path: 'configuracoes',
+                loadComponent: () => import('./pages/configuracoes/configuracoes')
+            }
+        ]
     },
     {
         path: '**',

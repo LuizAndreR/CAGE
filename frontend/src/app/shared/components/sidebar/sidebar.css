@@ -1,0 +1,149 @@
+/* Layout Principal da Sidebar */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  width: 16rem; /* w-64 */
+  height: 100dvh;
+  background-color: #ffffff;
+  border-right: 1px solid #ffe4e6; 
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  z-index: 10;
+}
+
+/* =========================================
+   PARTE DE CIMA (BRAND / LOGO)
+========================================= */
+.sidebar-header {
+  padding: 1.5rem; /* p-6 */
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; /* gap-3 */
+}
+
+.logo-icon {
+  width: 2.5rem; /* w-10 */
+  height: 2.5rem; /* h-10 */
+  border-radius: 9999px;
+  background-color: #ffe4e6; /* bg-rose-100 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #e11d48; /* text-rose-600 */
+  font-weight: 700;
+  font-size: 1.25rem; /* text-xl */
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.logo-text .title {
+  font-weight: 700;
+  font-size: 1.125rem; /* text-lg */
+  letter-spacing: -0.025em; /* tracking-tight */
+  color: #881337; /* text-rose-900 */
+}
+
+.logo-text .subtitle {
+  font-size: 0.75rem; /* text-xs */
+  color: #fb7185; /* text-rose-400 */
+  font-weight: 500;
+  letter-spacing: 0.05em; /* tracking-wider */
+}
+
+/* =========================================
+   NAVEGAÇÃO E ESTADO ATIVO (AS CORES QUE VOCÊ PEDIU)
+========================================= */
+.sidebar-nav {
+  flex: 1;
+  padding: 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem; /* space-y-1 */
+  overflow-y: auto;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  border-radius: 1rem; /* rounded-2xl */
+  text-decoration: none;
+  font-weight: 500;
+  color: #57534e; /* text-stone-600 */
+  transition: all 0.2s ease;
+}
+
+.nav-link:hover {
+  background-color: rgba(255, 241, 242, 0.5); 
+  color: #9f1239; 
+}
+
+/* 
+  Aqui está a mágica! Essa classe é adicionada pelo Angular
+  quando o usuário está na tela correspondente. 
+*/
+.nav-link.active {
+  background-color: #FFE4E6; /* Cor de fundo solicitada */
+  color: #8B0836;            /* Cor da letra solicitada */
+}
+
+/* Ajuste fino para o ícone herdar a cor exata da letra */
+.nav-link.active .nav-icon {
+  color: #8B0836;
+}
+
+.nav-icon {
+  font-size: 1.25rem;
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+  transition: color 0.2s ease;
+}
+
+/* =========================================
+   PARTE DE BAIXO (PERFIL DO USUÁRIO)
+========================================= */
+.sidebar-footer {
+  padding: 1rem;
+  margin-top: auto;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background-color: #fafaf9; /* bg-stone-50 */
+  border-radius: 1rem; /* rounded-2xl */
+  border: 1px solid #f5f5f4; /* border-stone-100 */
+}
+
+.user-avatar {
+  width: 2rem; /* w-8 */
+  height: 2rem; /* h-8 */
+  border-radius: 9999px;
+  background-color: #fecdd3; /* bg-rose-200 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9f1239; /* text-rose-800 */
+  font-weight: 600;
+  font-size: 0.875rem; /* text-sm */
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-info .user-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #292524; /* text-stone-800 */
+}
+
+.user-info .user-role {
+  font-size: 0.75rem;
+  color: #78716c; /* text-stone-500 */
+}

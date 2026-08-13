@@ -6,4 +6,4 @@ import { Component } from '@angular/core';
   templateUrl: './receitas.html',
   styleUrl: './receitas.css',
 })
-export class Receitas {}
+export default class Receitas {}

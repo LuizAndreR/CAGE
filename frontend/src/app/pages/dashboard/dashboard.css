@@ -59,6 +59,17 @@
   margin-bottom: 2.5rem;
 }
 
+@media (max-width: 768px) {
+  .summary-grid {
+    /* Troca o grid por flexbox apenas no celular para empilhar corretamente */
+    display: flex;
+    flex-direction: column;
+    
+    /* Adiciona o distanciamento para não ficarem grudados */
+    gap: 1.5rem; 
+  }
+}
+
 /* Cores dos Ícones dos Cards */
 .card-blue { background-color: #dbeafe; color: #1e40af; }
 .card-emerald { background-color: #d1fae5; color: #065f46; }

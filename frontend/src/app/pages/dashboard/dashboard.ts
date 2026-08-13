@@ -3,7 +3,8 @@ import { RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { SummaryCard } from '../../shared/components/summary-card/summary-card';
 import { ListPanel } from '../../shared/components/list-panel/list-panel';
-import { DashboardResumo, DashboardService } from './dashboard.service';
+import { DashboardService } from './dashboard.service';
+import { DashboardResumo } from '../../core/models/dashboard.interface';
 
 export interface ReceitaView {
   name: string;
@@ -25,7 +26,7 @@ export interface PedidoView {
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css'
 })
-export class Dashboard implements OnInit {
+export default class Dashboard implements OnInit {
   private dashboardService = inject(DashboardService);
   private cdr = inject(ChangeDetectorRef); 
 

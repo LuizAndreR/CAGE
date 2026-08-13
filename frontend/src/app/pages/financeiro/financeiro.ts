@@ -6,4 +6,4 @@ import { Component } from '@angular/core';
   templateUrl: './financeiro.html',
   styleUrl: './financeiro.css',
 })
-export class Financeiro {}
+export default class Financeiro {}
