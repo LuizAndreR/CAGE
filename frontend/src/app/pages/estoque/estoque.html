@@ -1,1 +1,164 @@
-<p>estoque works!</p>
+<div class="estoque-container">
+  
+  @switch (view()) {
+    
+    <!-- VISÃO 1: LISTA (TABELA) -->
+    @case ('list') {
+      <header class="page-header">
+        <div class="header-titles">
+          <h1>Estoque</h1>
+          <p>Controle seus ingredientes e embalagens.</p>
+        </div>
+        <button class="btn-primary" (click)="changeView('form')">
+          <span class="material-symbols-outlined">add</span>
+          Adicionar Novo Item
+        </button>
+      </header>
+
+      <div class="tabs">
+         <button [class.active]="activeTab() === 'todos'" (click)="activeTab.set('todos')">
+            Todos
+         </button>
+         <button [class.active]="activeTab() === 'baixo'" (click)="activeTab.set('baixo')" class="tab-alert">
+            Baixo Estoque
+            @if (items().some(i => i.quantidadeAtual <= i.quantidadeMinima)) {
+            <span class="alert-dot"></span>
+            }
+         </button>
+      </div>
+
+     <div class="table-card">
+        <!-- O wrapper precisa abraçar a tabela diretamente para o scroll funcionar no mobile -->
+        <div class="table-responsive-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>Marca</th>
+                <th>Quantidade</th>
+                <th>Valor Médio</th>
+                <th>Qtde Mínima</th>
+                <th class="text-right">Ações Rápidas</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of filteredItems(); track item.id) {
+                <tr class="table-row">
+                  <td id="ItemNome" class="font-bold" (click)="selectedId.set(item.id); changeView('detail')">{{ item.nome }}</td>
+                  <td (click)="selectedId.set(item.id); changeView('detail')">{{ item.marca }}</td>
+                  <td>
+                    <span [class.text-danger]="item.quantidadeAtual <= item.quantidadeMinima">
+                      {{ item.quantidadeAtual }} {{ item.unidade }}
+                    </span>
+                  </td>
+                  <td>{{ formatCurrency(item.valorMedio) }}</td>
+                  <td class="text-muted">{{ item.quantidadeMinima }} {{ item.unidade }}</td>
+                  <td  class="actions-cell">
+                    <button class="btn-icon btn-add" (click)="openActionModal('add', item.id)" title="Adicionar">
+                      <span class="material-symbols-outlined">add</span>
+                    </button>
+                    <button class="btn-icon btn-remove" (click)="openActionModal('remove', item.id)" title="Retirar">
+                      <span class="material-symbols-outlined">remove</span>
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="6" class="text-center empty-state">Nenhum item encontrado.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
+
+    <!-- VISÃO 2: DETALHES -->
+    @case ('detail') {
+      @if (selectedItem(); as item) {
+        <div class="detail-view">
+          <header class="detail-header">
+            <button class="btn-back" (click)="changeView('list')">
+              <span class="material-symbols-outlined">chevron_left</span> Voltar
+            </button>
+            <div class="detail-actions">
+              <button class="btn-outline" (click)="editItem(item)">
+                <span class="material-symbols-outlined">edit</span> Editar
+              </button>
+              <button class="btn-danger-outline">
+                <span class="material-symbols-outlined">delete</span> Excluir
+              </button>
+            </div>
+          </header>
+          
+          <h2>{{ item.nome }}</h2>
+          <p class="subtitle">{{ item.marca }}</p>
+
+          <div class="cards-grid">
+            <div class="info-card">
+              <span class="material-symbols-outlined">inventory_2</span>
+              <p class="card-title">Estoque Atual</p>
+              <h3 [class.text-danger]="item.quantidadeAtual <= item.quantidadeMinima">
+                {{ item.quantidadeAtual }} <small>{{ item.unidade }}</small>
+              </h3>
+            </div>
+            <!-- Mais cards de detalhes aqui... -->
+          </div>
+        </div>
+      }
+    }
+
+    <!-- VISÃO 3: FORMULÁRIO -->
+    @case ('form') {
+      <div class="form-view">
+        <header class="detail-header">
+          <button class="btn-back" (click)="changeView('list')">
+            <span class="material-symbols-outlined">chevron_left</span> Voltar
+          </button>
+          <h2>{{ formData().id ? 'Editar Item' : 'Novo Item' }}</h2>
+        </header>
+
+        <div class="form-card">
+          <!-- O binding bidirecional é feito com ngModel no Angular -->
+          <div class="form-group">
+            <label>Nome do Item</label>
+            <input type="text" [(ngModel)]="formData().nome" placeholder="Ex: Farinha de Trigo">
+          </div>
+          
+          <div class="form-actions">
+            <button class="btn-outline" (click)="changeView('list')">Cancelar</button>
+            <button class="btn-primary">Salvar Ingrediente</button>
+          </div>
+        </div>
+      </div>
+    }
+  }
+
+  <!-- MODAL DE AÇÃO RÁPIDA (ADD/REMOVE) -->
+  @if (actionModal().isOpen) {
+    <div class="modal-overlay" (click)="closeActionModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3 [class.text-success]="actionModal().type === 'add'" [class.text-danger]="actionModal().type === 'remove'">
+            {{ actionModal().type === 'add' ? 'Adicionar ao Estoque' : 'Retirar do Estoque' }}
+          </h3>
+          <button class="btn-icon" (click)="closeActionModal()">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        
+        <div class="form-group mt-4">
+          <label>Quantidade</label>
+          <input type="number" [(ngModel)]="actionAmount" placeholder="0">
+        </div>
+
+        <div class="modal-actions mt-4">
+          <button class="btn-outline" (click)="closeActionModal()">Cancelar</button>
+          <button class="btn-primary" [disabled]="!actionAmount()" (click)="confirmAction()">
+            <span class="material-symbols-outlined">check</span> Confirmar
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>
