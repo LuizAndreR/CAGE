@@ -1,23 +1,24 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, signal, inject, OnInit } from '@angular/core';
 import { EstoqueItem } from '../../core/models/estoque.interface';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { EstoqueService } from '../../core/service/estoque.service';
 
 @Component({
   selector: 'app-estoque',
+  standalone: true, 
   imports: [CommonModule, FormsModule],
   templateUrl: './estoque.html',
   styleUrl: './estoque.css',
 })  
-export default class Estoque {
+export default class Estoque implements OnInit {
+  
+  private estoqueService = inject(EstoqueService);
+
   view = signal<'list' | 'detail' | 'form'>('list');
   activeTab = signal<'todos' | 'baixo'>('todos');
   
-  items = signal<EstoqueItem[]>([
-    { id: 1, nome: "Farinha de Trigo", marca: "Dona Benta", quantidadeAtual: 15, unidade: 'KG', valorMedio: 4.50, quantidadeMinima: 10 },
-    { id: 2, nome: "Chocolate em Pó 50%", marca: "Nestlé", quantidadeAtual: 2.5, unidade: 'KG', valorMedio: 28.00, quantidadeMinima: 5 }
-  ]);
-  
+  items = signal<EstoqueItem[]>([]);
   selectedId = signal<number | null>(null);
   search = signal<string>('');
 
@@ -25,24 +26,46 @@ export default class Estoque {
     isOpen: false, type: 'add', itemId: null
   });
   actionAmount = signal<number | null>(null);
-
-  // Estado do Formulário
   formData = signal<Partial<EstoqueItem>>({ unidade: 'G' });
+
+  ngOnInit(): void {
+    this.carregarEstoque();
+  }
+
+  mudarAba(aba: 'todos' | 'baixo'): void {
+    this.activeTab.set(aba);
+    this.carregarEstoque();
+  }
+
+  carregarEstoque(): void {
+    const requisicao$ = this.activeTab() === 'todos' 
+      ? this.estoqueService.getItens() 
+      : this.estoqueService.getItensBaixoEstoque();
+
+    requisicao$.subscribe({
+      next: (dadosDaApi) => {
+        this.items.set(dadosDaApi);
+      },
+      error: (erro) => {
+        console.error('Falha ao comunicar com a API:', erro);
+      }
+    });
+  }
 
   selectedItem = computed(() => 
     this.items().find(i => i.id === this.selectedId()) || null
   );
 
+  
   filteredItems = computed(() => {
     const termo = this.search().toLowerCase();
-    const tab = this.activeTab();
     
     return this.items().filter(item => {
-      const matchesSearch = item.nome.toLowerCase().includes(termo) || item.marca.toLowerCase().includes(termo);
-      const matchesTab = tab === 'todos' ? true : item.quantidadeAtual <= item.quantidadeMinima;
-      return matchesSearch && matchesTab;
+      const marcaTexto = item.marca?.toLowerCase() || '';
+      return item.nome.toLowerCase().includes(termo) || marcaTexto.includes(termo);
     });
   });
+
 
   formatCurrency(value: number): string {
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);

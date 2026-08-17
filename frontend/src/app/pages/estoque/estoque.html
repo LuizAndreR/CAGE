@@ -16,15 +16,12 @@
       </header>
 
       <div class="tabs">
-         <button [class.active]="activeTab() === 'todos'" (click)="activeTab.set('todos')">
-            Todos
-         </button>
-         <button [class.active]="activeTab() === 'baixo'" (click)="activeTab.set('baixo')" class="tab-alert">
-            Baixo Estoque
-            @if (items().some(i => i.quantidadeAtual <= i.quantidadeMinima)) {
-            <span class="alert-dot"></span>
-            }
-         </button>
+        <button [class.active]="activeTab() === 'todos'" (click)="mudarAba('todos')">
+          Todos
+        </button>
+        <button [class.active]="activeTab() === 'baixo'" (click)="mudarAba('baixo')" class="tab-alert">
+          Baixo Estoque
+        </button>
       </div>
 
      <div class="table-card">
