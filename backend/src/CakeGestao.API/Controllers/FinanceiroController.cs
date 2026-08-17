@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CakeGestao.API.Controllers;
 
 [ApiController]
-[Route("api/financeiro/")]
+[Route("api/financeiro")]
 [Authorize(Roles = "Admin, Dono")]
 public class FinanceiroController : ApiControllerBase
 {
@@ -25,7 +25,7 @@ public class FinanceiroController : ApiControllerBase
         _mediator = mediator;
     }
 
-    [HttpGet("getall")]
+    [HttpGet("")]
     public async Task<IActionResult> GetAll([FromQuery]string? tipo, [FromQuery]string? categoria, [FromQuery]int? mes, [FromQuery]int? ano)
     {
         _logger.LogInformation("{LogPrefix} Solicitando extrato financeiro completo.", ControllerLogPrefix);
@@ -41,7 +41,7 @@ public class FinanceiroController : ApiControllerBase
         return HandleResult(transacaoResult, _logger, ControllerLogPrefix);
     }
 
-    [HttpGet("getresumo")]
+    [HttpGet("resumo")]
     public async Task<IActionResult> GetResumo()
     {
         _logger.LogInformation("{LogPrefix} Solicitando resumo financeiro.", ControllerLogPrefix);
@@ -56,7 +56,7 @@ public class FinanceiroController : ApiControllerBase
         return HandleResult(transacaoResult, _logger, ControllerLogPrefix);
     }
 
-    [HttpGet("get/{id}")]
+    [HttpGet("{id}")]
     public async Task<IActionResult> GetById([FromRoute] int id)
     {
         _logger.LogInformation("{LogPrefix} Buscando detalhes da transação. ID: {Id}", ControllerLogPrefix, id);
@@ -72,7 +72,7 @@ public class FinanceiroController : ApiControllerBase
         return HandleResult(transacaoResult, _logger, ControllerLogPrefix);
     }
 
-    [HttpPost("create")]
+    [HttpPost("")]
     public async Task<IActionResult> CreateTransacao([FromBody] CreateTransacaoCommand request)
     {
         _logger.LogInformation("{LogPrefix} Registrando nova movimentação financeira. Valor: {Valor} | Tipo: {Tipo}",
@@ -91,7 +91,7 @@ public class FinanceiroController : ApiControllerBase
         return HandleResult<object>(transacaoResult, _logger, ControllerLogPrefix);
     }
 
-    [HttpPost("cancel/{id}")]
+    [HttpPost("{id}/cancelamento")]
     public async Task<IActionResult> CancelarTransacao([FromBody] CancelTransacaoCommand request, [FromRoute] int id)
     {
         _logger.LogInformation("{LogPrefix} Solicitando cancelamento de transação. ID: {Id}", ControllerLogPrefix, id);

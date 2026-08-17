@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CakeGestao.API.Controllers;
 
 [ApiController]
-[Route("api/empresa/")]
+[Route("api/empresa")]
 [Authorize(Roles = "Admin")]
 public class EmpresaController : ApiControllerBase
 {
@@ -26,7 +26,7 @@ public class EmpresaController : ApiControllerBase
         _logger = logger;
     }
 
-    [HttpGet("getAll")]
+    [HttpGet("")]
     public async Task<IActionResult> GetAllEmpresas()
     {
         _logger.LogInformation("{LogPrefix} Listando todas as empresas cadastradas.", ControllerLogPrefix);
@@ -36,7 +36,7 @@ public class EmpresaController : ApiControllerBase
         return HandleResult(result, _logger, ControllerLogPrefix);
     }
 
-    [HttpGet("get/{id}")]
+    [HttpGet("{id}")]
     public async Task<IActionResult> GetEmpresaById(int id)
     {
         _logger.LogInformation("{LogPrefix} Buscando detalhes da empresa. ID: {Id}", ControllerLogPrefix, id);
@@ -46,7 +46,7 @@ public class EmpresaController : ApiControllerBase
         return HandleResult(result, _logger, ControllerLogPrefix);
     }
 
-    [HttpPost("create")]
+    [HttpPost("")]
     public async Task<IActionResult> CreateEmpresa([FromBody] CreateEmpresaCommand request)
     {
         _logger.LogInformation("{LogPrefix} Iniciando criação de nova empresa. Nome: {Nome}", ControllerLogPrefix, request.Nome);
@@ -56,7 +56,7 @@ public class EmpresaController : ApiControllerBase
         return HandleResult<object>(result, _logger, ControllerLogPrefix);
     }
 
-    [HttpPatch("update/{id}")]
+    [HttpPut("{id}")]
     public async Task<IActionResult> UpdateEmpresa([FromBody] UpdateEmpresaCommand request, [FromRoute] int id)
     {
         _logger.LogInformation("{LogPrefix} Atualizando dados cadastrais da empresa. ID: {Id}", ControllerLogPrefix, id);
@@ -67,7 +67,7 @@ public class EmpresaController : ApiControllerBase
         return HandleResult<object>(result, _logger, ControllerLogPrefix);
     }
 
-    [HttpPatch("updatedono/{id}")]
+    [HttpPut("me")]
     [Authorize(Roles = "Dono")]
     public async Task<IActionResult> UpdateEmpresaDono([FromBody] UpdateEmpresaCommand request)
     {
@@ -85,7 +85,7 @@ public class EmpresaController : ApiControllerBase
         return HandleResult<object>(result, _logger, ControllerLogPrefix);
     }
 
-    [HttpPut("updatestatus/{id}")]
+    [HttpPatch("{id}/status")]
     public async Task<IActionResult> UpdateStatusEmpresa([FromBody] UpdateStatusEmpresaCommand request, [FromRoute] int id)
     {
         _logger.LogInformation("{LogPrefix} Alterando status da empresa. ID: {Id}", ControllerLogPrefix, id);
@@ -96,7 +96,7 @@ public class EmpresaController : ApiControllerBase
         return HandleResult<object>(result, _logger, ControllerLogPrefix);
     }
 
-    [HttpDelete("delete/{id}")] 
+    [HttpDelete("{id}")] 
     public async Task<IActionResult> DeleteEmpresa([FromRoute] int id)
     {
         _logger.LogInformation("{LogPrefix} Iniciando exclusão de empresa. ID: {Id}", ControllerLogPrefix, id);

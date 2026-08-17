@@ -27,7 +27,7 @@ public class PedidoController : ApiControllerBase
         _mediator = mediator;
     }
 
-    [HttpGet("getall")]
+    [HttpGet("")]
     public async Task<IActionResult> GetAll()
     {
         _logger.LogInformation("{LogPrefix} Recebida requisição para listar pedidos.", ControllerLogPrefix);
@@ -45,7 +45,7 @@ public class PedidoController : ApiControllerBase
         return HandleResult(pedidoResult, _logger, ControllerLogPrefix);
     }
 
-    [HttpGet("get/{pedidoId}")]
+    [HttpGet("{pedidoId}")]
     public async Task<IActionResult> GetPedidoById([FromRoute] int pedidoId)
     {
         _logger.LogInformation("{LogPrefix} Recebida requisição para busca o pedido de Id: {Id}.", ControllerLogPrefix, pedidoId);
@@ -63,7 +63,7 @@ public class PedidoController : ApiControllerBase
         return HandleResult(pedidoResult, _logger, ControllerLogPrefix);
     }
     
-    [HttpPost("create")]
+    [HttpPost("")]
     public async Task<IActionResult> CreatePedido([FromBody] CreatePedidoCommand request)
     {
         _logger.LogInformation("{LogPrefix} Recebida requisição para criar um novo pedido.", ControllerLogPrefix);
@@ -81,7 +81,7 @@ public class PedidoController : ApiControllerBase
         return HandleResult<object>(pedidoResult, _logger, ControllerLogPrefix);
     }
 
-    [HttpPut("update/{pedidoId}")]
+    [HttpPut("{pedidoId}")]
     public async Task<IActionResult> UpdatePedido([FromBody] UpdatePedidoCommand request, [FromRoute] int pedidoId)
     {
         _logger.LogInformation("{LogPrefix} Recebida requisição para atualizar o pedido de id: {PedidoId}.", ControllerLogPrefix, pedidoId);
@@ -100,7 +100,7 @@ public class PedidoController : ApiControllerBase
         return HandleResult<object>(pedidoResult, _logger, ControllerLogPrefix);
     }
 
-    [HttpPatch("updatepagamento/{pedidoId}")]
+    [HttpPatch("{pedidoId}/pagamento")]
     public async Task<IActionResult> UpdatePagamento([FromBody] UpdatePagamentoPedidoCommand request,[FromRoute] int pedidoId)
     {
         _logger.LogInformation("{LogPrefix} Recebida requisição para atualizar o pagamento do pedido de id: {PedidoId}.", ControllerLogPrefix, pedidoId);
@@ -121,7 +121,7 @@ public class PedidoController : ApiControllerBase
         return HandleResult<object>(pedidoResult, _logger, ControllerLogPrefix);
     }
 
-    [HttpPatch("updatestatus/{pedidoId}")]
+    [HttpPatch("{pedidoId}/status")]
     public async Task<IActionResult> UpdateStatus([FromBody] UpdateStatusPedidoCommand request, [FromRoute] int pedidoId)
     {
         _logger.LogInformation("{LogPrefix} Recebida requisição para atualizar o status do pedido de id: {PedidoId}.", ControllerLogPrefix, pedidoId);
@@ -140,7 +140,7 @@ public class PedidoController : ApiControllerBase
         return HandleResult<object>(pedidoResult, _logger, ControllerLogPrefix);
     }
 
-    [HttpDelete("delete/{pedidoId}")]
+    [HttpDelete("{pedidoId}")]
     public async Task<IActionResult> DeletePedido([FromRoute] int pedidoId)
     {
         _logger.LogInformation("{LogPrefix} Recebida requisição para deletar o pedido de id: {PedidoId}.", ControllerLogPrefix, pedidoId);
