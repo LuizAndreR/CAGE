@@ -42,11 +42,18 @@ public class UpdateItemEstoqueHandler : IRequestHandler<UpdateItemEstoqueCommand
         }
         var itemEstoque = itemEstoqueResult.Value;
 
-        var existingItemResult = await _estoqueRepository.ExistItemByNome(request.Nome, request.EmpresaId, request.Marca);
-        if (existingItemResult.IsSuccess)
+        bool dadosDeBuscaMudaram = 
+            !itemEstoque.Nome.Equals(request.Nome, StringComparison.OrdinalIgnoreCase) || 
+            !itemEstoque.Marca.Equals(request.Marca, StringComparison.OrdinalIgnoreCase);
+
+        if (dadosDeBuscaMudaram)
         {
-            _logger.LogWarning("{LogPrefix} Item já cadastrado. EmpresaId: {EmpresaId} | Nome: {Nome}", LogPrefix, request.EmpresaId, request.Nome);
-            return Result.Fail(new ConflictError("Já existe um item de estoque com o nome fornecido."));
+            var existingItemResult = await _estoqueRepository.ExistItemByNome(request.Nome, request.EmpresaId, request.Marca);
+            if (existingItemResult.IsSuccess)
+            {
+                _logger.LogWarning("{LogPrefix} Conflito: Outro item já possui esse cadastro. EmpresaId: {EmpresaId} | Nome: {Nome}", LogPrefix, request.EmpresaId, request.Nome);
+                return Result.Fail(new ConflictError("Já existe outro item de estoque cadastrado com este mesmo nome e marca."));
+            }
         }
 
         itemEstoque.AtualizarDadosCadastrais(
