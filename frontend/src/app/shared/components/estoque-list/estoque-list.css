@@ -1,0 +1,183 @@
+/* =========================================
+   ESTILOS GERAIS DA LISTA / TABELA
+========================================= */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 1.5rem;
+}
+
+.header-titles h1 {
+  font-size: 2rem;
+  color: var(--text-primary, #1c1917);
+  margin-bottom: 0.25rem;
+  margin-top: 0;
+}
+
+.header-titles p {
+  color: var(--text-secondary, #78716c);
+  margin: 0;
+}
+
+.btn-primary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--primary-color, #1c1917);
+  color: white;
+  border-radius: 9999px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-primary:hover { 
+  background-color: var(--primary-hover, #292524); 
+}
+
+/* =========================================
+   TABS E FILTROS
+========================================= */
+.tabs {
+  display: flex;
+  border-bottom: 1px solid #e7e5e4;
+  gap: 1rem;
+  width: 100%;
+  overflow-x: auto;
+  margin-bottom: 1.5rem;
+}
+
+.tabs button {
+  background: none;
+  border: none;
+  padding: 1rem 1.5rem;
+  font-weight: bold;
+  color: var(--text-secondary, #78716c);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tabs button:hover {
+  color: var(--text-primary, #1c1917);
+}
+
+.tabs button.active {
+  color: var(--primary-hover, #1c1917);
+  border-bottom-color: var(--primary-hover, #1c1917);
+}
+
+/* =========================================
+   TABELA
+========================================= */
+.table-card {
+  background-color: var(--bg-surface, #ffffff);
+  border-radius: var(--radius-lg, 1rem);
+  border: 1px solid #f5f5f4;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.table-responsive-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  min-width: 650px;
+}
+
+th {
+  padding: 1rem 1.5rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #a8a29e;
+  background-color: #fafaf9;
+  border-bottom: 1px solid #f5f5f4;
+  white-space: nowrap;
+}
+
+td {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #f5f5f4;
+  color: var(--text-secondary, #78716c);
+  white-space: nowrap;
+}
+
+.text-item-nome {
+  font-weight: 500;
+  color: var(--text-primary, #1c1917);
+}
+
+.table-row:hover {
+  background-color: #fafaf9;
+  cursor: pointer;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.empty-state {
+  padding: 3rem 1rem;
+  color: #a8a29e;
+}
+
+/* =========================================
+   AÇÕES DA TABELA E STATUS
+========================================= */
+.actions-cell {
+  display: flex;
+  justify-content: flex-start;
+  gap: 0.5rem;
+}
+
+.btn-icon {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.btn-add { background-color: #ecfdf5; color: var(--success, #059669); }
+.btn-add:hover { background-color: #d1fae5; }
+
+.btn-remove { background-color: #fff1f2; color: var(--danger, #e11d48); }
+.btn-remove:hover { background-color: #ffe4e6; }
+
+.text-danger { color: var(--danger, #e11d48) !important; font-weight: 600; }
+.text-muted { color: #a8a29e; }
+
+/* =========================================
+   RESPONSIVIDADE MOBILE
+========================================= */
+@media (max-width: 768px) {
+  .page-header { align-items: center; }
+  
+  .btn-primary { 
+    padding: 0.75rem; 
+    border-radius: 50%; 
+  }
+  
+  .btn-primary .btn-text { display: none; }
+  
+  .btn-primary .material-symbols-outlined {
+    font-size: 1.5rem;
+    margin: 0;
+  }
+}

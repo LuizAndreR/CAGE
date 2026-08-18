@@ -1,0 +1,84 @@
+<div class="form-view-container">
+  <header class="form-header">
+    <button type="button" class="btn-back" (click)="cancelar.emit()">
+      <span class="material-symbols-outlined" style="font-size: 18px;">chevron_left</span> Voltar
+    </button>
+    <h2>{{ itemParaEditar() ? 'Editar Item' : 'Novo Item no Estoque' }}</h2>
+  </header>
+
+  <form [formGroup]="estoqueForm" (ngSubmit)="onSubmit()" class="form-card-container">
+    
+    <div class="form-grid">
+      <div class="form-group full-width">
+        <label>Nome do Item</label>
+        <input type="text" formControlName="nome" placeholder="Ex: Farinha de Trigo Especial" class="form-input" />
+      </div>
+
+      <div class="form-group full-width">
+        <label>Marca</label>
+        <input type="text" formControlName="marca" placeholder="Ex: Dona Benta" class="form-input" />
+      </div>
+      
+      <div class="form-group">
+        <label>Unidade de Medida</label>
+        <select formControlName="unidadeMedida" class="form-select">
+          <option value="G">Gramas (G)</option>
+          <option value="KG">Quilogramas (KG)</option>
+          <option value="ML">Mililitros (ML)</option>
+          <option value="L">Litros (L)</option>
+          <option value="TSP">Colher de Chá (TSP)</option>
+          <option value="TBS">Colher de Sopa (TBS)</option>
+          <option value="CUP">Xícara (CUP)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Valor Médio (R$)</label>
+        <div class="input-with-prefix">
+          <span class="prefix">R$</span>
+          <input type="number" formControlName="valor" placeholder="0.00" class="form-input prefix-input" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Quantidade Atual</label>
+        <input type="number" formControlName="quantidadeAtual" placeholder="0" class="form-input" />
+      </div>
+
+      <div class="form-group">
+        <label>Quantidade Mínima</label>
+        <input type="number" formControlName="quantidadeMinima" placeholder="Alerta de estoque baixo" class="form-input" />
+      </div>
+    </div>
+
+    @if (estoqueForm.get('unidadeMedida')?.value === 'G' || estoqueForm.get('unidadeMedida')?.value === 'KG') {
+      <div class="conversion-section">
+        <h3>Conversão de Medida</h3>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Unidade de Referência (Volume)</label>
+            <select formControlName="unidadeMedidaReferenciaVolume" class="form-select">
+              <option value="CUP">CUP (Xícara)</option>
+              <option value="TBS">TBS (Colher de Sopa)</option>
+              <option value="TSP">TSP (Colher de Chá)</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Peso da Referência</label>
+            <input type="number" formControlName="pesoReferenciaEmGramas" placeholder="Ex: 120" class="form-input" />
+            <span class="help-text">Coloque o peso em gramas de referência</span>
+          </div>
+        </div>
+      </div>
+    }
+
+    <div class="form-actions-footer">
+      <button type="button" class="btn-cancel" (click)="cancelar.emit()">Cancelar</button>
+      <button type="submit" class="btn-submit" [disabled]="estoqueForm.invalid">
+        Salvar Ingrediente
+      </button>
+    </div>
+  </form>
+</div>

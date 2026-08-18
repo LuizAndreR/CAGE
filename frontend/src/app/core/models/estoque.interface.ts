@@ -6,9 +6,11 @@ export interface EstoqueItem {
   marca: string;
   quantidadeAtual: number;
   unidadeMedida: Unit; 
-  valor?: number;        // Usado pelo Formulário (Write)
-  valorMedia?: number;   // Devolvido pela API na Listagem (Read)
+  valor?: number;        
+  valorMedia?: number;   
   quantidadeMinima: number; 
-  pesoReferenciaEmGramas?: number | null;
+  quantidadeMinina?: number;  
   unidadeMedidaReferenciaVolume?: string | null; 
+  unidadeReferenciaVolume?: string | null; 
+  pesoReferenciaEmGramas?: number | null;
 }

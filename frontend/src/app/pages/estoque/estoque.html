@@ -1,270 +1,34 @@
 <div class="estoque-container">
   
   @switch (view()) {
-    
-    <!-- VISÃO 1: LISTA (TABELA) -->
     @case ('list') {
-      <header class="page-header">
-        <div class="header-titles">
-          <h1>Estoque</h1>
-          <p>Controle seus ingredientes e embalagens.</p>
-        </div>
-        <button class="btn-primary" type="button" (click)="changeView('form')">
-          <span class="material-symbols-outlined">add</span>
-          <span class="btn-text">Adicionar Novo Item</span>
-        </button>
-      </header>
-
-      <div class="tabs">
-        <button type="button" [class.active]="activeTab() === 'todos'" (click)="mudarAba('todos')">
-          Todos
-        </button>
-        <button type="button" [class.active]="activeTab() === 'baixo'" (click)="mudarAba('baixo')" class="tab-alert">
-          Baixo Estoque
-        </button>
-      </div>
-
-     <div class="table-card">
-        <div class="table-responsive-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>Nome</th>
-                <th>Marca</th>
-                <th>Quantidade</th>
-                <th>Valor Médio</th>
-                <th>Qtde Mínima</th>
-                <th class="text-right">Ações Rápidas</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (item of filteredItems(); track item.id) {
-                <tr class="table-row">
-                  <td class="font-bold text-item-nome" (click)="selectedId.set(item.id); changeView('detail')">
-                    {{ item.nome }}
-                  </td>
-                  <td (click)="selectedId.set(item.id); changeView('detail')">{{ item.marca }}</td>
-                  
-                  <td>
-                    <span [class.text-danger]="item.quantidadeAtual <= item.quantidadeMinima">
-                      {{ item.quantidadeAtual }} {{ item.unidadeMedida }}
-                    </span>
-                  </td>
-                  
-                  <td>{{ formatCurrency(item.valorMedia) }}</td>
-                  
-                  <td class="text-muted">{{ item.quantidadeMinima }} {{ item.unidadeMedida }}</td>
-                  
-                  <td class="actions-cell">
-                    <button 
-                      class="btn-icon btn-add" 
-                      type="button" 
-                      (click)="$event.stopPropagation(); openActionModal('add', item.id)" 
-                      title="Adicionar">
-                      <span class="material-symbols-outlined">add</span>
-                    </button>
-                    
-                    <button 
-                      class="btn-icon btn-remove" 
-                      type="button" 
-                      (click)="$event.stopPropagation(); openActionModal('remove', item.id)" 
-                      title="Retirar">
-                      <span class="material-symbols-outlined">remove</span>
-                    </button>
-                  </td>
-                </tr>
-              } @empty {
-                <tr>
-                  <td colspan="6" class="text-center empty-state">Nenhum item encontrado.</td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <app-estoque-list
+        [items]="filteredItems()"
+        [activeTab]="activeTab()"
+        (mudarAba)="onMudarAba($event)"
+        (novoItem)="changeView('form')"
+        (selecionarItem)="onSelecionarItem($event)"
+        (acaoRapida)="openActionModal($event.type, $event.id)">
+      </app-estoque-list>
     }
 
-    <!-- VISÃO 2: DETALHES -->
     @case ('detail') {
       @if (selectedItem(); as item) {
-        <div class="detail-view-container">
-          
-          <header class="detail-header-wrapper">
-            <div class="detail-header-left">
-              <button class="btn-back-pill" type="button" (click)="changeView('list')">
-                <span class="material-symbols-outlined">chevron_left</span> Voltar
-              </button>
-              <h1 class="detail-title">{{ item.nome }}</h1>
-              <p class="detail-subtitle">{{ item.marca }}</p>
-            </div>
-            
-            <div class="detail-header-actions">
-              <button class="btn-edit" type="button" (click)="editItem(item)">
-                <span class="material-symbols-outlined">edit</span> Editar
-              </button>
-              <!-- Adicionamos o evento de clique aqui -->
-              <button class="btn-delete" type="button" (click)="openDeleteModal()">
-                <span class="material-symbols-outlined">delete</span> Excluir
-              </button>
-            </div>  
-          </header>
-
-          <div class="detail-content">
-            
-            <div class="detail-grid">
-              <div class="detail-card">
-                <div class="card-label">
-                  <span class="material-symbols-outlined">inventory_2</span>
-                  <p>Estoque Atual</p>
-                </div>
-                <div class="card-value-wrapper">
-                  <p class="value-large" [class.text-danger]="item.quantidadeAtual <= item.quantidadeMinima">
-                    {{ item.quantidadeAtual }}
-                  </p>
-                  <p class="value-unit">{{ item.unidadeMedida }}</p>
-                </div>
-                @if (item.quantidadeAtual <= item.quantidadeMinima) {
-                  <p class="alert-text">
-                    <span class="material-symbols-outlined">warning</span> Estoque Baixo
-                  </p>
-                }
-              </div>
-
-              <div class="detail-card">
-                <div class="card-label">
-                  <span class="material-symbols-outlined">scale</span>
-                  <p>Estoque Mínimo</p>
-                </div>
-                <div class="card-value-wrapper">
-                  <p class="value-large">{{ item.quantidadeMinima }}</p>
-                  <p class="value-unit">{{ item.unidadeMedida }}</p>
-                </div>
-              </div>
-
-              <div class="detail-card">
-                <div class="card-label">
-                  <span class="material-symbols-outlined">payments</span>
-                  <p>Valor Médio</p>
-                </div>
-                <p class="value-large">{{ formatCurrency(item.valorMedia || 0) }}</p>
-              </div>
-            </div>
-
-            @if (item.pesoReferenciaEmGramas || item.unidadeMedidaReferenciaVolume) {
-              <div class="conversion-detail-card">
-                <h3>
-                  <span class="material-symbols-outlined">sync_alt</span>
-                  Referência de Peso/Volume
-                </h3>
-                
-                <div class="conversion-grid">
-                  <div class="conversion-info">
-                    <p class="conversion-label">Unidade de Volume</p>
-                    <p class="conversion-value">{{ item.unidadeMedidaReferenciaVolume || item.unidadeMedida }}</p>
-                  </div>
-                  <div class="conversion-info">
-                    <p class="conversion-label">Equivale a (em Gramas)</p>
-                    <p class="conversion-value">{{ item.pesoReferenciaEmGramas || 0 }} g</p>
-                  </div>
-                </div>
-                
-                <p class="conversion-help">
-                  Esta conversão é utilizada para calcular o custo de receitas que utilizam medidas de volume para este ingrediente.
-                </p>
-              </div>
-            }
-            
-          </div>
-        </div>
+        <app-estoque-detail
+          [item]="item"
+          (voltar)="changeView('list')"
+          (editar)="onEditItem()"
+          (deletar)="openDeleteModal()">
+        </app-estoque-detail>
       }
     }
 
-    <!-- VISÃO 3: FORMULÁRIO (Refatorado sem Tailwind) -->
     @case ('form') {
-      <div class="form-view-container">
-        
-        <header class="form-header">
-          <button type="button" class="btn-back" (click)="cancelarFormulario()">
-            <span class="material-symbols-outlined" style="font-size: 18px;">chevron_left</span> Voltar
-          </button>
-          <h2>{{ estoqueForm.get('id')?.value ? 'Editar Item' : 'Novo Item no Estoque' }}</h2>
-        </header>
-
-        <form [formGroup]="estoqueForm" (ngSubmit)="salvarItem()" class="form-card-container">
-          <div class="form-grid">
-            <div class="form-group full-width">
-              <label>Nome do Item</label>
-              <input type="text" formControlName="nome" placeholder="Ex: Farinha de Trigo Especial" class="form-input" />
-            </div>
-
-            <div class="form-group full-width">
-              <label>Marca</label>
-              <input type="text" formControlName="marca" placeholder="Ex: Dona Benta" class="form-input" />
-            </div>
-            
-            <div class="form-group">
-              <label>Unidade de Medida</label>
-              <select formControlName="unidadeMedida" class="form-select">
-                <option value="G">Gramas (G)</option>
-                <option value="KG">Quilogramas (KG)</option>
-                <option value="ML">Mililitros (ML)</option>
-                <option value="L">Litros (L)</option>
-                <option value="TSP">Colher de Chá (TSP)</option>
-                <option value="TBS">Colher de Sopa (TBS)</option>
-                <option value="CUP">Xícara (CUP)</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label>Valor Médio (R$)</label>
-              <div class="input-with-prefix">
-                <span class="prefix">R$</span>
-                <input type="number" formControlName="valor" placeholder="0.00" class="form-input prefix-input" />
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label>Quantidade Atual</label>
-              <input type="number" formControlName="quantidadeAtual" placeholder="0" class="form-input" />
-            </div>
-
-            <div class="form-group">
-              <label>Quantidade Mínima</label>
-              <input type="number" formControlName="quantidadeMinima" placeholder="Alerta de estoque baixo" class="form-input" />
-            </div>
-          </div>
-
-          @if (estoqueForm.get('unidadeMedida')?.value === 'G' || estoqueForm.get('unidadeMedida')?.value === 'KG') {
-            <div class="conversion-section">
-              <h3>Conversão de Medida</h3>
-
-              <div class="form-grid">
-                <div class="form-group">
-                  <label>Unidade de Referência (Volume)</label>
-                  <select formControlName="unidadeMedidaReferenciaVolume" class="form-select">
-                    <option value="CUP">CUP (Xícara)</option>
-                    <option value="TBS">TBS (Colher de Sopa)</option>
-                    <option value="TSP">TSP (Colher de Chá)</option>
-                  </select>
-                </div>
-                
-                <div class="form-group">
-                  <label>Peso da Referência</label>
-                  <input type="number" formControlName="pesoReferenciaEmGramas" placeholder="Ex: 120" class="form-input" />
-                  <span class="help-text">Coloque o peso em gramas de referência</span>
-                </div>
-              </div>
-            </div>
-          }
-
-          <div class="form-actions-footer">
-            <button type="button" class="btn-cancel" (click)="cancelarFormulario()">Cancelar</button>
-            <button type="submit" class="btn-submit" [disabled]="estoqueForm.invalid">
-              Salvar Ingrediente
-            </button>
-          </div>
-        </form>
-      </div>
+      <app-estoque-form
+        [itemParaEditar]="itemEditando()"
+        (cancelar)="changeView('list')"
+        (salvar)="onSalvarItem($event)">
+      </app-estoque-form>
     }
   }
 
@@ -319,7 +83,6 @@
           <button class="btn-cancel" type="button" (click)="closeActionModal()">
             Cancelar
           </button>
-          
           <button 
             class="btn-confirm" 
             type="button" 
@@ -358,7 +121,6 @@
           <button class="btn-cancel" type="button" (click)="closeDeleteModal()">
             Cancelar
           </button>
-          <!-- Reutilizamos a classe btn-confirm-remove para manter o botão vermelho padrão -->
           <button class="btn-confirm btn-confirm-remove" type="button" (click)="confirmDelete()">
             <span class="material-symbols-outlined">delete</span> Confirmar Exclusão
           </button>
