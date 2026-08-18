@@ -5,9 +5,10 @@ export interface EstoqueItem {
   nome: string;
   marca: string;
   quantidadeAtual: number;
-  unidade: Unit;
-  valorMedio: number;
-  quantidadeMinima: number;
-  pesoReferenciaEmGramas?: number;
-  unidadeMedidaReferenciaVolume?: string;
+  unidadeMedida: Unit; 
+  valor?: number;        // Usado pelo Formulário (Write)
+  valorMedia?: number;   // Devolvido pela API na Listagem (Read)
+  quantidadeMinima: number; 
+  pesoReferenciaEmGramas?: number | null;
+  unidadeMedidaReferenciaVolume?: string | null; 
 }
