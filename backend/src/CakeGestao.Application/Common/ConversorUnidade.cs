@@ -14,8 +14,16 @@ public static class ConversorUnidade
         UnidadeMedidaEnum? unidadeReferenciaVolume = null,
         decimal? pesoReferenciaEmGramas = null)
     {
+        // 1. Passa direto: 1 para 1 (Ex: UN para UN, KG para KG)
         if (origem == destino) return Result.Ok(quantidade);
 
+        // 2. Bloqueio de negócio: Impede misturar Unidade discreta com Massa/Volume
+        if (origem == UnidadeMedidaEnum.UN || destino == UnidadeMedidaEnum.UN)
+        {
+            return Result.Fail("Não é possível converter 'Unidades' (UN) para medidas de massa ou volume. Por favor, verifique se a unidade informada na receita corresponde à unidade cadastrada no estoque.");
+        }
+
+        // 3. Lógica original de conversão contínua
         bool origemEMassa = IsMassa(origem);
         bool destinoEMassa = IsMassa(destino);
         double qtd = (double)quantidade;
@@ -29,7 +37,7 @@ public static class ConversorUnidade
     
         if (unidadeReferenciaVolume is null || pesoReferenciaEmGramas is null || pesoReferenciaEmGramas <= 0)
         {
-            return Result.Fail($"Para usar medidas de volume (como Xícara, Colher ou ml) neste ingrediente, você precisa editar o cadastro dele no Estoque e informar a Referência de Peso (Ex: 1 CUP = 120g).");
+            return Result.Fail("Para usar medidas de volume (como Xícara, Colher ou ml) neste ingrediente, você precisa editar o cadastro dele no Estoque e informar a Referência de Peso (Ex: 1 CUP = 120g).");
         }
         
         double densidadeGramaPorMl = (double)pesoReferenciaEmGramas.Value / new Volume(1, ObterUnidadeVolume(unidadeReferenciaVolume.Value)).Milliliters;
