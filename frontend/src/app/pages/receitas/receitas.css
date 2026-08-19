@@ -1,0 +1,21 @@
+/* Container que engloba o módulo inteiro de Receitas */
+.receita-page-wrapper {
+  padding: 2rem;
+  background-color: var(--bg-primary, #f5f5f4);
+  min-height: 100dvh;
+}
+
+/* Temporário para as telas que ainda vamos construir */
+.placeholder-screen {
+  background: white;
+  padding: 3rem;
+  border-radius: 1.5rem;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+@media (max-width: 768px) {
+  .receita-page-wrapper {
+    padding: 1rem;
+  }
+}

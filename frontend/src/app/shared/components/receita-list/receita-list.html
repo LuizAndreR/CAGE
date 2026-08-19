@@ -1,0 +1,89 @@
+<div class="receita-list-container">
+  
+  <header class="page-header">
+    <div class="header-titles">
+      <h1>Receitas</h1>
+      <p>Catálogo de produtos e fichas técnicas.</p>
+    </div>
+    <button class="btn-primary" type="button" (click)="novaReceita.emit()">
+        <span class="material-symbols-outlined">add</span>
+        <span class="btn-text">Nova Receita</span>
+    </button>
+  </header>
+
+  <!-- Filtros / Abas (Figma Design Limpo) -->
+  <div class="tabs-container">
+    <button
+      type="button"
+      class="tab-btn"
+      [class.active]="activeTab() === 'todas'"
+      (click)="mudarAba.emit('todas')"
+    >
+      Todas
+    </button>
+    <button
+      type="button"
+      class="tab-btn"
+      [class.active]="activeTab() === 'ativas'"
+      (click)="mudarAba.emit('ativas')"
+    >
+      Ativas
+    </button>
+    <button
+      type="button"
+      class="tab-btn"
+      [class.active]="activeTab() === 'desativadas'"
+      (click)="mudarAba.emit('desativadas')"
+    >
+      Desativadas
+    </button>
+  </div>
+
+  <!-- Grid de Cards de Receita -->
+  <div class="recipe-grid">
+    @for (receita of receitas(); track receita.id) {
+      <div class="recipe-card" (click)="selecionarReceita.emit(receita.id)">
+        
+        <div class="card-content">
+          <div class="card-header">
+            <span class="badge" [class.badge-active]="receita.status" [class.badge-inactive]="!receita.status">
+              {{ receita.status ? 'Ativo' : 'Inativo' }}
+            </span>
+          </div>
+
+          <h3 class="recipe-title">{{ receita.nome }}</h3>
+          
+          <div class="financial-grid">
+            <div class="financial-item cost">
+              <p class="label">Custo Total</p>
+              <p class="value">{{ formatCurrency(receita.custoTotal) }}</p>
+            </div>
+            <div class="financial-item sale">
+              <p class="label">Venda</p>
+              <p class="value">{{ formatCurrency(receita.precoVenda) }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-footer" (click)="$event.stopPropagation()">
+          <span class="status-label">Status</span>
+          
+          <button 
+            type="button" 
+            class="toggle-switch" 
+            [class.toggle-on]="receita.status"
+            (click)="alternarStatus.emit({ id: receita.id, statusAtual: receita.status })"
+            title="Mudar status da receita">
+            <span class="toggle-knob"></span>
+          </button>
+        </div>
+
+      </div>
+    } @empty {
+      <div class="empty-state">
+        <span class="material-symbols-outlined empty-icon">restaurant_menu</span>
+        <p>Nenhuma receita encontrada para a visualização atual.</p>
+      </div>
+    }
+  </div>
+</div>

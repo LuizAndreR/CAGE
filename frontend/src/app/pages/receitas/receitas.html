@@ -1,1 +1,35 @@
-<p>receitas works!</p>
+<div class="receita-page-wrapper">
+  
+  @switch (view()) {
+    
+    <!-- TELA 1: LISTAGEM (O componente que você fez) -->
+    @case ('list') {
+      <app-receita-list
+        [receitas]="filteredReceitas()"
+        [activeTab]="activeTab()"
+        (mudarAba)="onMudarAba($event)"
+        (novaReceita)="onNovaReceita()"
+        (selecionarReceita)="onSelecionarReceita($event)"
+        (alternarStatus)="onAlternarStatus($event)">
+      </app-receita-list>
+    }
+
+    <!-- TELA 2: DETALHES (Será feita na próxima etapa) -->
+    @case ('detail') {
+      <div class="placeholder-screen">
+        <h2>Detalhes da Receita ID: {{ selectedId() }}</h2>
+        <button (click)="view.set('list')">Voltar</button>
+      </div>
+    }
+
+    <!-- TELA 3: FORMULÁRIO (Será feita futuramente) -->
+    @case ('form') {
+      <div class="placeholder-screen">
+        <h2>Nova Receita</h2>
+        <button (click)="view.set('list')">Voltar</button>
+      </div>
+    }
+
+  }
+
+</div>
