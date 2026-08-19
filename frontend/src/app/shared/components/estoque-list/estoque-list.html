@@ -33,17 +33,17 @@
         </tr>
       </thead>
       <tbody>
-        <!-- Lendo o Signal items() -->
+       <!-- Lendo o Signal items() -->
         @for (item of items(); track item.id) {
-          <tr class="table-row">
-            <!-- Emite evento para detalhar o item -->
-            <td class="font-bold text-item-nome" (click)="selecionarItem.emit(item.id)">
+          <!-- 1. Colocamos o evento de detalhar diretamente na linha inteira -->
+          <tr class="table-row" (click)="selecionarItem.emit(item.id)">
+            
+            <td class="font-bold text-item-nome">
               {{ item.nome }}
             </td>
-            <td (click)="selecionarItem.emit(item.id)">{{ item.marca }}</td>
+            <td>{{ item.marca }}</td>
             
             <td>
-              <!-- Correção: Fallback na regra de CSS condicional -->
               <span [class.text-danger]="item.quantidadeAtual <= (item.quantidadeMinima ?? item.quantidadeMinina ?? 0)">
                 {{ item.quantidadeAtual }} {{ item.unidadeMedida }}
               </span>
@@ -51,16 +51,14 @@
             
             <td>{{ formatCurrency(item.valorMedia) }}</td>
             
-            <!-- Correção: Fallback na exibição do texto -->
-            <td class="text-muted">
-             {{ item.quantidadeMinima ?? item.quantidadeMinina ?? 0 }} {{ item.unidadeMedida }}
-            </td>
+            <td class="text-muted">{{ item.quantidadeMinima ?? item.quantidadeMinina ?? 0 }} {{ item.unidadeMedida }}</td>
             
-            <td class="actions-cell">
+            <!-- 2. Bloqueamos a propagação de cliques na célula inteira de Ações -->
+            <td class="actions-cell" (click)="$event.stopPropagation()">
               <button 
                 class="btn-icon btn-add" 
                 type="button" 
-                (click)="$event.stopPropagation(); acaoRapida.emit({ type: 'add', id: item.id })" 
+                (click)="acaoRapida.emit({ type: 'add', id: item.id })" 
                 title="Adicionar">
                 <span class="material-symbols-outlined">add</span>
               </button>
@@ -68,7 +66,7 @@
               <button 
                 class="btn-icon btn-remove" 
                 type="button" 
-                (click)="$event.stopPropagation(); acaoRapida.emit({ type: 'remove', id: item.id })" 
+                (click)="acaoRapida.emit({ type: 'remove', id: item.id })" 
                 title="Retirar">
                 <span class="material-symbols-outlined">remove</span>
               </button>
