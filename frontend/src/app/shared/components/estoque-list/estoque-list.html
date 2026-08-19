@@ -52,7 +52,9 @@
             <td>{{ formatCurrency(item.valorMedia) }}</td>
             
             <!-- Correção: Fallback na exibição do texto -->
-            <td class="text-muted">{{ item.quantidadeMinima || item.quantidadeMinina }} {{ item.unidadeMedida }}</td>
+            <td class="text-muted">
+             {{ item.quantidadeMinima ?? item.quantidadeMinina ?? 0 }} {{ item.unidadeMedida }}
+            </td>
             
             <td class="actions-cell">
               <button 

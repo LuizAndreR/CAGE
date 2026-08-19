@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { UserService } from '../../../pages/configuracoes/user.service'; 
+import { UserService } from '../../../core/service/user.service'; 
 import { UsuarioResponse } from '../../../core/models/usuario.interface';
 
 @Component({
