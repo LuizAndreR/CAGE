@@ -40,7 +40,11 @@ public class ReceitaRepository : IReceitaRepository
     
     public async Task<Result<Receita>> GetReceitaByIdAsync(int id, int empresaId)
     {
-        var receita = await _context.Receitas.Include(r => r.Ingredientes).FirstOrDefaultAsync(r => r.Id == id && r.EmpresaId == empresaId);
+        var receita = await _context.Receitas
+            .Include(r => r.Ingredientes)
+                .ThenInclude(i => i.Item) 
+            .FirstOrDefaultAsync(r => r.Id == id && r.EmpresaId == empresaId);
+            
         if (receita == null)
         {
             _logger.LogWarning("{LogPrefix} Receita ID: {Id} da Empresa: {EmpresaId} não encontrada.", LogPrefix, id, empresaId); 
@@ -48,7 +52,7 @@ public class ReceitaRepository : IReceitaRepository
         }
         return Result.Ok(receita);
     }
-    
+
     public async Task<Result> CreateReceitaAsync(Receita receita)
     {
         _logger.LogInformation("{LogPrefix} Criando nova receita: {Nome}", LogPrefix, receita.Nome);

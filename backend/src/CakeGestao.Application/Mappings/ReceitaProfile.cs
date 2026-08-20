@@ -8,9 +8,12 @@ public class ReceitaProfile : Profile
 {
     public ReceitaProfile()
     {
-        CreateMap<Receita, ReceitaResponse>();
-        CreateMap<Ingrediente, IngredienteResponse>();
-
         CreateMap<Receita, ReceitaResponseAll>();
+
+        CreateMap<Receita, ReceitaResponse>();
+
+        CreateMap<Ingrediente, IngredienteResponse>()
+            .ForMember(dest => dest.Nome, opt => opt.MapFrom(src => src.Item.Nome))
+            .ForMember(dest => dest.UnidadeMedida, opt => opt.MapFrom(src => src.UnidadeMedida.ToString()));
     }
 }

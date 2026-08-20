@@ -12,14 +12,13 @@ public class ReceitaResponse
 
     public List<IngredienteResponse> Ingredientes { get; set; } = new();
 
-    public decimal CustoTotalEstimado { get; set; }
-
     public int TotalIngredientes => Ingredientes?.Count ?? 0;
 }
 
 public class IngredienteResponse
 {
     public int ItemId { get; set; }
+    public string Nome { get; set; } = string.Empty;
     public decimal Quantidade { get; set; }
     public required string UnidadeMedida { get; set; }
 }
