@@ -2,7 +2,7 @@
   
   @switch (view()) {
     
-    <!-- TELA 1: LISTAGEM (O componente que você fez) -->
+    <!-- TELA 1: LISTAGEM -->
     @case ('list') {
       <app-receita-list
         [receitas]="filteredReceitas()"
@@ -14,22 +14,30 @@
       </app-receita-list>
     }
 
-    <!-- TELA 2: DETALHES (Será feita na próxima etapa) -->
+    <!-- TELA 2: DETALHES (Agora integrado com o componente filho) -->
     @case ('detail') {
-      <div class="placeholder-screen">
-        <h2>Detalhes da Receita ID: {{ selectedId() }}</h2>
-        <button (click)="view.set('list')">Voltar</button>
-      </div>
+      @if (receitaDetalhe()) {
+        <app-receita-detail
+          [receita]="receitaDetalhe()!"
+          (voltar)="onVoltar()"
+          (editar)="onEditar($event)"
+          (excluir)="onExcluir($event)">
+        </app-receita-detail>
+      } @else {
+        <!-- Estado de carregamento elegante enquanto a API responde -->
+        <div class="loading-state">
+          <span class="material-symbols-outlined spin-icon">progress_activity</span>
+          <p>Carregando ficha técnica...</p>
+        </div>
+      }
     }
 
-    <!-- TELA 3: FORMULÁRIO (Será feita futuramente) -->
+    <!-- TELA 3: FORMULÁRIO -->
     @case ('form') {
       <div class="placeholder-screen">
         <h2>Nova Receita</h2>
         <button (click)="view.set('list')">Voltar</button>
       </div>
     }
-
   }
-
 </div>

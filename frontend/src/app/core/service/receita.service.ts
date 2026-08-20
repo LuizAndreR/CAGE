@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { ReceitaListResponse } from '../models/receita.interface';
+import { ReceitaListResponse, ReceitaResponse } from '../models/receita.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -18,5 +18,9 @@ export class ReceitaService {
 
   mudarStatus(id: number, novoStatus: boolean): Observable<void> {
     return this.http.patch<void>(`${this.apiUrl}/${id}/status`, { status: novoStatus });
+  }
+
+  getReceitaById(id: number): Observable<ReceitaResponse> {
+    return this.http.get<ReceitaResponse>(`${this.apiUrl}/${id}`);
   }
 }

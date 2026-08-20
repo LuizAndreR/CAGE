@@ -1,0 +1,273 @@
+.receita-detail-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  animation: slideUpFade 0.3s ease-out;
+}
+
+.btn-back {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: fit-content;
+  padding: 0.5rem 1rem;
+  background-color: #ffffff;
+  color: var(--text-secondary, #78716c);
+  border: 1px solid var(--border-light, #e7e5e4);
+  border-radius: 9999px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+
+  &:hover {
+    color: var(--cor-marca-primaria, #8B0836);
+    border-color: #fce4ec;
+    background-color: #fffafb;
+  }
+}
+
+/* =========================================
+   CABEÇALHO (Sem Imagem)
+========================================= */
+.detail-header {
+  background: linear-gradient(135deg, #8B0836 0%, #4a041c 100%); /* Fundo elegante substituindo a imagem */
+  border-radius: 2rem;
+  padding: 2rem;
+  color: white;
+  box-shadow: 0 4px 6px -1px rgba(139, 8, 54, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+
+  .header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .recipe-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin: 0;
+    line-height: 1.2;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+
+    @media (max-width: 768px) {
+      font-size: 2rem;
+    }
+  }
+}
+
+/* Badges e Botões do Header */
+.badge {
+  padding: 0.375rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+  &.badge-active { background-color: rgba(16, 185, 129, 0.9); color: white; }
+  &.badge-inactive { background-color: rgba(120, 113, 108, 0.9); color: white; }
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+
+  .btn-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #44403c;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    backdrop-filter: blur(4px);
+
+    &:hover {
+      background-color: white;
+      color: #8B0836;
+      transform: scale(1.1);
+    }
+
+    &.btn-delete:hover {
+      color: #e11d48;
+    }
+  }
+}
+
+/* =========================================
+   CONTEÚDO E RESUMO FINANCEIRO
+========================================= */
+.detail-content {
+  background-color: white;
+  border-radius: 2rem;
+  padding: 2rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  border: 1px solid var(--border-light, #e7e5e4);
+
+  @media (max-width: 768px) { padding: 1.5rem; }
+}
+
+.financial-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.summary-card {
+  padding: 1.5rem;
+  border-radius: 1.25rem;
+  border: 1px solid;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  .summary-label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .summary-value {
+    font-size: 1.875rem;
+    font-weight: 800;
+    margin: 0;
+    color: #1c1917;
+  }
+
+  &.bg-sale { background-color: #fff1f2; border-color: #ffe4e6; .text-sale { color: #fb7185; } }
+  &.bg-cost { background-color: #f5f5f4; border-color: #e7e5e4; .text-cost { color: #a8a29e; } }
+  &.bg-margin { background-color: #ecfdf5; border-color: #d1fae5; .text-margin { color: #059669; } }
+}
+
+/* =========================================
+   GRID DE DETALHES (PREPARO E INGREDIENTES)
+========================================= */
+.details-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+
+  @media (min-width: 1024px) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.info-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #292524;
+    margin: 0;
+
+    .icon-rose { color: #fb7185; }
+  }
+}
+
+.preparation-box {
+  background-color: #fafaf9;
+  border: 1px solid #e7e5e4;
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  white-space: pre-line;
+  color: #57534e;
+  line-height: 1.7;
+  min-height: 200px;
+}
+
+.total-badge {
+  background-color: #ffe4e6;
+  color: #9f1239;
+  font-weight: 800;
+  font-size: 0.875rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+}
+
+/* =========================================
+   TABELA DE INGREDIENTES
+========================================= */
+.ingredients-table-wrapper {
+  background-color: white;
+  border: 1px solid #e7e5e4;
+  border-radius: 1.25rem;
+  overflow: hidden;
+}
+
+.ingredients-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+
+  thead {
+    background-color: #fafaf9;
+    border-bottom: 1px solid #e7e5e4;
+
+    th {
+      padding: 1rem 1.25rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #78716c;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+  }
+
+  tbody tr {
+    transition: background-color 0.2s;
+    border-bottom: 1px solid #f5f5f4;
+
+    &:last-child { border-bottom: none; }
+    &:hover { background-color: #fff1f2; }
+
+    td {
+      padding: 1rem 1.25rem;
+      font-size: 0.875rem;
+    }
+  }
+}
+
+/* Utilitários Locais da Tabela */
+.font-medium { font-weight: 600; }
+.font-bold { font-weight: 700; }
+.text-stone { color: #292524; }
+.text-muted { color: #78716c; }
+.text-right { text-align: right; }
+.py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+.text-center { text-align: center; }
+
+.item-id-hint {
+  font-size: 0.75rem;
+  color: #a8a29e;
+  font-weight: 400;
+  margin-right: 0.5rem;
+}
+
+@keyframes slideUpFade {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}

@@ -1,15 +1,16 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReceitaService } from '../../core/service/receita.service';
-import { ReceitaListResponse } from '../../core/models/receita.interface';
+import { ReceitaListResponse, ReceitaResponse } from '../../core/models/receita.interface';
 
-// Importação do componente de listagem que você acabou de criar
+// Importação dos componentes filhos
 import { ReceitaList } from '../../shared/components/receita-list/receita-list';
+import { ReceitaDetail } from '../../shared/components/receita-detail/receita-detail'; // Ajuste o caminho se necessário
 
 @Component({
   selector: 'app-receita-page',
   standalone: true,
-  imports: [CommonModule, ReceitaList],
+  imports: [CommonModule, ReceitaList, ReceitaDetail], 
   templateUrl: './receitas.html',
   styleUrl: './receitas.css'
 })
@@ -22,7 +23,11 @@ export default class Receitas implements OnInit {
   // Estado dos Dados
   receitas = signal<ReceitaListResponse[]>([]);
   activeTab = signal<'todas' | 'ativas' | 'desativadas'>('todas');
+  
   selectedId = signal<number | null>(null);
+  
+  // NOVO: Signal para guardar os dados completos da receita selecionada
+  receitaDetalhe = signal<ReceitaResponse | null>(null);
 
   ngOnInit(): void {
     this.carregarReceitas();
@@ -36,7 +41,6 @@ export default class Receitas implements OnInit {
     });
   }
 
-  // Signal Computado para o filtro das abas
   filteredReceitas = computed(() => {
     const lista = this.receitas();
     const filtro = this.activeTab();
@@ -53,18 +57,25 @@ export default class Receitas implements OnInit {
 
   onNovaReceita(): void {
     this.selectedId.set(null);
-    this.view.set('form'); // Vai para a tela de criação futuramente
+    this.receitaDetalhe.set(null);
+    this.view.set('form'); 
   }
 
+  // ATUALIZADO: Agora ele busca os detalhes na API antes de trocar de tela
   onSelecionarReceita(id: number): void {
     this.selectedId.set(id);
-    this.view.set('detail'); // Vai para a tela de detalhes futuramente
+    
+    this.receitaService.getReceitaById(id).subscribe({
+      next: (dadosCompletos) => {
+        this.receitaDetalhe.set(dadosCompletos);
+        this.view.set('detail'); // Só muda a tela quando os dados chegarem com sucesso
+      },
+      error: (erro) => console.error(`Falha ao carregar a receita ${id}:`, erro)
+    });
   }
 
   onAlternarStatus(evento: { id: number, statusAtual: boolean }): void {
-    // Implementação otimista (muda na tela antes da API confirmar)
     const novoStatus = !evento.statusAtual;
-    
     this.receitas.update(lista => 
       lista.map(r => r.id === evento.id ? { ...r, status: novoStatus } : r)
     );
@@ -72,8 +83,25 @@ export default class Receitas implements OnInit {
     this.receitaService.mudarStatus(evento.id, novoStatus).subscribe({
       error: (erro) => {
         console.error('Erro ao mudar status:', erro);
-        this.carregarReceitas(); // Reverte a lista se der erro
+        this.carregarReceitas();
       }
     });
+  }
+
+  // NOVOS MÉTODOS: Ações da tela de detalhes
+  onVoltar(): void {
+    this.receitaDetalhe.set(null);
+    this.selectedId.set(null);
+    this.view.set('list');
+  }
+
+  onEditar(id: number): void {
+    console.log('Navegar para edição da receita:', id);
+    // Será implementado quando fizermos o formulário
+  }
+
+  onExcluir(id: number): void {
+    console.log('Disparar exclusão da receita:', id);
+    // Será implementado futuramente
   }
 }
