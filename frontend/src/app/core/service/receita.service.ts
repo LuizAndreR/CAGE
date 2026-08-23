@@ -16,11 +16,19 @@ export class ReceitaService {
     return this.http.get<ReceitaListResponse[]>(this.apiUrl);
   }
 
+  getReceitaById(id: number): Observable<ReceitaResponse> {
+    return this.http.get<ReceitaResponse>(`${this.apiUrl}/${id}`);
+  }
+
   mudarStatus(id: number, novoStatus: boolean): Observable<void> {
     return this.http.patch<void>(`${this.apiUrl}/${id}/status`, { status: novoStatus });
   }
 
-  getReceitaById(id: number): Observable<ReceitaResponse> {
-    return this.http.get<ReceitaResponse>(`${this.apiUrl}/${id}`);
+  criarReceita(payload: any): Observable<void> {
+    return this.http.post<void>(this.apiUrl, payload);
+  }
+
+  atualizarReceita(id: number, payload: any): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${id}`, payload);
   }
 }

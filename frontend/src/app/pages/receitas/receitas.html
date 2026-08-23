@@ -34,10 +34,11 @@
 
     <!-- TELA 3: FORMULÁRIO -->
     @case ('form') {
-      <div class="placeholder-screen">
-        <h2>Nova Receita</h2>
-        <button (click)="view.set('list')">Voltar</button>
-      </div>
+      <app-receita-form
+        [receitaId]="selectedId()"
+        (voltar)="onVoltar()"
+        (salvo)="onSalvoComSucesso()">
+      </app-receita-form>
     }
   }
 </div>
