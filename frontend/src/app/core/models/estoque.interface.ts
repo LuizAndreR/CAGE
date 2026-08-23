@@ -1,4 +1,4 @@
-type Unit = 'G' | 'KG' | 'ML' | 'L' | 'TSP' | 'TBS' | 'CUP';
+type Unit = 'G' | 'KG' | 'ML' | 'L' | 'TSP' | 'TBS' | 'CUP' | 'UN';
 
 export interface EstoqueItem {
   id: number;
