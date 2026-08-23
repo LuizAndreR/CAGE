@@ -7,6 +7,7 @@ public class ReceitaResponse
     public required string ModoPreparo { get; set; }
     public decimal PrecoVenda { get; set; }
     public decimal PercentualMargemLucro { get; private set; }
+    public decimal PercentualCustoExtra { get; private set; }
     public decimal CustoTotal { get; private set; }
     public bool Status { get; set; }
 
