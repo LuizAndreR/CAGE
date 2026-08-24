@@ -58,7 +58,12 @@ public class Receita
             PrecoVenda = precoVendaInformado;
             if (CustoTotal > 0)
             {
-                PercentualMargemLucro = ((PrecoVenda / CustoTotal) - 1) * 100;
+                PercentualMargemLucro = ((PrecoVenda / CustoTotal) - 1m) * 100m;
+            
+            if (PercentualMargemLucro > 999.99m)
+            {
+                PercentualMargemLucro = 999.99m;
+            }
             }
             else
             {
@@ -71,7 +76,7 @@ public class Receita
 
             if (CustoTotal > 0)
             {
-                PrecoVenda = CustoTotal + (CustoTotal * (PercentualMargemLucro / 100));
+                PrecoVenda = CustoTotal + (CustoTotal * (PercentualMargemLucro / 100m));
             }
             else
             {
