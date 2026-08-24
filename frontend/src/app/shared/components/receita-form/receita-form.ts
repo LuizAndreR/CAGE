@@ -28,9 +28,9 @@ export class ReceitaForm implements OnInit {
   receitaForm: FormGroup = this.fb.group({
     nome: ['', [Validators.required]],
     modoPreparo: ['', [Validators.required]],
-    precoVenda: [0, [Validators.required, Validators.min(0)]],
-    percentualCustoExtra: [0, [Validators.min(0)]],
-    percentualMargemLucro: [0, [Validators.required, Validators.min(0)]],
+    precoVenda: [null, [Validators.required, Validators.min(0)]],
+    percentualCustoExtra: [null, [Validators.min(0)]],
+    percentualMargemLucro: [null, [Validators.required, Validators.min(0)]],
     ingredientes: this.fb.array([])
   });
 
@@ -68,6 +68,32 @@ export class ReceitaForm implements OnInit {
       this.isEditing.set(true);
       this.carregarDadosEdicao(id);
     }
+
+    this.configurarRegraPrecificacao();
+  }
+
+  // --- NOVA REGRA DE NEGÓCIO DA PRECIFICAÇÃO ---
+  private configurarRegraPrecificacao(): void {
+    const precoControl = this.receitaForm.get('precoVenda');
+    const margemControl = this.receitaForm.get('percentualMargemLucro');
+
+    if (!precoControl || !margemControl) return;
+
+    // 1. Quando o usuário digitar no Preço de Venda
+    precoControl.valueChanges.subscribe(valorPreco => {
+      // Se o preço for maior que zero, obrigatoriamente a margem vira 0
+      if (valorPreco && valorPreco > 0) {
+        margemControl.setValue(0, { emitEvent: false });
+      }
+    });
+
+    // 2. Quando o usuário digitar na Margem de Lucro
+    margemControl.valueChanges.subscribe(valorMargem => {
+      // Se a margem for maior que zero, obrigatoriamente o preço vira 0
+      if (valorMargem && valorMargem > 0) {
+        precoControl.setValue(0, { emitEvent: false });
+      }
+    });
   }
 
   carregarDadosEdicao(id: number): void {
@@ -79,7 +105,7 @@ export class ReceitaForm implements OnInit {
           precoVenda: receita.precoVenda,
           percentualCustoExtra: receita.percentualCustoExtra || 0, 
           percentualMargemLucro: receita.percentualMargemLucro || 0
-        });
+        }, { emitEvent: false }); 
 
         this.ingredientesArray.clear();
         
