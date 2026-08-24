@@ -40,6 +40,21 @@ export class ReceitaForm implements OnInit {
     quantidade: ['', [Validators.required, Validators.min(0.1)]],
     unidadeMedida: ['G', Validators.required]
   });
+  
+  // NOVO: Signal para controlar quais opções aparecem no select de Medida
+  unidadesPermitidas = signal<{ valor: string, label: string }[]>([]);
+
+  // Dicionário de Nomes Amigáveis
+  private nomesUnidades: Record<string, string> = {
+    'G': 'Gramas (G)',
+    'KG': 'Quilogramas (KG)',
+    'ML': 'Mililitros (ML)',
+    'L': 'Litros (L)',
+    'TSP': 'Colher de Chá (TSP)',
+    'TBS': 'Colher de Sopa (TBS)',
+    'CUP': 'Xícara (CUP)',
+    'UN': 'Unidade (UN)' // Adicionada a Unidade que faltava!
+  };
 
   get ingredientesArray(): FormArray {
     return this.receitaForm.get('ingredientes') as FormArray;
@@ -96,13 +111,40 @@ export class ReceitaForm implements OnInit {
     const select = event.target as HTMLSelectElement;
     const idSelecionado = Number(select.value);
     
-    const itemEncontrado = this.estoqueItens().find(item => item.id === idSelecionado);
+    const item = this.estoqueItens().find(i => i.id === idSelecionado);
     
-    if (itemEncontrado) {
+    if (item) {
+      // 1. Descobre a base do item no estoque (Massa, Volume ou Unidade)
+      const umEstoque = item.unidadeMedida.toUpperCase();
+      let siglasPermitidas: string[] = [];
+
+      // 2. Aplica as suas regras de negócio de conversão
+      if (['G', 'KG'].includes(umEstoque)) {
+        siglasPermitidas = ['G', 'KG', 'TSP', 'TBS', 'CUP']; // Massa + Culinárias
+      } else if (['ML', 'L'].includes(umEstoque)) {
+        siglasPermitidas = ['ML', 'L', 'TSP', 'TBS', 'CUP']; // Volume + Culinárias
+      } else if (umEstoque === 'UN') {
+        siglasPermitidas = ['UN']; // Unidade estrita
+      }
+
+      // 3. Monta a lista de objetos para o HTML ler (Valor e Texto Amigável)
+      const listaParaSelect = siglasPermitidas.map(sigla => ({
+        valor: sigla,
+        label: this.nomesUnidades[sigla] || sigla
+      }));
+
+      // Atualiza o Signal para refletir no HTML imediatamente
+      this.unidadesPermitidas.set(listaParaSelect);
+
+      // 4. Preenche o formulário com o nome e a unidade padrão do estoque
       this.novoIngredienteForm.patchValue({ 
-        nome: itemEncontrado.nome,
-        unidadeMedida: itemEncontrado.unidadeMedida
+        nome: item.nome,
+        unidadeMedida: umEstoque 
       });
+    } else {
+      // Se desmarcar, limpa a lista
+      this.unidadesPermitidas.set([]);
+      this.novoIngredienteForm.get('unidadeMedida')?.reset();
     }
   }
 

@@ -42,20 +42,34 @@
         <h2 class="section-title">Precificação</h2>
         
         <div class="pricing-grid">
+          
           <div class="input-group">
-            <label>Preço de Venda (R$)</label>
-            <input type="number" formControlName="precoVenda" placeholder="0,00" class="input-success">
+            <label>Preço de Venda</label>
+            <!-- Wrapper para adicionar o R$ na frente -->
+            <div class="input-wrapper">
+              <span class="prefix">R$</span>
+              <input type="number" formControlName="precoVenda" placeholder="0,00" class="input-success">
+            </div>
           </div>
           
           <div class="input-group">
-            <label>% Custo Extra</label>
-            <input type="number" formControlName="percentualCustoExtra" placeholder="10">
+            <label>Custo Extra</label>
+            <!-- Wrapper para adicionar o % no final -->
+            <div class="input-wrapper">
+              <input type="number" formControlName="percentualCustoExtra" placeholder="10">
+              <span class="suffix">%</span>
+            </div>
           </div>
           
           <div class="input-group">
-            <label>% Margem Lucro</label>
-            <input type="number" formControlName="percentualMargemLucro" placeholder="60">
+            <label>Margem Lucro</label>
+            <!-- Wrapper para adicionar o % no final -->
+            <div class="input-wrapper">
+              <input type="number" formControlName="percentualMargemLucro" placeholder="60">
+              <span class="suffix">%</span>
+            </div>
           </div>
+          
         </div>
       </div>
     </div>
@@ -90,13 +104,12 @@
             <div class="input-group flex-1">
               <label>Medida</label>
               <select formControlName="unidadeMedida">
-                <option value="g">g</option>
-                <option value="kg">kg</option>
-                <option value="ml">ml</option>
-                <option value="l">l</option>
-                <option value="un">un</option>
-                <option value="xícaras">xícaras</option>
-                <option value="colheres">colheres</option>
+                <!-- Laço dinâmico lendo as opções permitidas -->
+                @for (und of unidadesPermitidas(); track und.valor) {
+                  <option [value]="und.valor">{{ und.label }}</option>
+                } @empty {
+                  <option value="" disabled selected>Selecione o ingrediente...</option>
+                }
               </select>
             </div>
           </div>
