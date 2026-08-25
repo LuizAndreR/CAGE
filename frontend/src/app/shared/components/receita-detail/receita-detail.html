@@ -17,7 +17,7 @@
         <button type="button" class="btn-icon" (click)="editar.emit(receita().id)" title="Editar">
           <span class="material-symbols-outlined">edit</span>
         </button>
-        <button type="button" class="btn-icon btn-delete" (click)="excluir.emit(receita().id)" title="Excluir">
+        <button type="button" class="btn-icon btn-delete" (click)="abrirModal()" title="Excluir">
           <span class="material-symbols-outlined">delete</span>
         </button>
       </div>
@@ -99,3 +99,27 @@
     </div>
   </div>
 </div>
+
+@if (isModalAberto()) {
+  <div class="modal-overlay" (click)="fecharModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <span class="material-symbols-outlined icon-warning">warning</span>
+        <h3>Excluir Receita</h3>
+      </div>
+      
+      <div class="modal-body">
+        <p>Tem certeza que deseja excluir a receita <strong>{{ receita().nome }}</strong>?</p>
+        <p class="text-danger">Esta ação não poderá ser desfeita.</p>
+      </div>
+      
+      <div class="modal-actions">
+        <button type="button" class="btn-cancel" (click)="fecharModal()">Cancelar</button>
+        <button type="button" class="btn-confirm" (click)="confirmarExclusao()">
+          <span class="material-symbols-outlined">delete_forever</span>
+          Sim, Excluir
+        </button>
+      </div>
+    </div>
+  </div>
+}

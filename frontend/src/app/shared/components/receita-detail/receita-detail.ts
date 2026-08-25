@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReceitaResponse } from '../../../core/models/receita.interface';
 
@@ -12,10 +12,11 @@ import { ReceitaResponse } from '../../../core/models/receita.interface';
 export class ReceitaDetail {
   receita = input.required<ReceitaResponse>();
 
-  // Eventos de navegação e ação
   voltar = output<void>();
   editar = output<number>();
   excluir = output<number>();
+
+  isModalAberto = signal<boolean>(false);
 
   formatCurrency(value: number): string {
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
@@ -23,5 +24,18 @@ export class ReceitaDetail {
 
   formatPercent(value: number): string {
     return `${value.toFixed(2)}%`;
+  }
+
+  abrirModal(): void {
+    this.isModalAberto.set(true);
+  }
+
+  fecharModal(): void {
+    this.isModalAberto.set(false);
+  }
+
+  confirmarExclusao(): void {
+    this.excluir.emit(this.receita().id);
+    this.fecharModal();
   }
 }
