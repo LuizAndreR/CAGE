@@ -32,15 +32,23 @@
     <div class="financial-summary">
       <div class="summary-card bg-sale">
         <p class="summary-label text-sale">Custo Total Estimado</p>
-        <p class="summary-value">{{ formatCurrency(receita().custoTotal) }}</p>
+        <p class="summary-value">{{ receita().custoTotal | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</p>
       </div>
+      
       <div class="summary-card bg-cost">
         <p class="summary-label text-cost">Preço de Venda </p>
-        <p class="summary-value">{{ formatCurrency(receita().precoVenda) }}</p>
+        <p class="summary-value">{{ receita().precoVenda | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</p>
       </div>
+      
       <div class="summary-card bg-margin">
         <p class="summary-label text-margin">Margem de Lucro</p>
-        <p class="summary-value">{{ formatPercent(receita().percentualMargemLucro) }}</p>
+        <p class="summary-value">{{ receita().percentualMargemLucro / 100 | percent:'1.2-2':'pt-BR' }}</p>
+      </div>
+
+      <!-- NOVO DADO: Custo Extra -->
+      <div class="summary-card bg-cost">
+        <p class="summary-label text-cost">Custo Extra</p>
+        <p class="summary-value">{{ receita().percentualCustoExtra / 100 | percent:'1.2-2':'pt-BR' }}</p>
       </div>
     </div>
 

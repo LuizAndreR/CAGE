@@ -78,16 +78,19 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1.5rem;
-  background-color: var(--cor-marca-primaria, #8B0836);
+  background-color: var(--primary-color, #1c1917);
   color: white;
   border-radius: 9999px;
   border: none;
   font-weight: bold;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: 0 4px 6px -1px rgba(139, 8, 54, 0.3);
+  box-shadow: 0 4px 6px -1px rgba(28, 25, 23, 0.3);
+}
 
-  &:hover { background-color: #6a0528; transform: translateY(-1px); }
+.btn-save:hover { 
+  background-color: #292524; 
+  transform: translateY(-1px); 
 }
 
 /* =========================================
