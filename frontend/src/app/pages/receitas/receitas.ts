@@ -1,9 +1,9 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReceitaService } from '../../core/service/receita.service';
+import { ToastService } from '../../core/service/toast.service'; 
 import { ReceitaListResponse, ReceitaResponse } from '../../core/models/receita.interface';
 
-// Importação dos componentes filhos
 import { ReceitaList } from '../../shared/components/receita-list/receita-list';
 import { ReceitaDetail } from '../../shared/components/receita-detail/receita-detail'; 
 import { ReceitaForm } from '../../shared/components/receita-form/receita-form'; 
@@ -17,10 +17,13 @@ import { ReceitaForm } from '../../shared/components/receita-form/receita-form';
 })
 export default class Receitas implements OnInit {
   private receitaService = inject(ReceitaService);
+  private toast = inject(ToastService); // INJEÇÃO DO SERVIÇO
 
   view = signal<'list' | 'detail' | 'form'>('list');
   
-  // Estado dos Dados
+  // NOVO: Controle de estado de carregamento da tela
+  isLoading = signal<boolean>(true);
+  
   receitas = signal<ReceitaListResponse[]>([]);
   activeTab = signal<'todas' | 'ativas' | 'desativadas'>('todas');
   
@@ -32,9 +35,18 @@ export default class Receitas implements OnInit {
   }
 
   carregarReceitas(): void {
+    this.isLoading.set(true); // Inicia o bloqueio da tela
+
     this.receitaService.getReceitas().subscribe({
-      next: (dados) => this.receitas.set(dados),
-      error: (erro) => console.error('Falha ao carregar as receitas da API:', erro)
+      next: (dados) => {
+        this.receitas.set(dados);
+        this.isLoading.set(false); // Libera a tela
+      },
+      error: (erro) => {
+        console.error('Falha ao carregar as receitas da API:', erro);
+        this.toast.showError('Erro ao buscar as receitas no servidor.'); // FEEDBACK VISUAL
+        this.isLoading.set(false);
+      }
     });
   }
 
@@ -52,7 +64,7 @@ export default class Receitas implements OnInit {
   }
 
   onNovaReceita(): void {
-    this.selectedId.set(null); // Garante que o ID é nulo (Modo Criação)
+    this.selectedId.set(null); 
     this.receitaDetalhe.set(null);
     this.view.set('form'); 
   }
@@ -65,20 +77,27 @@ export default class Receitas implements OnInit {
         this.receitaDetalhe.set(dadosCompletos);
         this.view.set('detail'); 
       },
-      error: (erro) => console.error(`Falha ao carregar a receita ${id}:`, erro)
+      error: (erro) => {
+        console.error(`Falha ao carregar a receita ${id}:`, erro);
+        this.toast.showError('Não foi possível carregar os detalhes.'); // FEEDBACK VISUAL
+      }
     });
   }
 
   onAlternarStatus(evento: { id: number, statusAtual: boolean }): void {
     const novoStatus = !evento.statusAtual;
+    
+    // Atualização otimista local
     this.receitas.update(lista => 
       lista.map(r => r.id === evento.id ? { ...r, status: novoStatus } : r)
     );
 
     this.receitaService.mudarStatus(evento.id, novoStatus).subscribe({
+      next: () => this.toast.showSuccess('Status atualizado com sucesso!'), // FEEDBACK VISUAL
       error: (erro) => {
         console.error('Erro ao mudar status:', erro);
-        this.carregarReceitas();
+        this.toast.showError('Falha ao alterar o status da receita.'); // FEEDBACK VISUAL
+        this.carregarReceitas(); // Reverte a lista buscando do banco novamente
       }
     });
   }
@@ -89,32 +108,30 @@ export default class Receitas implements OnInit {
     this.view.set('list');
   }
 
-  // ATUALIZADO: Agora redireciona corretamente para o formulário de edição
   onEditar(id: number): void {
-    this.selectedId.set(id); // Guarda o ID para o formulário saber que é edição
-    this.view.set('form'); // Troca a tela
+    this.selectedId.set(id);
+    this.view.set('form');
   }
 
-  // NOVO: Método para lidar com o sucesso do salvamento
   onSalvoComSucesso(): void {
-    this.carregarReceitas(); // Atualiza a lista com o novo dado do C#
-    this.view.set('list');   // Volta para a tela principal
+    this.carregarReceitas();
+    this.toast.showSuccess('Receita salva com sucesso!'); // FEEDBACK VISUAL
+    this.view.set('list');
   }
 
   onExcluir(id: number): void {
     this.receitaService.excluirReceita(id).subscribe({
       next: () => {
-        // Atualiza o estado removendo a receita excluída da lista
         this.receitas.update(lista => lista.filter(r => r.id !== id));
-        
-        // Limpa a seleção e volta para a aba de listagem
         this.receitaDetalhe.set(null);
         this.selectedId.set(null);
         this.view.set('list');
+        
+        this.toast.showSuccess('Receita excluída permanentemente.'); // FEEDBACK VISUAL
       },
       error: (erro) => {
         console.error('Falha ao excluir a receita na API:', erro);
-        // Futuramente, podemos adicionar um aviso visual (Toast) aqui
+        this.toast.showError('Não foi possível excluir a receita.'); // FEEDBACK VISUAL
       }
     });
   }

@@ -1,8 +1,9 @@
 import { Component, computed, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { EstoqueItem } from '../../core/models/estoque.interface';
 import { EstoqueService } from '../../core/service/estoque.service';
-import { FormsModule } from '@angular/forms';
+import { ToastService } from '../../core/service/toast.service'; // IMPORTAÇÃO DO TOAST
 
 import { EstoqueList } from '../../shared/components/estoque-list/estoque-list';
 import { EstoqueDetail } from '../../shared/components/estoque-detail/estoque-detail';
@@ -17,6 +18,7 @@ import { EstoqueForm } from '../../shared/components/estoque-form/estoque-form';
 })  
 export default class Estoque implements OnInit {
   private estoqueService = inject(EstoqueService);
+  private toast = inject(ToastService); // INJEÇÃO DO SERVIÇO DE TOAST
 
   view = signal<'list' | 'detail' | 'form'>('list');
   activeTab = signal<'todos' | 'baixo'>('todos');
@@ -25,6 +27,9 @@ export default class Estoque implements OnInit {
   search = signal<string>('');
   
   itemEditando = signal<EstoqueItem | null>(null);
+  
+  // Controle de carregamento (UX)
+  isLoading = signal<boolean>(true);
 
   // Modais State
   actionModal = signal<{ isOpen: boolean; type: 'add' | 'remove'; itemId: number | null }>({ isOpen: false, type: 'add', itemId: null });
@@ -38,13 +43,22 @@ export default class Estoque implements OnInit {
 
   // --- LÓGICA DE DADOS ---
   carregarEstoque(): void {
+    this.isLoading.set(true); // Bloqueia a tela
+    
     const requisicao$ = this.activeTab() === 'todos' 
       ? this.estoqueService.getItens() 
       : this.estoqueService.getItensBaixoEstoque();
 
     requisicao$.subscribe({
-      next: (dados) => this.items.set(dados),
-      error: (erro) => console.error('Erro na API:', erro)
+      next: (dados) => {
+        this.items.set(dados);
+        this.isLoading.set(false); // Libera a tela
+      },
+      error: (erro) => {
+        console.error('Erro na API:', erro);
+        this.toast.showError('Falha ao carregar o estoque.'); // AVISO
+        this.isLoading.set(false);
+      }
     });
   }
 
@@ -82,16 +96,23 @@ export default class Estoque implements OnInit {
   }
 
   onSalvarItem(payload: any): void {
-    const operacao$ = payload.id 
-      ? this.estoqueService.atualizarItem(payload.id, payload)
-      : this.estoqueService.criarItem((delete payload.id, payload));
+    // RESOLUÇÃO CLEAN CODE: Extraímos o ID e criamos um novo objeto sem mutar o payload original
+    const { id, ...dadosEnvio } = payload;
+
+    const operacao$ = id 
+      ? this.estoqueService.atualizarItem(id, payload)
+      : this.estoqueService.criarItem(dadosEnvio);
 
     operacao$.subscribe({
       next: () => {
+        this.toast.showSuccess(id ? 'Item atualizado com sucesso!' : 'Novo item adicionado ao estoque!'); // AVISO
         this.changeView('list');
         this.carregarEstoque();
       },
-      error: (erro) => console.error('Erro ao salvar:', erro)
+      error: (erro) => {
+        console.error('Erro ao salvar:', erro);
+        this.toast.showError('Não foi possível salvar as informações do item.'); // AVISO
+      }
     });
   }
 
@@ -127,10 +148,14 @@ export default class Estoque implements OnInit {
 
     operacao$.subscribe({
       next: () => {
+        this.toast.showSuccess(`Quantidade ${modal.type === 'add' ? 'adicionada' : 'retirada'} com sucesso!`); // AVISO
         this.closeActionModal();
         this.carregarEstoque(); 
       },
-      error: (erro) => console.error(`Erro ao ${modal.type === 'add' ? 'adicionar' : 'remover'} estoque:`, erro)
+      error: (erro) => {
+        console.error(`Erro ao ${modal.type === 'add' ? 'adicionar' : 'remover'} estoque:`, erro);
+        this.toast.showError('Falha ao processar a movimentação no estoque.'); // AVISO
+      }
     });
   }
 
@@ -148,12 +173,15 @@ export default class Estoque implements OnInit {
 
     this.estoqueService.deletarItem(item.id).subscribe({
       next: () => {
-        console.log(`Item ${item.nome} deletado com sucesso.`);
+        this.toast.showSuccess(`${item.nome} foi excluído permanentemente.`); // AVISO
         this.closeDeleteModal();
-        this.view.set('list');
+        this.changeView('list');
         this.carregarEstoque();
       },
-      error: (erro) => console.error('Erro ao deletar o item:', erro)
+      error: (erro) => {
+        console.error('Erro ao deletar o item:', erro);
+        this.toast.showError('Não foi possível excluir o item selecionado.'); // AVISO
+      }
     });
   }
 }

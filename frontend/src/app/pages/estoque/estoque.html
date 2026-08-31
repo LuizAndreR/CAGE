@@ -2,14 +2,23 @@
   
   @switch (view()) {
     @case ('list') {
-      <app-estoque-list
-        [items]="filteredItems()"
-        [activeTab]="activeTab()"
-        (mudarAba)="onMudarAba($event)"
-        (novoItem)="changeView('form')"
-        (selecionarItem)="onSelecionarItem($event)"
-        (acaoRapida)="openActionModal($event.type, $event.id)">
-      </app-estoque-list>
+      <!-- Se estiver carregando da API, exibe o loading -->
+      @if (isLoading()) {
+        <div class="loading-state">
+          <span class="material-symbols-outlined spin-icon">progress_activity</span>
+          <p>Carregando itens do estoque...</p>
+        </div>
+      } @else {
+        <!-- Se terminou de carregar, exibe a tabela -->
+        <app-estoque-list
+          [items]="filteredItems()"
+          [activeTab]="activeTab()"
+          (mudarAba)="onMudarAba($event)"
+          (novoItem)="changeView('form')"
+          (selecionarItem)="onSelecionarItem($event)"
+          (acaoRapida)="openActionModal($event.type, $event.id)">
+        </app-estoque-list>
+      }
     }
 
     @case ('detail') {
