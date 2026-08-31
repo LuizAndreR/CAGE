@@ -31,4 +31,8 @@ export class ReceitaService {
   atualizarReceita(id: number, payload: any): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/${id}`, payload);
   }
+
+  excluirReceita(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
 }

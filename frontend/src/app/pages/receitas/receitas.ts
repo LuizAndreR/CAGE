@@ -102,7 +102,20 @@ export default class Receitas implements OnInit {
   }
 
   onExcluir(id: number): void {
-    console.log('Disparar exclusão da receita:', id);
-    // Será implementado futuramente
+    this.receitaService.excluirReceita(id).subscribe({
+      next: () => {
+        // Atualiza o estado removendo a receita excluída da lista
+        this.receitas.update(lista => lista.filter(r => r.id !== id));
+        
+        // Limpa a seleção e volta para a aba de listagem
+        this.receitaDetalhe.set(null);
+        this.selectedId.set(null);
+        this.view.set('list');
+      },
+      error: (erro) => {
+        console.error('Falha ao excluir a receita na API:', erro);
+        // Futuramente, podemos adicionar um aviso visual (Toast) aqui
+      }
+    });
   }
 }
