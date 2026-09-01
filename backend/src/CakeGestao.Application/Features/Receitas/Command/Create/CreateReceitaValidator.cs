@@ -22,8 +22,9 @@ public class CreateReceitaValidator : AbstractValidator<CreateReceitaCommand>
         RuleFor(r => r.PrecoVenda)
             .GreaterThanOrEqualTo(0).WithMessage("O preço não pode ser um valor negativo.");
 
-        RuleFor(x => x.PercentualCustoExtra)
-            .GreaterThanOrEqualTo(0).WithMessage("O percentual de custo extra não pode ser negativo.");
+        RuleFor(x => x.CustoExtra)
+            .GreaterThanOrEqualTo(0)
+            .WithMessage("O valor de custo extra não pode ser negativo.");
 
         RuleFor(x => x.PercentualMargemLucro)
             .GreaterThanOrEqualTo(0).WithMessage("O percentual de margem de lucro não pode ser negativo.");
