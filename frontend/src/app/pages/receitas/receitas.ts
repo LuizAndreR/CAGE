@@ -4,9 +4,9 @@ import { ReceitaService } from '../../core/service/receita.service';
 import { ToastService } from '../../core/service/toast.service'; 
 import { ReceitaListResponse, ReceitaResponse } from '../../core/models/receita.interface';
 
-import { ReceitaList } from '../../shared/components/receita-list/receita-list';
-import { ReceitaDetail } from '../../shared/components/receita-detail/receita-detail'; 
-import { ReceitaForm } from '../../shared/components/receita-form/receita-form'; 
+import { ReceitaList } from '../../shared/components/receita/receita-list/receita-list';
+import { ReceitaDetail } from '../../shared/components/receita/receita-detail/receita-detail'; 
+import { ReceitaForm } from '../../shared/components/receita/receita-form/receita-form'; 
 
 @Component({
   selector: 'app-receita-page',

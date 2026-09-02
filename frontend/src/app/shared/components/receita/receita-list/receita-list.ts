@@ -1,6 +1,6 @@
 import { Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReceitaListResponse } from '../../../core/models/receita.interface';
+import { ReceitaListResponse } from '../../../../core/models/receita.interface';
 
 @Component({
   selector: 'app-receita-list',

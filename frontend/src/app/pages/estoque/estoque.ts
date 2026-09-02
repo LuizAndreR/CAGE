@@ -5,7 +5,7 @@ import { EstoqueItem } from '../../core/models/estoque.interface';
 import { EstoqueService } from '../../core/service/estoque.service';
 import { ToastService } from '../../core/service/toast.service'; // IMPORTAÇÃO DO TOAST
 
-import { EstoqueList } from '../../shared/components/estoque-list/estoque-list';
+import { EstoqueList } from '../../shared/components/estoque/estoque-list/estoque-list';
 import { EstoqueDetail } from '../../shared/components/estoque-detail/estoque-detail';
 import { EstoqueForm } from '../../shared/components/estoque-form/estoque-form';
 

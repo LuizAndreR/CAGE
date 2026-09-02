@@ -2,9 +2,9 @@ import { Component, inject, OnInit, signal, input, output } from '@angular/core'
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
 
-import { EstoqueService } from '../../../core/service/estoque.service';
-import { EstoqueItem } from '../../../core/models/estoque.interface';
-import { ReceitaService } from '../../../core/service/receita.service';
+import { EstoqueService } from '../../../../core/service/estoque.service';
+import { EstoqueItem } from '../../../../core/models/estoque.interface';
+import { ReceitaService } from '../../../../core/service/receita.service';
 
 @Component({
   selector: 'app-receita-form', 
