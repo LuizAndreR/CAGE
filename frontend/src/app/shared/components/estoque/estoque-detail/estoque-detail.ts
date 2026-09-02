@@ -1,6 +1,6 @@
 import { Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { EstoqueItem } from '../../../core/models/estoque.interface';
+import { EstoqueItem } from '../../../../core/models/estoque.interface';
 
 @Component({
   selector: 'app-estoque-detail',

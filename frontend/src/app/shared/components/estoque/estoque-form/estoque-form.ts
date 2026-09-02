@@ -1,7 +1,7 @@
 import { Component, inject, input, output, effect, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { EstoqueItem } from '../../../core/models/estoque.interface';
+import { EstoqueItem } from '../../../../core/models/estoque.interface';
 
 @Component({
   selector: 'app-estoque-form',
