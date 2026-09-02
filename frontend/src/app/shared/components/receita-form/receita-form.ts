@@ -29,7 +29,7 @@ export class ReceitaForm implements OnInit {
     nome: ['', [Validators.required]],
     modoPreparo: ['', [Validators.required]],
     precoVenda: [null, [Validators.required, Validators.min(0)]],
-    percentualCustoExtra: [null, [Validators.min(0)]],
+    custoExtra: [null, [Validators.min(0)]],
     percentualMargemLucro: [null, [Validators.required, Validators.min(0)]],
     ingredientes: this.fb.array([])
   });
@@ -103,7 +103,7 @@ export class ReceitaForm implements OnInit {
           nome: receita.nome,
           modoPreparo: receita.modoPreparo,
           precoVenda: receita.precoVenda,
-          percentualCustoExtra: receita.percentualCustoExtra || 0, 
+          custoExtra: receita.custoExtra || 0,
           percentualMargemLucro: receita.percentualMargemLucro || 0
         }, { emitEvent: false }); 
 

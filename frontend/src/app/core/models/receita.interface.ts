@@ -13,7 +13,7 @@ export interface ReceitaResponse {
   percentualMargemLucro: number;
   custoTotal: number;
   status: boolean;
-  percentualCustoExtra: number;
+  custoExtra: number;
   ingredientes: IngredienteResponse[];
   totalIngredientes: number;
 }

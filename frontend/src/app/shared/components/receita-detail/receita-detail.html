@@ -48,7 +48,7 @@
       <!-- NOVO DADO: Custo Extra -->
       <div class="summary-card bg-cost">
         <p class="summary-label text-cost">Custo Extra</p>
-        <p class="summary-value">{{ receita().percentualCustoExtra / 100 | percent:'1.2-2':'pt-BR' }}</p>
+        <p class="summary-value">{{ receita().custoExtra | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</p>
       </div>
     </div>
 
