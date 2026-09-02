@@ -2,11 +2,14 @@
 <header class="page-header">
   <div class="header-titles">
     <h1>Financeiro</h1>
+    <!-- Classe subtitle adicionada para controle no mobile -->
     <p>Acompanhe seu fluxo de caixa e transações diárias.</p>
   </div>
-  <button class="btn-primary" (click)="novaTransacao.emit()">
+  
+  <button class="btn-primary" (click)="novaTransacao.emit()" title="Nova Transação">
     <span class="material-symbols-outlined">add</span>
-    Nova Transação
+    <!-- Envolvemos o texto em um span para poder escondê-lo no mobile -->
+    <span class="btn-text">Nova Transação</span>
   </button>
 </header>
 
