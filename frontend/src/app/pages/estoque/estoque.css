@@ -190,6 +190,40 @@
 }
 .btn-confirm-remove:hover:not(:disabled) { background-color: #be123c; }
 
+
+/* =========================================
+   ESTILOS GLOBAIS DO SISTEMA CAGE
+========================================= */
+
+/* Centralização Elegante do Loading */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh; 
+  gap: 1rem;
+  color: #78716c;
+}
+
+.loading-state p {
+  font-size: 1.125rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Animação Global de Rotação (Spinner) */
+.spin-icon {
+  font-size: 3rem;
+  color: #8B0836; /* Cor padrão do CAGE */
+  animation: spin 1s linear infinite; 
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
