@@ -11,26 +11,17 @@ export class FinanceiroService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/financeiro`;
 
-  getTransacoes(filtros?: { tipo?: string, categoria?: string, mes?: string }): Observable<TransacaoResponse[]> {
+  // CORREÇÃO AQUI: Atualizamos a tipagem de 'mes' para number e adicionamos 'ano?: number'
+  getTransacoes(filtros?: { tipo?: string, categoria?: string, ano?: number, mes?: number }): Observable<TransacaoResponse[]> {
     let params = new HttpParams();
     
-    // Tratamento de Clean Code: Só anexa na URL se existir E não for vazio
-    if (filtros?.tipo && filtros.tipo !== '') {
-      params = params.set('tipo', filtros.tipo);
-    }
+    // Adicionamos os parâmetros apenas se eles existirem
+    if (filtros?.tipo) params = params.set('tipo', filtros.tipo);
+    if (filtros?.categoria) params = params.set('categoria', filtros.categoria);
     
-    if (filtros?.categoria && filtros.categoria !== '') {
-      params = params.set('categoria', filtros.categoria);
-    }
-    
-    // Quebra a string "2026-05" de forma segura para mandar ano=2026 e mes=5 pro C#
-    if (filtros?.mes && filtros.mes !== '') {
-      const mesParts = filtros.mes.split('-');
-      if (mesParts.length === 2) {
-        params = params.set('ano', mesParts[0]);
-        params = params.set('mes', mesParts[1]);
-      }
-    }
+    // O HttpParams exige que os valores da URL sejam strings, então usamos toString()
+    if (filtros?.ano) params = params.set('ano', filtros.ano.toString());
+    if (filtros?.mes) params = params.set('mes', filtros.mes.toString());
 
     return this.http.get<TransacaoResponse[]>(this.apiUrl, { params });
   }

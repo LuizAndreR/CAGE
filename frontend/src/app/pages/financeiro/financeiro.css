@@ -1,9 +1,73 @@
+/* =========================================
+   WRAPPER PRINCIPAL DA PÁGINA
+========================================= */
 .financeiro-page-wrapper {
   padding: 2rem;
   background-color: var(--bg-primary, #f5f5f4);
   min-height: 100dvh;
+  
+  /* Dica de Sênior: Usar flexbox aqui ajuda a centralizar o loading no meio da tela vazia */
+  display: flex;
+  flex-direction: column;
 }
 
 @media (max-width: 768px) {
-  .financeiro-page-wrapper { padding: 1rem; }
+  .financeiro-page-wrapper { 
+    padding: 1rem; 
+  }
+}
+
+/* =========================================
+   ESTADO DE CARREGAMENTO (LOADING)
+========================================= */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1; /* Faz o loading preencher todo o espaço vertical disponível do wrapper */
+  min-height: 50vh; /* Garante que não fique espremido no topo */
+  gap: 1rem;
+  color: #78716c; /* Tom de cinza elegante para o texto */
+  animation: fadeIn 0.3s ease-out;
+}
+
+.loading-state p {
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* O ícone do Material Symbols */
+.spin-icon {
+  font-size: 2.5rem;
+  color: #1c1917; /* Destaca o ícone com uma cor mais escura */
+  animation: spin 1s linear infinite; /* Aplica a rotação infinita */
+}
+
+/* =========================================
+   ANIMAÇÕES
+========================================= */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* =========================================
+   TELAS TEMPORÁRIAS (DETAIL E FORM)
+========================================= */
+.placeholder-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 2rem;
+  background: white;
+  border-radius: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }

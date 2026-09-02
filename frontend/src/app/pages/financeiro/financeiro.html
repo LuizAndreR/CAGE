@@ -3,12 +3,10 @@
   @switch (view()) {
     
     @case ('list') {
-      @if (isLoading()) {
-        <div class="loading-state">
-          <span class="material-symbols-outlined spin-icon">progress_activity</span>
-          <p>Carregando extrato financeiro...</p>
-        </div>
-      } @else {
+      
+      <!-- 1. Envolvemos a lista e escondemos com CSS durante o loading.
+           Isso impede que o Angular DESTRUA o componente e perca o estado dos selects. -->
+      <div [style.display]="isLoading() ? 'none' : 'block'">
         <app-financeiro-list
           [transacoes]="transacoes()"
           [resumo]="resumo()"
@@ -16,6 +14,14 @@
           (novaTransacao)="onNovaTransacao()"
           (selecionarTransacao)="onSelecionarTransacao($event)">
         </app-financeiro-list>
+      </div>
+
+      <!-- 2. O loading agora é independente e sobrepõe a tela perfeitamente -->
+      @if (isLoading()) {
+        <div class="loading-state">
+          <span class="material-symbols-outlined spin-icon">progress_activity</span>
+          <p>Carregando extrato financeiro...</p>
+        </div>
       }
     }
 
