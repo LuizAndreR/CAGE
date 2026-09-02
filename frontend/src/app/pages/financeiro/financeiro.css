@@ -1,0 +1,9 @@
+.financeiro-page-wrapper {
+  padding: 2rem;
+  background-color: var(--bg-primary, #f5f5f4);
+  min-height: 100dvh;
+}
+
+@media (max-width: 768px) {
+  .financeiro-page-wrapper { padding: 1rem; }
+}

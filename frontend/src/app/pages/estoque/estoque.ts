@@ -6,12 +6,12 @@ import { EstoqueService } from '../../core/service/estoque.service';
 import { ToastService } from '../../core/service/toast.service'; // IMPORTAÇÃO DO TOAST
 
 import { EstoqueList } from '../../shared/components/estoque/estoque-list/estoque-list';
-import { EstoqueDetail } from '../../shared/components/estoque-detail/estoque-detail';
-import { EstoqueForm } from '../../shared/components/estoque-form/estoque-form';
+import { EstoqueDetail } from '../../shared/components/estoque/estoque-detail/estoque-detail';
+import { EstoqueForm } from '../../shared/components/estoque/estoque-form/estoque-form';
 
 @Component({
   selector: 'app-estoque',
-  standalone: true, 
+  standalone: true,
   imports: [CommonModule, FormsModule, EstoqueList, EstoqueDetail, EstoqueForm],
   templateUrl: './estoque.html',
   styleUrl: './estoque.css'

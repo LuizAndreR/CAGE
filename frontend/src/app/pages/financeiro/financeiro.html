@@ -1,1 +1,39 @@
-<p>financeiro works!</p>
+<div class="financeiro-page-wrapper">
+  
+  @switch (view()) {
+    
+    @case ('list') {
+      @if (isLoading()) {
+        <div class="loading-state">
+          <span class="material-symbols-outlined spin-icon">progress_activity</span>
+          <p>Carregando extrato financeiro...</p>
+        </div>
+      } @else {
+        <app-financeiro-list
+          [transacoes]="transacoes()"
+          [resumo]="resumo()"
+          (filtrar)="onFiltrar($event)"
+          (novaTransacao)="onNovaTransacao()"
+          (selecionarTransacao)="onSelecionarTransacao($event)">
+        </app-financeiro-list>
+      }
+    }
+
+    @case ('detail') {
+      <!-- Futuro componente app-financeiro-detail -->
+      <div class="placeholder-screen">
+        <h2>Detalhes da Transação ID: {{ selectedId() }}</h2>
+        <button (click)="view.set('list')">Voltar</button>
+      </div>
+    }
+
+    @case ('form') {
+      <!-- Futuro componente app-financeiro-form -->
+      <div class="placeholder-screen">
+        <h2>Nova Transação</h2>
+        <button (click)="view.set('list')">Cancelar</button>
+      </div>
+    }
+  }
+
+</div>
