@@ -10,7 +10,8 @@ public class ReceitaProfile : Profile
     {
         CreateMap<Receita, ReceitaResponseAll>();
 
-        CreateMap<Receita, ReceitaResponse>();
+        CreateMap<Receita, ReceitaResponse>()
+            .ForMember(dest => dest.CustoExtra, opt => opt.MapFrom(src => src.PercentualCustoExtra));
 
         CreateMap<Ingrediente, IngredienteResponse>()
             .ForMember(dest => dest.Nome, opt => opt.MapFrom(src => src.Item.Nome))
