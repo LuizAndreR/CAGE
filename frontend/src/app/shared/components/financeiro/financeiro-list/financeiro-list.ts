@@ -17,11 +17,22 @@ export class FinanceiroList {
   novaTransacao = output<void>();
   selecionarTransacao = output<number>();
   filtrar = output<{ tipo?: string, categoria?: string, ano?: number, mes?: number }>();
-
+  
   filtroTipo = '';
   filtroCategoria = '';
   filtroMes = '';
 
+  // Espelho do CategoriasEnum do C# Backend
+  categoriasDisponiveis = [
+    'Vendas', 
+    'Compras', 
+    'Fixos', 
+    'Manutencao', 
+    'Salarios', 
+    'Marketing', 
+    'Impostos', 
+    'Outros'
+  ];
   // 1. Variáveis para gerenciar as datas dinâmicas
   mesesDisponiveis: { valor: string, rotulo: string }[] = [];
   private mesesVistos = new Set<string>();

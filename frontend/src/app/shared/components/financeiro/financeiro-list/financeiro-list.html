@@ -55,9 +55,11 @@
     <label>Categoria</label>
     <select [(ngModel)]="filtroCategoria" (change)="onFilterChange()">
       <option value="">Todas as categorias</option>
-      <option value="Vendas">Vendas</option>
-      <option value="Compras">Compras</option>
-      <option value="Fixos">Fixos</option>
+      
+      @for (categoria of categoriasDisponiveis; track categoria) {
+        <option [value]="categoria">{{ categoria }}</option>
+      }
+      
     </select>
   </div>
 
