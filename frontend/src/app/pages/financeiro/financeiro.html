@@ -33,11 +33,10 @@
     }   
 
     @case ('form') {
-      <div class="placeholder-screen">
-        <h2>Nova Transação</h2>
-        <button (click)="view.set('list')">Cancelar</button>
-      </div>
-    }
+      <app-financeiro-form
+        (cancelar)="view.set('list')"
+        (salvar)="onSalvarNovaTransacao($event)">
+      </app-financeiro-form>
   }
-
+  }
 </div>

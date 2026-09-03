@@ -32,4 +32,10 @@ export class FinanceiroService {
     // Enviamos o motivo no corpo da requisição para o Model Binding do .NET ler o CancelTransacaoCommand
     return this.http.post<void>(`${this.apiUrl}/${id}/cancelamento`, { motivo });
   }
+
+  // Envia os dados validados para o backend criar a transação
+  criarTransacao(payload: { tipo: string, categoria: string, valor: number, data: string, descricao: string }): Observable<void> {
+    // Como a API C# ignora EmpresaId e PedidoId no command inicial, enviamos apenas o payload formatado
+    return this.http.post<void>(this.apiUrl, payload);
+  }
 }

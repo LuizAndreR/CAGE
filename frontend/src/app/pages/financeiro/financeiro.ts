@@ -7,11 +7,12 @@ import { TransacaoResponse, TransacaoResumo } from '../../core/models/financeiro
 
 import { FinanceiroList } from '../../shared/components/financeiro/financeiro-list/financeiro-list';
 import { FinanceiroDetail } from '../../shared/components/financeiro/financeiro-detail/financeiro-detail';
+import { FinanceiroForm } from '../../shared/components/financeiro/financeiro-form/financeiro-form';
 
 @Component({
   selector: 'app-financeiro-page',
   standalone: true,
-  imports: [CommonModule, FinanceiroList, FinanceiroDetail], 
+  imports: [CommonModule, FinanceiroList, FinanceiroDetail, FinanceiroForm], 
   templateUrl: './financeiro.html',
   styleUrl: './financeiro.css'
 })
@@ -91,6 +92,26 @@ export default class Financeiro implements OnInit {
         console.error('Erro ao cancelar a transação:', erro);
         this.toast.showError('Falha ao tentar cancelar a transação.');
         this.isLoading.set(false); // Desliga o loading se falhar, mantendo o usuário na tela de detalhes
+      }
+    });
+  }
+
+  // IMPLEMENTAÇÃO REAL DO SALVAMENTO
+  onSalvarNovaTransacao(novaTransacao: { tipo: string, categoria: string, valor: number, data: string, descricao: string }): void {
+    this.isLoading.set(true); // Levanta a tela de carregamento global
+    
+    // Chama o serviço para enviar o POST para a API
+    this.financeiroService.criarTransacao(novaTransacao).subscribe({
+      next: () => {
+        this.toast.showSuccess('Transação registrada com sucesso!');
+        this.view.set('list'); // Retorna para a tela de lista
+        this.selectedId.set(null); // Limpa a seleção
+        this.carregarDados(); // Recarrega os dados do banco para atualizar tabela e saldo
+      },
+      error: (erro) => {
+        console.error('Erro ao salvar transação:', erro);
+        this.toast.showError('Não foi possível registrar a transação. Verifique os dados.');
+        this.isLoading.set(false);
       }
     });
   }
