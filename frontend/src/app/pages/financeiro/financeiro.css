@@ -25,24 +25,37 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex: 1; /* Faz o loading preencher todo o espaço vertical disponível do wrapper */
-  min-height: 50vh; /* Garante que não fique espremido no topo */
+  flex: 1; 
+  min-height: 50vh; 
   gap: 1rem;
-  color: #78716c; /* Tom de cinza elegante para o texto */
+  color: #78716c; 
   animation: fadeIn 0.3s ease-out;
 }
 
 .loading-state p {
-  font-size: 1rem;
+  font-size: 1.125rem; /* Ajustado para bater com o estoque */
   font-weight: 500;
   margin: 0;
 }
 
 /* O ícone do Material Symbols */
 .spin-icon {
-  font-size: 2.5rem;
-  color: #1c1917; /* Destaca o ícone com uma cor mais escura */
-  animation: spin 1s linear infinite; /* Aplica a rotação infinita */
+  font-size: 3rem; /* Tamanho padronizado */
+  color: #8B0836; /* Cor padrão do CAGE */
+  animation: spin 1s linear infinite; 
+}
+
+/* =========================================
+   ANIMAÇÕES
+========================================= */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* =========================================
