@@ -11,15 +11,12 @@ export class FinanceiroService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/financeiro`;
 
-  // CORREÇÃO AQUI: Atualizamos a tipagem de 'mes' para number e adicionamos 'ano?: number'
   getTransacoes(filtros?: { tipo?: string, categoria?: string, ano?: number, mes?: number }): Observable<TransacaoResponse[]> {
     let params = new HttpParams();
     
-    // Adicionamos os parâmetros apenas se eles existirem
     if (filtros?.tipo) params = params.set('tipo', filtros.tipo);
     if (filtros?.categoria) params = params.set('categoria', filtros.categoria);
     
-    // O HttpParams exige que os valores da URL sejam strings, então usamos toString()
     if (filtros?.ano) params = params.set('ano', filtros.ano.toString());
     if (filtros?.mes) params = params.set('mes', filtros.mes.toString());
 
@@ -28,5 +25,11 @@ export class FinanceiroService {
 
   getResumo(): Observable<TransacaoResumo> {
     return this.http.get<TransacaoResumo>(`${this.apiUrl}/resumo`);
+  }
+
+  // NOVA IMPLEMENTAÇÃO: Rota de cancelamento
+  cancelarTransacao(id: number, motivo: string): Observable<void> {
+    // Enviamos o motivo no corpo da requisição para o Model Binding do .NET ler o CancelTransacaoCommand
+    return this.http.post<void>(`${this.apiUrl}/${id}/cancelamento`, { motivo });
   }
 }

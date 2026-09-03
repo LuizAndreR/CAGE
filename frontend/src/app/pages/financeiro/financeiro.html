@@ -3,9 +3,6 @@
   @switch (view()) {
     
     @case ('list') {
-      
-      <!-- 1. Envolvemos a lista e escondemos com CSS durante o loading.
-           Isso impede que o Angular DESTRUA o componente e perca o estado dos selects. -->
       <div [style.display]="isLoading() ? 'none' : 'block'">
         <app-financeiro-list
           [transacoes]="transacoes()"
@@ -16,7 +13,6 @@
         </app-financeiro-list>
       </div>
 
-      <!-- 2. O loading agora é independente e sobrepõe a tela perfeitamente -->
       @if (isLoading()) {
         <div class="loading-state">
           <span class="material-symbols-outlined spin-icon">progress_activity</span>
@@ -26,15 +22,17 @@
     }
 
     @case ('detail') {
-      <!-- Futuro componente app-financeiro-detail -->
-      <div class="placeholder-screen">
-        <h2>Detalhes da Transação ID: {{ selectedId() }}</h2>
-        <button (click)="view.set('list')">Voltar</button>
-      </div>
-    }
+      <!-- MELHORIA: Só renderiza se a transação for encontrada na memória -->
+      @if (transacaoSelecionada()) {
+        <app-financeiro-detail
+          [transacao]="transacaoSelecionada()!"
+          (voltar)="view.set('list')"
+          (cancelar)="onCancelarTransacao($event)">
+        </app-financeiro-detail>
+      }
+    }   
 
     @case ('form') {
-      <!-- Futuro componente app-financeiro-form -->
       <div class="placeholder-screen">
         <h2>Nova Transação</h2>
         <button (click)="view.set('list')">Cancelar</button>

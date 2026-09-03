@@ -1,14 +1,17 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FinanceiroService } from '../../core/service/financeiro.service';
 import { ToastService } from '../../core/service/toast.service';
+
 import { TransacaoResponse, TransacaoResumo } from '../../core/models/financeiro.interface';
+
 import { FinanceiroList } from '../../shared/components/financeiro/financeiro-list/financeiro-list';
+import { FinanceiroDetail } from '../../shared/components/financeiro/financeiro-detail/financeiro-detail';
 
 @Component({
   selector: 'app-financeiro-page',
   standalone: true,
-  imports: [CommonModule, FinanceiroList], 
+  imports: [CommonModule, FinanceiroList, FinanceiroDetail], 
   templateUrl: './financeiro.html',
   styleUrl: './financeiro.css'
 })
@@ -23,11 +26,16 @@ export default class Financeiro implements OnInit {
   resumo = signal<TransacaoResumo>({ entrada: 0, saida: 0 });
   selectedId = signal<number | null>(null);
 
+  transacaoSelecionada = computed(() => {
+    const id = this.selectedId();
+    if (!id) return null;
+    return this.transacoes().find(t => t.id === id) || null;
+  });
+
   ngOnInit(): void {
     this.carregarDados();
   }
 
-  // Tipagem forte para garantir que strings vazias não cheguem aqui
   carregarDados(filtros?: { tipo?: string, categoria?: string, ano?: number, mes?: number }): void {
     this.isLoading.set(true);
 
@@ -42,7 +50,6 @@ export default class Financeiro implements OnInit {
         this.isLoading.set(false);
       },
       error: (erro) => {
-        // Interceptação pacífica do 404
         if (erro.status === 404) {
           this.transacoes.set([]); 
           this.isLoading.set(false);
@@ -68,4 +75,23 @@ export default class Financeiro implements OnInit {
     this.selectedId.set(id);
     this.view.set('detail');
   }
-}
+
+  // IMPLEMENTAÇÃO REAL DO CANCELAMENTO
+  onCancelarTransacao(evento: { id: number, motivo: string }): void {
+    this.isLoading.set(true); // Ativa o loading na tela inteira
+    
+    this.financeiroService.cancelarTransacao(evento.id, evento.motivo).subscribe({
+      next: () => {
+        this.toast.showSuccess('Transação cancelada com sucesso!');
+        this.view.set('list'); // Volta para a tela de lista
+        this.selectedId.set(null); // Limpa a seleção
+        this.carregarDados(); // Dispara nova busca para atualizar lista e resumo
+      },
+      error: (erro) => {
+        console.error('Erro ao cancelar a transação:', erro);
+        this.toast.showError('Falha ao tentar cancelar a transação.');
+        this.isLoading.set(false); // Desliga o loading se falhar, mantendo o usuário na tela de detalhes
+      }
+    });
+  }
+} 
