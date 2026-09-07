@@ -1,0 +1,135 @@
+<div class="page-container fade-in">
+  <!-- CABEÇALHO -->
+  <header class="page-header">
+    <div class="header-titles">
+      <h1>Pedidos</h1>
+      <p>Acompanhe as encomendas e vendas do dia.</p>
+    </div>
+    
+    <button class="btn-primary" (click)="novoPedido.emit()">
+      <span class="material-symbols-outlined">add</span>
+      <span class="btn-text">Novo Pedido</span>
+    </button>
+  </header>
+
+  <!-- BARRA DE FERRAMENTAS -->
+  <div class="toolbar-card">
+    <div class="search-box">
+      <span class="material-symbols-outlined search-icon">search</span>
+      <input 
+        type="text" 
+        placeholder="Buscar por cliente ou nº do pedido..." 
+        [ngModel]="termoBusca()"
+        (ngModelChange)="termoBusca.set($event)"
+      />
+    </div>
+  </div>
+
+  <!-- TABELA DE PEDIDOS -->
+  <div class="table-container">
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>Pedido</th>
+            <th>Cliente</th>
+            <th>Criação</th>
+            <th>Entrega</th>
+            <th>Pagamento</th>
+            <th>Status</th>
+            <th class="text-right">Valor</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (pedido of pedidosFiltrados(); track pedido.id) {
+            <tr (click)="selecionarPedido.emit(pedido)">
+              
+              <!-- ID -->
+              <td>
+                <span class="badge-id">
+                  <span class="material-symbols-outlined">receipt_long</span>
+                  #{{ pedido.id }}
+                </span>
+              </td>
+              
+              <!-- CLIENTE -->
+              <td class="font-bold text-main">{{ pedido.clienteNome }}</td>
+              
+              <!-- DATA DE CRIAÇÃO -->
+              <td class="text-muted text-sm">
+                {{ formatDate(pedido.dataCriacao) }}
+              </td>
+
+              <!-- DATA DE ENTREGA (Pode ser nula) -->
+              <td class="text-main font-medium with-icon">
+                <span class="material-symbols-outlined icon-small text-muted">schedule</span>
+                {{ formatDate(pedido.dataEntrega) }}
+              </td>
+
+              <!-- PAGO (Booleano) -->
+              <td>
+                @if (pedido.pago) {
+                  <span class="badge-pagamento pago">
+                    <span class="material-symbols-outlined icon-xs">check_circle</span> Pago
+                  </span>
+                } @else {
+                  <span class="badge-pagamento pendente">
+                    <span class="material-symbols-outlined icon-xs">error</span> Pendente
+                  </span>
+                }
+              </td>
+
+              <!-- STATUS (Baseado no StatusPedidoEnum) -->
+              <td>
+                <span class="status-badge" 
+                      [class.status-pendente]="pedido.statusPedido === 'Pendente'"
+                      [class.status-producao]="pedido.statusPedido === 'EmProducao'"
+                      [class.status-pronto]="pedido.statusPedido === 'ProntoEntregue'"
+                      [class.status-concluido]="pedido.statusPedido === 'Concluido'">
+                  
+                  <!-- Ícones dinâmicos de acordo com o status -->
+                  <span class="material-symbols-outlined icon-xs">
+                    {{ 
+                      pedido.statusPedido === 'Pendente' ? 'hourglass_empty' : 
+                      pedido.statusPedido === 'EmProducao' ? 'cookie' : 
+                      pedido.statusPedido === 'ProntoEntregue' ? 'local_shipping' : 'done_all'
+                    }}
+                  </span>
+                  
+                  <!-- Formatação amigável do texto do Enum -->
+                  {{ 
+                    pedido.statusPedido === 'EmProducao' ? 'Em Produção' : 
+                    pedido.statusPedido === 'ProntoEntregue' ? 'Pronto/Entregue' : 
+                    pedido.statusPedido === 'Concluido' ? 'Concluído' : pedido.statusPedido 
+                  }}
+                </span>
+              </td>
+              
+              <!-- VALOR -->
+              <td class="font-bold text-main text-right">
+                {{ formatCurrency(pedido.valorTotal) }}
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="7" class="empty-state">
+                <span class="material-symbols-outlined">inbox</span>
+                Nenhum pedido encontrado.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- RODAPÉ DA TABELA -->
+    <div class="table-footer">
+      <span>Mostrando {{ pedidosFiltrados().length }} de {{ pedidos().length }} pedidos</span>
+    </div>
+  </div>
+
+  <!-- BOTÃO FLUTUANTE MOBILE -->
+  <button class="fab-mobile" (click)="novoPedido.emit()">
+    <span class="material-symbols-outlined">add</span>
+  </button>
+</div>

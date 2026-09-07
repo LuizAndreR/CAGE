@@ -1,1 +1,44 @@
-<p>pedidos works!</p>
+<div class="pedido-page-wrapper">
+  
+  @switch (view()) {
+    
+    <!-- TELA DE LISTAGEM -->
+    @case ('list') {
+      <div [style.display]="isLoading() ? 'none' : 'block'">
+        <app-pedidos-list
+          [pedidos]="pedidos()"
+          (novoPedido)="onNovoPedido()"
+          (selecionarPedido)="onSelecionarPedido($event)">
+        </app-pedidos-list>
+      </div>
+
+      <!-- REAPROVEITANDO O LOADING GLOBAL QUE FIZEMOS NO STYLES.CSS -->
+      @if (isLoading()) {
+        <div class="loading-state">
+          <span class="material-symbols-outlined spin-icon">progress_activity</span>
+          <p>Carregando pedidos da boleria...</p>
+        </div>
+      }
+    }
+
+    <!-- TELA DE DETALHES (Placeholder) -->
+    @case ('detail') {
+      @if (pedidoSelecionado()) {
+        <div class="placeholder-screen">
+          <h2>Detalhes do Pedido #{{ pedidoSelecionado()?.id }}</h2>
+          <p>Cliente: {{ pedidoSelecionado()?.clienteNome }}</p>
+          <button class="btn-secondary" (click)="view.set('list')">Voltar para a Lista</button>
+        </div>
+      }
+    }   
+
+    <!-- TELA DE NOVO PEDIDO (Placeholder) -->
+    @case ('create') {
+      <div class="placeholder-screen">
+        <h2>Criar Novo Pedido</h2>
+        <button class="btn-secondary" (click)="view.set('list')">Cancelar</button>
+      </div>
+    }
+  }
+
+</div>
