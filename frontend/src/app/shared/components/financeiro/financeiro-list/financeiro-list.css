@@ -136,13 +136,14 @@
   background: white;
   border-radius: 1.5rem;
   border: 1px solid #f5f5f4;
-  overflow: hidden;
+  overflow: hidden; /* Oculta as pontas quadradas do cabeçalho que tentarem vazar */
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
 table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate; /* Restaura a capacidade de arredondamento */
+  border-spacing: 0;
   text-align: left;
 }
 
@@ -161,12 +162,27 @@ td {
   font-size: 0.875rem;
   color: #57534e;
   border-bottom: 1px solid #f5f5f4;
-  transition: background-color 0.2s;
 }
 
-tbody tr { cursor: pointer; }
-tbody tr:hover { background-color: #fafaf9; }
-tbody tr:last-child td { border-bottom: none; }
+tbody tr { 
+  background-color: #ffffff; /* Garante que a linha seja sempre puramente branca */
+  cursor: pointer; 
+  transition: background-color 0.2s ease; /* Anima a linha inteira suavemente */
+}
+
+tbody tr:hover { 
+  background-color: #f5f5f4; /* Aplica o tom de cinza correto ao passar o mouse */
+}
+
+tbody tr:last-child td { 
+  border-bottom: none; 
+}
+
+/* Isolamento estrito do estilo de cancelado */
+tr.is-cancelled { 
+  opacity: 0.6; 
+  background-color: #f5f5f4; /* Mantém o cinza fixo para indicar cancelamento */
+}
 
 /* Isolamento estrito do estilo de cancelado */
 tr.is-cancelled { 
@@ -242,17 +258,15 @@ tr.is-cancelled .icon-down {
   
 .table-responsive {
   width: 100%;
-  overflow-x: auto; /* Cria a barra de rolagem horizontal apenas se necessário */
-  -webkit-overflow-scrolling: touch; /* Dica de Sênior: Deixa a rolagem suave no iPhone/iOS */
+  overflow-x: auto; 
+  -webkit-overflow-scrolling: touch; 
   
-  /* Opcional: manter o design com bordas arredondadas que usamos no projeto */
   background: white;
   border-radius: 1.5rem;
   border: 1px solid #f5f5f4;
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
-/* Garante que a tabela não tente se espremer e mantenha um tamanho mínimo legível */
 .table-responsive table {
   min-width: 600px; /* Se a tela for menor que 600px, a rolagem ativa automaticamente */
   width: 100%;
