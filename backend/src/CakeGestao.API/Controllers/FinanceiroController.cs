@@ -3,7 +3,7 @@ using CakeGestao.Application.Features.Financeiro.Command.Cancelamento;
 using CakeGestao.Application.Features.Financeiro.Command.Create;
 using CakeGestao.Application.Features.Financeiro.Query.Get;
 using CakeGestao.Application.Features.Financeiro.Query.GetAll;
-using CakeGestao.Application.Features.Financeiro.Query.GetEntrada;
+using CakeGestao.Application.Features.Financeiro.Query.GetResumo;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
