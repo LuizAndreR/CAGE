@@ -14,7 +14,7 @@ public class CreatePedidoHandler : IRequestHandler<CreatePedidoCommand, Result>
     private readonly IValidator<CreatePedidoCommand> _validator;
     private readonly IReceitaRepository _receitaRepository;
     private readonly IPedidoRepository _pedidoRepository;
-    private const string LogPrefix = "[Create Receita Handler]";
+    private const string LogPrefix = "[Create Pedido Handler]";
     
     public CreatePedidoHandler(ILogger<CreatePedidoHandler> logger, IValidator<CreatePedidoCommand> validator, IReceitaRepository receitaRepository, IPedidoRepository pedidoRepository)
     {
