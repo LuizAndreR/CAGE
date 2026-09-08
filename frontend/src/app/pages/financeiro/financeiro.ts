@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FinanceiroService } from '../../core/service/financeiro.service';
-import { ToastService } from '../../core/service/toast.service';
+import { FinanceiroService } from '../../core/services/financeiro.service';
+import { ToastService } from '../../core/services/toast.service';
 
 import { TransacaoResponse, TransacaoResumo } from '../../core/models/financeiro.interface';
 

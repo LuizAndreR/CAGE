@@ -1,7 +1,7 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReceitaService } from '../../core/service/receita.service';
-import { ToastService } from '../../core/service/toast.service'; 
+import { ReceitaService } from '../../core/services/receita.service';
+import { ToastService } from '../../core/services/toast.service'; 
 import { ReceitaListResponse, ReceitaResponse } from '../../core/models/receita.interface';
 
 import { ReceitaList } from '../../shared/components/receita/receita-list/receita-list';

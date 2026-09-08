@@ -2,8 +2,8 @@ import { Component, computed, signal, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { EstoqueItem } from '../../core/models/estoque.interface';
-import { EstoqueService } from '../../core/service/estoque.service';
-import { ToastService } from '../../core/service/toast.service'; // IMPORTAÇÃO DO TOAST
+import { EstoqueService } from '../../core/services/estoque.service';
+import { ToastService } from '../../core/services/toast.service'; 
 
 import { EstoqueList } from '../../shared/components/estoque/estoque-list/estoque-list';
 import { EstoqueDetail } from '../../shared/components/estoque/estoque-detail/estoque-detail';

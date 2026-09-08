@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PedidoService } from '../../core/service/pedido.service'; // Ajuste o caminho
+import { PedidoService } from '../../core/services/pedido.service'; // Ajuste o caminho
 import { GetAllPedidosResponse } from '../../core/models/pedido.interface'; // Ajuste o caminho
 
 import { PedidosList } from '../../shared/components/pedidos/pedidos-list/pedidos-list';
