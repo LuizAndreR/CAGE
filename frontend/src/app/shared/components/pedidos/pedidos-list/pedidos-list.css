@@ -95,11 +95,13 @@
   box-shadow: 0 0 0 2px var(--accent-color, #FFB6C1);
 }
 
-/* TABELA */
+/* =========================================
+   TABELA (ESTILO CLEAN & BRANCO)
+========================================= */
 .table-container {
-  background: var(--surface-color, #FFF);
+  background: #ffffff; /* Fundo totalmente branco */
   border-radius: 1.5rem;
-  border: 1px solid var(--border-color, #E0E0E0);
+  border: 1px solid var(--border-color, #E0E0E0); /* Apenas a borda externa que delimita o card */
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
   display: flex;
   flex-direction: column;
@@ -114,37 +116,39 @@
 
 table {
   width: 100%;
-  min-width: 900px; /* Aumentado para acomodar as novas colunas */
+  min-width: 900px;
   border-collapse: collapse;
   text-align: left;
 }
 
 th {
-  padding: 1rem 1.5rem;
+  padding: 1.25rem 1.5rem;
   font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
-  color: var(--text-muted, #757575);
-  background-color: #FAFAFA;
-  border-bottom: 1px solid var(--border-color, #E0E0E0);
+  color: #a8a29e;
+  background-color: #fafaf9;
+  border-bottom: 1px solid #F5F5F5; /* Uma linha ultra-suave apenas para separar os títulos dos dados */
   white-space: nowrap;
 }
 
 td {
   padding: 1rem 1.5rem;
   font-size: 0.875rem;
-  border-bottom: 1px solid var(--border-color, #E0E0E0);
   color: var(--text-muted, #757575);
+  border: none !important; /* DICA DE SÊNIOR: Removemos completamente a borda da célula (td) */
   white-space: nowrap;
 }
 
 tbody tr {
+  background-color: #ffffff; /* Linhas puramente brancas */
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
+/* Hover extremamente suave apenas para indicar clique, sem perder o aspecto 'limpo' */
 tbody tr:hover {
-  background-color: #FFF5F5;
+  background-color: #FAFAFA;
 }
 
 /* UTILITÁRIOS DA TABELA */
@@ -203,7 +207,7 @@ tbody tr:hover {
 .status-pronto { background-color: #F3E5F5; color: #6A1B9A; }
 .status-concluido { background-color: #E8F5E9; color: #2E7D32; }
 
-/* ESTADO VAZIO E RODAPÉ */
+/* ESTADO VAZIO */
 .empty-state {
   text-align: center;
   padding: 3rem 1rem;
@@ -216,12 +220,52 @@ tbody tr:hover {
 
 .empty-state .material-symbols-outlined { font-size: 2.5rem; opacity: 0.5; }
 
+/* =========================================
+   RODAPÉ E PAGINAÇÃO (TOTALMENTE BRANCO)
+========================================= */
 .table-footer {
   padding: 1rem 1.5rem;
-  background-color: #FAFAFA;
+  background-color: #ffffff; /* Fundo branco puro */
   font-size: 0.875rem;
   color: var(--text-muted, #757575);
-  border-top: 1px solid var(--border-color, #E0E0E0);
+  border-top: 1px solid #F5F5F5; /* Uma linha ultra-suave apenas separar a paginação dos dados */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.page-info {
+  font-weight: 600;
+  color: var(--text-main, #333);
+}
+
+.btn-page {
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.375rem;
+  border: 1px solid var(--border-color, #E0E0E0);
+  background-color: #ffffff;
+  color: var(--text-muted, #757575);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-page:hover:not(:disabled) {
+  background-color: #FAFAFA;
+  color: var(--text-main, #333);
+}
+
+.btn-page:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* ANIMAÇÕES E MOBILE */
@@ -254,5 +298,11 @@ tbody tr:hover {
     box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     z-index: 50;
     cursor: pointer;
+  }
+
+  .table-footer {
+    justify-content: center;
+    text-align: center;
+    background-color: #ffffff;
   }
 }

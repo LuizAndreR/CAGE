@@ -2,13 +2,11 @@
 <header class="page-header">
   <div class="header-titles">
     <h1>Financeiro</h1>
-    <!-- Classe subtitle adicionada para controle no mobile -->
     <p>Acompanhe seu fluxo de caixa e transações diárias.</p>
   </div>
   
   <button class="btn-primary" (click)="novaTransacao.emit()" title="Nova Transação">
     <span class="material-symbols-outlined">add</span>
-    <!-- Envolvemos o texto em um span para poder escondê-lo no mobile -->
     <span class="btn-text">Nova Transação</span>
   </button>
 </header>
@@ -55,30 +53,24 @@
     <label>Categoria</label>
     <select [(ngModel)]="filtroCategoria" (change)="onFilterChange()">
       <option value="">Todas as categorias</option>
-      
       @for (categoria of categoriasDisponiveis; track categoria) {
         <option [value]="categoria">{{ categoria }}</option>
       }
-      
     </select>
   </div>
 
   <div class="filter-group">
     <label>Data (Mês/Ano)</label>
     <select [(ngModel)]="filtroMes" (change)="onFilterChange()">
-      <!-- Valor vazio limpa o filtro de data -->
       <option value="">Todas as datas</option>
-      
-      <!-- O Angular desenha as opções dinamicamente baseadas nas transações reais -->
       @for (mes of mesesDisponiveis; track mes.valor) {
         <option [value]="mes.valor">{{ mes.rotulo }}</option>
       }
-      
     </select>
   </div>
 </div>
 
-<!-- TABELA DE TRANSAÇÕES -->
+<!-- TABELA DE TRANSAÇÕES E PAGINAÇÃO -->
 <div class="table-container table-responsive"> 
   <table>
     <thead>
@@ -91,7 +83,8 @@
       </tr>
     </thead>
     <tbody>
-      @for (t of transacoes(); track t.id) {
+      <!-- DICA DE SÊNIOR: Iterando sobre a lista paginada e não sobre a lista completa -->
+      @for (t of transacoesPaginadas(); track t.id) {
         <tr (click)="selecionarTransacao.emit(t.id)" [class.is-cancelled]="t.isCancelado">
           
           <td>{{ formatDate(t.data) }}</td>
@@ -121,4 +114,27 @@
       }
     </tbody>
   </table>
+
+  <!-- NOVO RODAPÉ DE PAGINAÇÃO -->
+  <div class="table-footer">
+    <span>Mostrando {{ transacoesPaginadas().length }} de {{ transacoes().length }} transações</span>
+    
+    <div class="pagination-controls">
+      <button 
+        class="btn-page" 
+        (click)="irParaPagina(paginaAtual() - 1)" 
+        [disabled]="paginaAtual() === 1">
+        Anterior
+      </button>
+      
+      <span class="page-info">Página {{ paginaAtual() }} de {{ totalPaginas() }}</span>
+      
+      <button 
+        class="btn-page" 
+        (click)="irParaPagina(paginaAtual() + 1)" 
+        [disabled]="paginaAtual() === totalPaginas()">
+        Próxima
+      </button>
+    </div>
+  </div>
 </div>

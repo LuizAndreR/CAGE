@@ -25,108 +25,118 @@
     </div>
   </div>
 
-  <!-- TABELA DE PEDIDOS -->
-  <div class="table-container">
-    <div class="table-responsive">
-      <table>
-        <thead>
-          <tr>
-            <th>Pedido</th>
-            <th>Cliente</th>
-            <th>Criação</th>
-            <th>Entrega</th>
-            <th>Pagamento</th>
-            <th>Status</th>
-            <th class="text-right">Valor</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (pedido of pedidosFiltrados(); track pedido.id) {
-            <tr (click)="selecionarPedido.emit(pedido)">
-              
-              <!-- ID -->
-              <td>
-                <span class="badge-id">
-                  <span class="material-symbols-outlined">receipt_long</span>
-                  #{{ pedido.id }}
+<!-- TABELA DE PEDIDOS -->
+<div class="table-container">
+  <div class="table-responsive">
+    <table>
+      <thead>
+        <tr>
+          <th>Pedido</th>
+          <th>Cliente</th>
+          <th>Criação</th>
+          <th>Entrega</th>
+          <th>Pagamento</th>
+          <th>Status</th>
+          <th class="text-right">Valor</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- DICA DE SÊNIOR: Iteramos sobre a lista paginada -->
+        @for (pedido of pedidosPaginados(); track pedido.id) {
+          <tr (click)="selecionarPedido.emit(pedido)">
+            
+            <td>
+              <span class="badge-id">
+                <span class="material-symbols-outlined">receipt_long</span>
+                #{{ pedido.id }}
+              </span>
+            </td>
+            
+            <td class="font-bold text-main">{{ pedido.clienteNome }}</td>
+            
+            <td class="text-muted text-sm">
+              {{ formatDate(pedido.dataCriacao) }}
+            </td>
+
+            <td class="text-main font-medium with-icon">
+              <span class="material-symbols-outlined icon-small text-muted">schedule</span>
+              {{ formatDate(pedido.dataEntrega) }}
+            </td>
+
+            <td>
+              @if (pedido.pago) {
+                <span class="badge-pagamento pago">
+                  <span class="material-symbols-outlined icon-xs">check_circle</span> Pago
                 </span>
-              </td>
-              
-              <!-- CLIENTE -->
-              <td class="font-bold text-main">{{ pedido.clienteNome }}</td>
-              
-              <!-- DATA DE CRIAÇÃO -->
-              <td class="text-muted text-sm">
-                {{ formatDate(pedido.dataCriacao) }}
-              </td>
+              } @else {
+                <span class="badge-pagamento pendente">
+                  <span class="material-symbols-outlined icon-xs">error</span> Pendente
+                </span>
+              }
+            </td>
 
-              <!-- DATA DE ENTREGA (Pode ser nula) -->
-              <td class="text-main font-medium with-icon">
-                <span class="material-symbols-outlined icon-small text-muted">schedule</span>
-                {{ formatDate(pedido.dataEntrega) }}
-              </td>
-
-              <!-- PAGO (Booleano) -->
-              <td>
-                @if (pedido.pago) {
-                  <span class="badge-pagamento pago">
-                    <span class="material-symbols-outlined icon-xs">check_circle</span> Pago
-                  </span>
-                } @else {
-                  <span class="badge-pagamento pendente">
-                    <span class="material-symbols-outlined icon-xs">error</span> Pendente
-                  </span>
-                }
-              </td>
-
-              <!-- STATUS (Baseado no StatusPedidoEnum) -->
-              <td>
-                <span class="status-badge" 
-                      [class.status-pendente]="pedido.statusPedido === 'Pendente'"
-                      [class.status-producao]="pedido.statusPedido === 'EmProducao'"
-                      [class.status-pronto]="pedido.statusPedido === 'ProntoEntregue'"
-                      [class.status-concluido]="pedido.statusPedido === 'Concluido'">
-                  
-                  <!-- Ícones dinâmicos de acordo com o status -->
-                  <span class="material-symbols-outlined icon-xs">
-                    {{ 
-                      pedido.statusPedido === 'Pendente' ? 'hourglass_empty' : 
-                      pedido.statusPedido === 'EmProducao' ? 'cookie' : 
-                      pedido.statusPedido === 'ProntoEntregue' ? 'local_shipping' : 'done_all'
-                    }}
-                  </span>
-                  
-                  <!-- Formatação amigável do texto do Enum -->
+            <td>
+              <span class="status-badge" 
+                    [class.status-pendente]="pedido.statusPedido === 'Pendente'"
+                    [class.status-producao]="pedido.statusPedido === 'EmProducao'"
+                    [class.status-pronto]="pedido.statusPedido === 'ProntoEntregue'"
+                    [class.status-concluido]="pedido.statusPedido === 'Concluido'">
+                
+                <span class="material-symbols-outlined icon-xs">
                   {{ 
-                    pedido.statusPedido === 'EmProducao' ? 'Em Produção' : 
-                    pedido.statusPedido === 'ProntoEntregue' ? 'Pronto/Entregue' : 
-                    pedido.statusPedido === 'Concluido' ? 'Concluído' : pedido.statusPedido 
+                    pedido.statusPedido === 'Pendente' ? 'hourglass_empty' : 
+                    pedido.statusPedido === 'EmProducao' ? 'cookie' : 
+                    pedido.statusPedido === 'ProntoEntregue' ? 'local_shipping' : 'done_all'
                   }}
                 </span>
-              </td>
-              
-              <!-- VALOR -->
-              <td class="font-bold text-main text-right">
-                {{ formatCurrency(pedido.valorTotal) }}
-              </td>
-            </tr>
-          } @empty {
-            <tr>
-              <td colspan="7" class="empty-state">
-                <span class="material-symbols-outlined">inbox</span>
-                Nenhum pedido encontrado.
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
+                
+                {{ 
+                  pedido.statusPedido === 'EmProducao' ? 'Em Produção' : 
+                  pedido.statusPedido === 'ProntoEntregue' ? 'Pronto/Entregue' : 
+                  pedido.statusPedido === 'Concluido' ? 'Concluído' : pedido.statusPedido 
+                }}
+              </span>
+            </td>
+            
+            <td class="font-bold text-main text-right">
+              {{ formatCurrency(pedido.valorTotal) }}
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="7" class="empty-state">
+              <span class="material-symbols-outlined">inbox</span>
+              Nenhum pedido encontrado.
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
 
-    <!-- RODAPÉ DA TABELA -->
-    <div class="table-footer">
-      <span>Mostrando {{ pedidosFiltrados().length }} de {{ pedidos().length }} pedidos</span>
+  <!-- NOVO RODAPÉ DE PAGINAÇÃO -->
+  <div class="table-footer">
+    <span>Mostrando {{ pedidosPaginados().length }} de {{ pedidosFiltrados().length }} pedidos</span>
+    
+    <div class="pagination-controls">
+      <button 
+        class="btn-page" 
+        (click)="irParaPagina(paginaAtual() - 1)" 
+        [disabled]="paginaAtual() === 1">
+        Anterior
+      </button>
+      
+      <span class="page-info">Página {{ paginaAtual() }} de {{ totalPaginas() }}</span>
+      
+      <button 
+        class="btn-page" 
+        (click)="irParaPagina(paginaAtual() + 1)" 
+        [disabled]="paginaAtual() === totalPaginas()">
+        Próxima
+      </button>
     </div>
   </div>
+</div>
 
   <!-- BOTÃO FLUTUANTE MOBILE -->
   <button class="fab-mobile" (click)="novoPedido.emit()">

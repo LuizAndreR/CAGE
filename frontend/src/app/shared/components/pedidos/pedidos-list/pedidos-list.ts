@@ -50,4 +50,27 @@ export class PedidosList {
       minute: '2-digit'
     });
   }
+
+  // Configurações de Paginação
+  paginaAtual = signal<number>(1);
+  itensPorPagina = signal<number>(15);
+
+  // Computed para fatiar a lista que já passou pelo filtro de busca
+  pedidosPaginados = computed(() => {
+    const inicio = (this.paginaAtual() - 1) * this.itensPorPagina();
+    const fim = inicio + this.itensPorPagina();
+    
+    return this.pedidosFiltrados().slice(inicio, fim);
+  });
+
+  totalPaginas = computed(() => {
+    return Math.ceil(this.pedidosFiltrados().length / this.itensPorPagina()) || 1;
+  });
+
+  // Método para navegar entre as páginas
+  irParaPagina(novaPagina: number): void {
+    if (novaPagina >= 1 && novaPagina <= this.totalPaginas()) {
+      this.paginaAtual.set(novaPagina);
+    }
+  }
 }

@@ -1,4 +1,4 @@
-import { Component, input, output, effect } from '@angular/core';
+import { Component, input, output, effect, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { TransacaoResponse, TransacaoResumo } from '../../../../core/models/financeiro.interface';
@@ -101,5 +101,26 @@ export class FinanceiroList {
       ano: anoFormatado,
       mes: mesFormatado
     });
+  }
+
+  paginaAtual = signal<number>(1);
+  itensPorPagina = signal<number>(15);
+
+  transacoesPaginadas = computed(() => {
+    const inicio = (this.paginaAtual() - 1) * this.itensPorPagina();
+    const fim = inicio + this.itensPorPagina();
+    
+    return this.transacoes().slice(inicio, fim); 
+  });
+
+  totalPaginas = computed(() => {
+    return Math.ceil(this.transacoes().length / this.itensPorPagina()) || 1;
+  });
+
+  // Método para navegar
+  irParaPagina(novaPagina: number): void {
+    if (novaPagina >= 1 && novaPagina <= this.totalPaginas()) {
+      this.paginaAtual.set(novaPagina);
+    }
   }
 }
