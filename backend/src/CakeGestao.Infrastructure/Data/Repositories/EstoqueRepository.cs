@@ -18,6 +18,14 @@ public class EstoqueRepository : IEstoqueRepository
         _logger = logger;
     }
 
+    public async Task<int> GetTotalItensEstoqueAsync(int empresaId, CancellationToken cancellationToken)
+    {
+        return await _context.Estoque
+            .AsNoTracking()
+            .Where(e => e.EmpresaId == empresaId)
+            .CountAsync(cancellationToken);
+    }
+    
     public async Task<Result<Estoque>> GetItemEstoqueByIdAsync(int itemId, int? empresaId)
     {
         _logger.LogDebug("{LogPrefix} Buscando ItemEstoque com ID: {Id} (Filtro Empresa: {Empresa}).", LogPrefix, itemId, empresaId);
@@ -79,6 +87,23 @@ public class EstoqueRepository : IEstoqueRepository
         }
 
         return Result.Ok(alertaEstoque);
+    }
+
+    public async Task<bool> ExisteDependenciaComReceitaAsync(int itemId, int empresaId)
+    {
+        _logger.LogDebug("{LogPrefix} Verificando dependências para o ItemID: {ItemId} na EmpresaID: {EmpresaId}", LogPrefix, itemId, empresaId);
+
+        bool existeDependencia = await _context.Set<Receita>()
+            .AsNoTracking()
+            .AnyAsync(r => r.EmpresaId == empresaId && 
+                           r.Ingredientes.Any(i => i.ItemId == itemId));
+
+        if (existeDependencia)
+        {
+            _logger.LogWarning("{LogPrefix} Bloqueio: O ItemID {ItemId} está vinculado a uma ou mais receitas.", LogPrefix, itemId);
+        }
+
+        return existeDependencia;
     }
 
     public async Task<Result> ExistItemByNome(string nome, int empresaId, string marca)

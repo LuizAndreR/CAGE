@@ -1,0 +1,63 @@
+/* Container que engloba o módulo inteiro de Receitas */
+.receita-page-wrapper {
+  padding: 2rem;
+  background-color: var(--bg-primary, #f5f5f4);
+  min-height: 100dvh;
+}
+
+/* Temporário para as telas que ainda vamos construir */
+.placeholder-screen {
+  background: white;
+  padding: 3rem;
+  border-radius: 1.5rem;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+/* =========================================
+   ESTADO DE CARREGAMENTO (LOADING)
+========================================= */
+.loading-state {
+  /* O Flexbox é o melhor amigo para centralizar elementos */
+  display: flex;
+  flex-direction: column;       /* Coloca o texto embaixo do ícone */
+  align-items: center;          /* Centraliza horizontalmente */
+  justify-content: center;      /* Centraliza verticalmente */
+  
+  /* Dá uma altura mínima para que ele tenha espaço para centralizar no meio da tela */
+  min-height: 50vh; 
+  gap: 1rem;                    /* Espaço entre o ícone e o texto */
+  color: #78716c;               /* Cor neutra/cinza para o texto */
+}
+
+.loading-state p {
+  font-size: 1.125rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Configuração do Ícone */
+.spin-icon {
+  font-size: 3rem;              /* Deixa o ícone maior */
+  color: #8B0836;               /* Aqui você pode colocar a cor primária do CAGE */
+  
+  /* A mágica do giro: chama a animação "spin", duração 1s, velocidade constante (linear), repetindo para sempre (infinite) */
+  animation: spin 1s linear infinite; 
+}
+
+/* O "motor" da animação de rotação */
+@keyframes spin {
+  0% { 
+    transform: rotate(0deg); 
+  }
+  100% { 
+    transform: rotate(360deg); 
+  }
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .receita-page-wrapper {
+    padding: 1rem;
+  }
+}

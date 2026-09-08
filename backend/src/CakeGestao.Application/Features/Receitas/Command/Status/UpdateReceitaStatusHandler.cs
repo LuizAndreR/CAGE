@@ -34,7 +34,7 @@ public class UpdateReceitaStatusHandler : IRequestHandler<UpdateReceitaStatusCom
             return Result.Fail(new ValidationError(errors));
         }
         
-        var receitaResult = await _repository.GetReceitaByIdAsync(request.EmpresaId, request.ReceitaId);
+        var receitaResult = await _repository.GetReceitaByIdAsync(request.ReceitaId, request.EmpresaId);
         if (receitaResult.IsFailed)
         {
             _logger.LogWarning("{LogPrefix} Receita de id {ReceitaId}não encontrado no banco de dados", LogPrefix, request.ReceitaId);

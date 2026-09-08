@@ -1,1 +1,141 @@
-<p>estoque works!</p>
+<div class="estoque-container">
+  
+  @switch (view()) {
+    @case ('list') {
+      <!-- Se estiver carregando da API, exibe o loading -->
+      @if (isLoading()) {
+        <div class="loading-state">
+          <span class="material-symbols-outlined spin-icon">progress_activity</span>
+          <p>Carregando itens do estoque...</p>
+        </div>
+      } @else {
+        <!-- Se terminou de carregar, exibe a tabela -->
+        <app-estoque-list
+          [items]="filteredItems()"
+          [activeTab]="activeTab()"
+          (mudarAba)="onMudarAba($event)"
+          (novoItem)="changeView('form')"
+          (selecionarItem)="onSelecionarItem($event)"
+          (acaoRapida)="openActionModal($event.type, $event.id)">
+        </app-estoque-list>
+      }
+    }
+
+    @case ('detail') {
+      @if (selectedItem(); as item) {
+        <app-estoque-detail
+          [item]="item"
+          (voltar)="changeView('list')"
+          (editar)="onEditItem()"
+          (deletar)="openDeleteModal()">
+        </app-estoque-detail>
+      }
+    }
+
+    @case ('form') {
+      <app-estoque-form
+        [itemParaEditar]="itemEditando()"
+        (cancelar)="changeView('list')"
+        (salvar)="onSalvarItem($event)">
+      </app-estoque-form>
+    }
+  }
+
+  <!-- MODAL DE AÇÃO RÁPIDA -->
+  @if (actionModal().isOpen) {
+    <div class="modal-overlay" (click)="closeActionModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        
+        <div class="modal-header">
+          <h2 [class.text-emerald]="actionModal().type === 'add'" [class.text-rose]="actionModal().type === 'remove'">
+            {{ actionModal().type === 'add' ? 'Adicionar ao Estoque' : 'Retirar do Estoque' }}
+          </h2>
+          <button class="btn-close-modal" (click)="closeActionModal()">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        
+        <div class="modal-body">
+          <div class="form-group">
+            <label>
+              {{ actionModal().type === 'add' ? 'Quantidade Adicionada' : 'Quantidade Retirada' }}
+            </label>
+            <div class="input-with-suffix">
+              <input 
+                type="number" 
+                [(ngModel)]="actionAmount" 
+                placeholder="0"
+                [class.focus-emerald]="actionModal().type === 'add'"
+                [class.focus-rose]="actionModal().type === 'remove'"
+              >
+              <span class="suffix">{{ obterUnidadeItemModal() }}</span>
+            </div>
+          </div>
+
+          @if (actionModal().type === 'add') {
+            <div class="form-group slide-in-top">
+              <label>Valor Gasto </label>
+              <div class="input-with-prefix">
+                <span class="prefix">R$</span>
+                <input 
+                  type="number" 
+                  [(ngModel)]="actionValor" 
+                  placeholder="0.00"
+                  class="focus-emerald"
+                >
+              </div>
+            </div>
+          }
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn-cancel" type="button" (click)="closeActionModal()">
+            Cancelar
+          </button>
+          <button 
+            class="btn-confirm" 
+            type="button" 
+            [disabled]="!actionAmount()" 
+            (click)="confirmAction()"
+            [class.btn-confirm-add]="actionModal().type === 'add'"
+            [class.btn-confirm-remove]="actionModal().type === 'remove'"
+          >
+            <span class="material-symbols-outlined">check</span> Confirmar
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
+
+  <!-- MODAL DE CONFIRMAÇÃO DE EXCLUSÃO -->
+  @if (isDeleteModalOpen()) {
+    <div class="modal-overlay" (click)="closeDeleteModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        
+        <div class="modal-header">
+          <h2 class="text-rose">Excluir Ingrediente</h2>
+          <button class="btn-close-modal" (click)="closeDeleteModal()">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        
+        <div class="modal-body">
+          <p style="color: var(--text-secondary); font-size: 1rem; line-height: 1.5;">
+            Você tem certeza que deseja deletar <strong>{{ selectedItem()?.nome }}</strong>? Esta ação não tem volta.
+          </p>
+        </div>
+
+        <div class="modal-footer" style="margin-top: 1.5rem;">
+          <button class="btn-cancel" type="button" (click)="closeDeleteModal()">
+            Cancelar
+          </button>
+          <button class="btn-confirm btn-confirm-remove" type="button" (click)="confirmDelete()">
+            <span class="material-symbols-outlined">delete</span> Confirmar Exclusão
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
+</div>

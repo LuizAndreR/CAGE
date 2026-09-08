@@ -13,6 +13,8 @@ public enum UnidadeMedidaEnum
     // Medidas de cozinha
     TSP = 5,    // colher de chá
     TBS = 6,    // colher de sopa (ou TBSP, mas aí passa de 3)
-    CUP = 7     // xícara
+    CUP = 7,    // xícara
+
+    UN = 8      // unidade
 }
 

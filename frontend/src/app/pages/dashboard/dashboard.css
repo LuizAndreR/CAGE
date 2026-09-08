@@ -1,0 +1,168 @@
+.dashboard-container {
+  box-sizing: border-box; 
+  min-height: 100dvh; 
+  width: 100%;
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  background-color: var(--bg-primary);
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.dashboard-header h1 {
+  font-size: 2.25rem; 
+  font-weight: 500;   
+  color: var(--text-primary);    
+  margin: 0;
+  letter-spacing: -0.02em; 
+}
+
+.dashboard-header p {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  margin-top: 0.25rem;
+}
+
+.btn-novo-pedido {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  background-color: var(--accent-color);
+  color: var(--primary-hover);
+  border: none;
+  border-radius: 9999px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-novo-pedido:hover {
+  background-color: #fda4af;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+@media (max-width: 768px) {
+  .summary-grid {
+    display: flex;
+    flex-direction: column;
+    
+    gap: 1.5rem; 
+  }
+}
+
+.card-blue { background-color: #dbeafe; color: #1e40af; }
+.card-emerald { background-color: #d1fae5; color: var(--success); }
+.card-rose { background-color: var(--accent-color); color: var(--primary-hover); }
+.card-indigo { background-color: #e0e7ff; color: #3730a3; }
+
+.lists-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.list-group {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #fafaf9;
+  transition: background-color 0.2s;
+}
+
+.list-item:hover {
+  background-color: #fafaf9;
+}
+
+.item-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.item-info strong {
+  font-size: 0.875rem;
+  color: var(--text-primary);
+}
+
+.item-info span {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 0.125rem;
+}
+
+.item-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.item-price {
+  font-weight: 700;
+  color: #44403c;
+  font-size: 0.875rem;
+  width: 5rem;
+  text-align: right;
+}
+
+.badge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  font-weight: 500;
+}
+
+.badge-emerald { background-color: #d1fae5; color: var(--success); }
+.badge-amber { background-color: #fef3c7; color: #92400e; }
+.badge-default { background-color: #f5f5f4; color: var(--text-secondary); }
+
+.recipe-item {
+  gap: 1rem;
+  cursor: pointer;
+}
+
+.recipe-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: var(--accent-color);
+  color: var(--primary-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.recipe-name {
+  flex: 1;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+}
+
+@media (max-width: 768px) {
+  .lists-grid {
+    grid-template-columns: 1fr;
+  }
+}

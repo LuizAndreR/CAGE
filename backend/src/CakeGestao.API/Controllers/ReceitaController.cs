@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CakeGestao.API.Controllers;
 
 [ApiController]
-[Route("api/receita/")]
+[Route("api/receita")]
 public class ReceitaController : ApiControllerBase
 {
     private readonly ILogger<ReceitaController> _logger;
@@ -23,7 +23,7 @@ public class ReceitaController : ApiControllerBase
         _mediator = mediator;
     }
 
-    [HttpGet("get/{id}")]
+    [HttpGet("{id}")]
     public async Task<IActionResult> GetReceitaById([FromRoute]int id)
     {
         _logger.LogInformation("{LogPrefix} Recebida requisição para buscar receita. ID: {Id}", ControllerLogPrefix, id);
@@ -39,7 +39,7 @@ public class ReceitaController : ApiControllerBase
         return HandleResult(result, _logger, ControllerLogPrefix);
     }
 
-    [HttpGet("getall")]
+    [HttpGet("")]
     public async Task<IActionResult> GetAllReceitas()
     {
         _logger.LogInformation("{LogPrefix} Recebida requisição para listar receitas da empresa.", ControllerLogPrefix);
@@ -55,7 +55,7 @@ public class ReceitaController : ApiControllerBase
         return HandleResult(result, _logger, ControllerLogPrefix);
     }
 
-    [HttpPost("create")]
+    [HttpPost("")]
     public async Task<IActionResult> CreateReceita([FromBody]CreateReceitaCommand request)
     {
         _logger.LogInformation("{LogPrefix} Criando uma nova receita chamada: {Nome}", ControllerLogPrefix, request.Nome);
@@ -74,7 +74,7 @@ public class ReceitaController : ApiControllerBase
         return HandleResult<object>(result, _logger, ControllerLogPrefix);
     }
 
-    [HttpPut("update/{id}")]
+    [HttpPut("{id}")]
     public async Task<IActionResult> UpdateReceita([FromRoute]int id, [FromBody] UpdateReceitaCommand request)
     {
         _logger.LogInformation("{LogPrefix} Atualizando receita ID: {Id}", ControllerLogPrefix, id);
@@ -91,7 +91,7 @@ public class ReceitaController : ApiControllerBase
         return HandleResult<object>(result, _logger, ControllerLogPrefix);
     }
 
-    [HttpPatch("updatestatus/{id}")]
+    [HttpPatch("{id}/status")]
     public async Task<IActionResult> UpdateStatus([FromRoute] int id, [FromBody] UpdateReceitaStatusCommand request)
     {
         _logger.LogInformation("{LogPrefix} Atualizando status da receita ID: {Id}", ControllerLogPrefix, id);
@@ -109,7 +109,7 @@ public class ReceitaController : ApiControllerBase
         return HandleResult<object>(result, _logger, ControllerLogPrefix);
     }
 
-    [HttpDelete("delete/{id}")]
+    [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteReceita([FromRoute] int id)
     {
         _logger.LogInformation("{LogPrefix} Delete status da receita ID: {Id}", ControllerLogPrefix, id);

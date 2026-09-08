@@ -47,20 +47,19 @@ public class Estoque
         PesoReferenciaEmGramas = pesoReferenciaEmGramas;
     }
 
-    public void AdicionarQuantidade (decimal quantidadeEntrada, decimal valorUnitarioEntrada)
+    public void AdicionarQuantidade(decimal quantidadeEntrada, decimal valorTotalEntrada)
     {
         decimal valorTotalAtualNoEstoque = QuantidadeAtual * ValorMedia;
-        decimal valorTotalDaEntrada = quantidadeEntrada * valorUnitarioEntrada;
-
+        
         decimal novaQuantidadeTotal = QuantidadeAtual + quantidadeEntrada;
 
         if (novaQuantidadeTotal > 0)
         {
-            ValorMedia = (valorTotalAtualNoEstoque + valorTotalDaEntrada) / novaQuantidadeTotal;
+            ValorMedia = (valorTotalAtualNoEstoque + valorTotalEntrada) / novaQuantidadeTotal;
         }
 
         QuantidadeAtual = novaQuantidadeTotal;
-    }
+    }   
 
     public void RemoverQuantidade(decimal quantidadeRemover)
     {

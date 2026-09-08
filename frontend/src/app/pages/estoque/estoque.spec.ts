@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Estoque } from './estoque';
+import Estoque from './estoque';
 
 describe('Estoque', () => {
   let component: Estoque;
@@ -8,7 +8,7 @@ describe('Estoque', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Estoque],
+      declarations: [Estoque],
     }).compileComponents();
 
     fixture = TestBed.createComponent(Estoque);

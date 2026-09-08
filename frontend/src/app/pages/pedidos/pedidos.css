@@ -1,0 +1,44 @@
+/* =========================================
+   WRAPPER PRINCIPAL DA PÁGINA
+========================================= */
+.pedido-page-wrapper {
+  padding: 2rem;
+  background-color: var(--bg-color, #FDFBF7); /* Cor de fundo global quente */
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 768px) {
+  .pedido-page-wrapper { 
+    padding: 1rem; 
+  }
+}
+
+/* Telas provisórias */
+.placeholder-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 2rem;
+  background: white;
+  border-radius: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.placeholder-screen h2 { margin: 0; color: var(--text-main, #333); }
+.placeholder-screen p { margin: 0; color: var(--text-muted, #757575); }
+
+.btn-secondary {
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  border: 1px solid #e7e5e4;
+  background: transparent;
+  color: #57534e;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-secondary:hover { background-color: #fafaf9; }

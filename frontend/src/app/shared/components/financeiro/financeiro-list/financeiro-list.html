@@ -1,0 +1,124 @@
+<!-- CABEÇALHO -->
+<header class="page-header">
+  <div class="header-titles">
+    <h1>Financeiro</h1>
+    <!-- Classe subtitle adicionada para controle no mobile -->
+    <p>Acompanhe seu fluxo de caixa e transações diárias.</p>
+  </div>
+  
+  <button class="btn-primary" (click)="novaTransacao.emit()" title="Nova Transação">
+    <span class="material-symbols-outlined">add</span>
+    <!-- Envolvemos o texto em um span para poder escondê-lo no mobile -->
+    <span class="btn-text">Nova Transação</span>
+  </button>
+</header>
+
+<!-- CARDS DE RESUMO -->
+<div class="summary-grid">
+  <div class="summary-card card-entrada">
+    <div class="card-top">
+      <span>Entradas</span>
+      <span class="material-symbols-outlined icon-up">arrow_circle_up</span>
+    </div>
+    <h3>{{ formatCurrency(resumo().entrada) }}</h3>
+  </div>
+
+  <div class="summary-card card-saida">
+    <div class="card-top">
+      <span>Saídas</span>
+      <span class="material-symbols-outlined icon-down">arrow_circle_down</span>
+    </div>
+    <h3>{{ formatCurrency(resumo().saida) }}</h3>
+  </div>
+
+  <div class="summary-card card-saldo">
+    <div class="card-top">
+      <span>Saldo Total</span>
+      <span class="material-symbols-outlined icon-balance">account_balance_wallet</span>
+    </div>
+    <h3>{{ formatCurrency(saldoTotal) }}</h3>
+  </div>
+</div>
+
+<!-- BARRA DE FILTROS -->
+<div class="filter-bar">
+  <div class="filter-group">
+    <label>Tipo</label>
+    <select [(ngModel)]="filtroTipo" (change)="onFilterChange()">
+      <option value="">Todos os tipos</option>
+      <option value="Entrada">Entrada</option>
+      <option value="Saida">Saída</option>
+    </select>
+  </div>
+
+  <div class="filter-group">
+    <label>Categoria</label>
+    <select [(ngModel)]="filtroCategoria" (change)="onFilterChange()">
+      <option value="">Todas as categorias</option>
+      
+      @for (categoria of categoriasDisponiveis; track categoria) {
+        <option [value]="categoria">{{ categoria }}</option>
+      }
+      
+    </select>
+  </div>
+
+  <div class="filter-group">
+    <label>Data (Mês/Ano)</label>
+    <select [(ngModel)]="filtroMes" (change)="onFilterChange()">
+      <!-- Valor vazio limpa o filtro de data -->
+      <option value="">Todas as datas</option>
+      
+      <!-- O Angular desenha as opções dinamicamente baseadas nas transações reais -->
+      @for (mes of mesesDisponiveis; track mes.valor) {
+        <option [value]="mes.valor">{{ mes.rotulo }}</option>
+      }
+      
+    </select>
+  </div>
+</div>
+
+<!-- TABELA DE TRANSAÇÕES -->
+<div class="table-responsive"> 
+  <table>
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Descrição</th>
+        <th>Categoria</th>
+        <th>Tipo</th>
+        <th class="text-right">Valor</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (t of transacoes(); track t.id) {
+        <tr (click)="selecionarTransacao.emit(t.id)" [class.is-cancelled]="t.isCancelado">
+          
+          <td>{{ formatDate(t.data) }}</td>
+          <td class="desc-cell">{{ t.descricao }}</td>
+          <td><span class="badge">{{ t.categoria }}</span></td>
+          
+          <td>
+            <div class="type-cell">
+              @if (t.tipo === 'Entrada') {
+                <span class="material-symbols-outlined icon-up">arrow_circle_up</span>
+              } @else {
+                <span class="material-symbols-outlined icon-down">arrow_circle_down</span>
+              }
+              {{ t.tipo === 'Entrada' ? 'Entrada' : 'Saída' }}
+            </div>
+          </td>
+          
+          <td class="text-right value-cell" [class.text-entrada]="t.tipo === 'Entrada'" [class.text-saida]="t.tipo === 'Saida'">
+            {{ t.tipo === 'Entrada' ? '+' : '-' }}{{ formatCurrency(t.valor) }}
+          </td>
+          
+        </tr>
+      } @empty {
+        <tr>
+          <td colspan="5" class="empty-state">Nenhuma transação encontrada.</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>

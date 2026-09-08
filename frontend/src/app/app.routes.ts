@@ -1,33 +1,50 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './core/guards/auth.guard';
+import { guestGuard } from './core/guards/guest.guard';
 
 export const routes: Routes = [
+{
+        path: '',
+        redirectTo: 'login', 
+        pathMatch: 'full'   
+    },
+    {
+        path: 'login',
+        canActivate: [guestGuard], 
+        loadComponent: () => import('./pages/login/login')
+    },
     {
         path: '',
-        redirectTo: 'dashboard',
-        pathMatch: 'full'
+        canActivate: [authGuard], 
+        children: [
+            {
+                path: 'dashboard',
+                loadComponent: () => import('./pages/dashboard/dashboard')
+            },
+            {
+                path: 'estoque',
+                loadComponent: () => import('./pages/estoque/estoque')
+            },
+            {
+                path: 'financeiro',
+                loadComponent: () => import('./pages/financeiro/financeiro')
+            },
+            {
+                path: 'pedidos',
+                loadComponent: () => import('./pages/pedidos/pedidos')
+            },
+            {   
+                path: 'receitas',
+                loadComponent: () => import('./pages/receitas/receitas')
+            },
+            {
+                path: 'configuracoes',
+                loadComponent: () => import('./pages/configuracoes/configuracoes')
+            }
+        ]
     },
     {
-        path: 'dashboard',
-        loadComponent: () => import('./pages/dashboard/dashboard').then(c => c.Dashboard)
-    },
-    {
-        path: 'estoque',
-        loadComponent: () => import('./pages/estoque/estoque').then(c => c.Estoque)
-    },
-    {
-        path: 'financeiro',
-        loadComponent: () => import('./pages/financeiro/financeiro').then(c => c.Financeiro)
-    },
-    {
-        path: 'pedidos',
-        loadComponent: () => import('./pages/pedidos/pedidos').then(c => c.Pedidos)
-    },
-    {   
-        path: 'receitas',
-        loadComponent: () => import('./pages/receitas/receitas').then(c => c.Receitas)
-    },
-    {
-        path: 'configuracoes',
-        loadComponent: () => import('./pages/configuracoes/configuracoes').then(c => c.Configuracoes)
+        path: '**',
+        redirectTo: 'login'
     }
 ];
