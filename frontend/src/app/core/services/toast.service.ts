@@ -31,18 +31,21 @@ export class ToastService {
     const id = Math.random().toString(36).substring(2, 9);
     
     this.toasts.update(currentToasts => {
-      const novaLista = [...currentToasts, { id, type, message }];
+    if (currentToasts.some(t => t.message === message)) {
+      return currentToasts;
+    }
 
-      if (novaLista.length > 5) {
-        return novaLista.slice(-5);
-      }
+    const novaLista = [...currentToasts, { id, type, message }];
 
-      return novaLista;
-    });
+    if (novaLista.length > 5) {
+      return novaLista.slice(-5);
+    }
 
-    // O setTimeout agora usa o tempo dinâmico que passamos como parâmetro
-    setTimeout(() => {
-      this.remove(id);
-    }, duration);
-  }
+    return novaLista;
+  });
+
+  setTimeout(() => {
+    this.remove(id);
+  }, duration);
+}
 }
