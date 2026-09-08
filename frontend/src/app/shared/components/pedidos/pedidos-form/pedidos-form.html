@@ -1,1 +1,96 @@
-<p>pedidos-form works!</p>
+<div class="form-container fade-in">
+  <div class="form-card">
+    
+    <!-- CABEÇALHO DO FORMULÁRIO -->
+    <div class="form-header border-bottom-rose">
+      <h2>
+        <span class="material-symbols-outlined text-rose">shopping_bag</span>
+        {{ pedidoParaEditar() ? 'Editar Pedido' : 'Novo Pedido' }}
+      </h2>
+      <button type="button" class="btn-close" (click)="cancelar.emit()">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <!-- CORPO DO FORMULÁRIO REATIVO -->
+    <form [formGroup]="pedidoForm" (ngSubmit)="onSubmit()" class="form-body">
+      
+      <!-- Dados Principais (Linha 1) -->
+      <div class="form-row">
+        <div class="form-group flex-2">
+          <label>Nome do Cliente</label>
+          <input type="text" formControlName="clienteNome" placeholder="Ex: Maria Oliveira"
+                 [class.is-invalid]="pedidoForm.get('clienteNome')?.invalid && pedidoForm.get('clienteNome')?.touched">
+        </div>
+
+        <div class="form-group flex-1">
+          <label>Data e Hora de Entrega</label>
+          <input type="datetime-local" formControlName="dataEntrega">
+        </div>
+      </div>
+
+      <!-- Dados Opcionais Adicionados (Linha 2) -->
+      <div class="form-row">
+        <div class="form-group flex-1">
+          <label>Telefone (Opcional)</label>
+          <input type="text" formControlName="telefoneCliente" placeholder="Ex: (86) 99999-9999">
+        </div>
+
+        <div class="form-group flex-2">
+          <label>Descrição / Observações (Opcional)</label>
+          <input type="text" formControlName="descricao" placeholder="Ex: Bolo sem lactose, entregar na portaria...">
+        </div>
+      </div>
+
+      <!-- Sessão Dinâmica de Produtos -->
+      <div class="section-header pt-4">
+        <label>Produtos (Receitas)</label>
+        <button type="button" class="btn-text-rose" (click)="adicionarItem()">
+          <span class="material-symbols-outlined icon-small">add</span> Adicionar
+        </button>
+      </div>
+
+      <div class="items-container" formArrayName="itens">
+        @for (itemCtrl of itens.controls; track $index) {
+          <!-- Uma linha para cada produto -->
+          <div class="item-row" [formGroupName]="$index">
+            
+            <select formControlName="receitaId" [class.is-invalid]="itemCtrl.get('receitaId')?.invalid && itemCtrl.get('receitaId')?.touched">
+              <option value="" disabled selected>Selecione um produto...</option>
+              @for (receita of receitasDisponiveis(); track receita.id) {
+                <option [value]="receita.id">{{ receita.nome }}</option>
+              }
+            </select>
+
+            <input type="number" formControlName="quantidade" placeholder="Qtd" min="1" class="input-qtd"
+                   [class.is-invalid]="itemCtrl.get('quantidade')?.invalid && itemCtrl.get('quantidade')?.touched">
+            
+            <!-- Botão lixeira desabilita se for o último item -->
+            <button type="button" class="btn-remove-item" (click)="removerItem($index)" [disabled]="itens.length === 1">
+              <span class="material-symbols-outlined">delete</span>
+            </button>
+          </div>
+        }
+      </div>
+
+      <!-- Valor Total Estimado (Apenas Leitura) -->
+      <div class="form-group total-group pt-4">
+        <label>Valor Total Estimado</label>
+        <div class="input-with-prefix">
+          <span class="prefix text-stone">R$</span>
+          <input type="text" [value]="calcularTotalEstimado()" readonly class="input-readonly text-rose-bold">
+        </div>
+        <small class="hint-text">*O valor exato será calculado no fechamento do pedido.</small>
+      </div>
+
+      <!-- RODAPÉ E AÇÕES -->
+      <div class="form-footer border-top-rose">
+        <button type="button" class="btn-cancel" (click)="cancelar.emit()">Cancelar</button>
+        <button type="submit" class="btn-submit" [disabled]="pedidoForm.invalid">
+          {{ pedidoParaEditar() ? 'Salvar Alterações' : 'Criar Pedido' }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

@@ -15,4 +15,8 @@ export class PedidoService {
   getPedidos(): Observable<GetAllPedidosResponse[]> {
     return this.http.get<GetAllPedidosResponse[]>(this.apiUrl);
   }
+
+  createPedido(command: any): Observable<any> {
+    return this.http.post(this.apiUrl, command);
+  }
 }

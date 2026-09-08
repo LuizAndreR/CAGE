@@ -9,3 +9,24 @@ export interface GetAllPedidosResponse {
   statusPedido: StatusPedido; 
   pago: boolean;
 }
+
+export interface ItemPedidoDetailDto {
+  receitaId: number;
+  quantidade: number;
+  valorUnitario: number;
+  subTotal: number; 
+}
+
+export interface PedidoResponse {
+  id: number;
+  clienteNome: string;
+  telefoneCliente?: string;
+  descricao?: string;      
+  dataCriacao: string;      
+  dataEntrega?: string;     
+  dataPagamento?: string;   
+  valorTotal: number;       
+  statusPedido: StatusPedido;
+  pago: boolean;
+  itens: ItemPedidoDetailDto[]; 
+}

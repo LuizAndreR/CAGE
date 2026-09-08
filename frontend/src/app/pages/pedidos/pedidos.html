@@ -12,7 +12,6 @@
         </app-pedidos-list>
       </div>
 
-      <!-- REAPROVEITANDO O LOADING GLOBAL QUE FIZEMOS NO STYLES.CSS -->
       @if (isLoading()) {
         <div class="loading-state">
           <span class="material-symbols-outlined spin-icon">progress_activity</span>
@@ -32,12 +31,13 @@
       }
     }   
 
-    <!-- TELA DE NOVO PEDIDO (Placeholder) -->
+    <!-- TELA DE FORMULÁRIO DE PEDIDO (Novo/Editar) -->
     @case ('create') {
-      <div class="placeholder-screen">
-        <h2>Criar Novo Pedido</h2>
-        <button class="btn-secondary" (click)="view.set('list')">Cancelar</button>
-      </div>
+      <app-pedidos-form
+        [pedidoParaEditar]="$any(pedidoSelecionado())"
+        (cancelar)="view.set('list')"
+        (salvar)="onSalvarPedido($event)">
+      </app-pedidos-form>
     }
   }
 

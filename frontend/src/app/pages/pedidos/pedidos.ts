@@ -1,29 +1,28 @@
 import { Component, inject, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PedidoService } from '../../core/services/pedido.service'; // Ajuste o caminho
-import { GetAllPedidosResponse } from '../../core/models/pedido.interface'; // Ajuste o caminho
+import { finalize } from 'rxjs/operators'; 
+import { PedidoService } from '../../core/services/pedido.service'; 
+import { GetAllPedidosResponse } from '../../core/models/pedido.interface'; 
 
 import { PedidosList } from '../../shared/components/pedidos/pedidos-list/pedidos-list';
+import { PedidosForm } from '../../shared/components/pedidos/pedidos-form/pedidos-form';
 
 @Component({
   selector: 'app-pedidos-page',
   standalone: true,
-  imports: [CommonModule, PedidosList],
+  imports: [CommonModule, PedidosList, PedidosForm],
   templateUrl: './pedidos.html',
   styleUrl: './pedidos.css'
 })
 export default class Pedidos implements OnInit {
   private pedidoService = inject(PedidoService);
 
-  // Controle de estado da tela usando Angular 22 Signals
   view = signal<'list' | 'create' | 'detail'>('list');
   isLoading = signal<boolean>(true);
   
-  // Armazena os dados vindos do C#
   pedidos = signal<GetAllPedidosResponse[]>([]);
   selectedId = signal<number | null>(null);
 
-  // Encontra automaticamente o pedido selecionado na memória
   pedidoSelecionado = computed(() => {
     const id = this.selectedId();
     if (!id) return null;
@@ -37,20 +36,19 @@ export default class Pedidos implements OnInit {
   carregarPedidos(): void {
     this.isLoading.set(true);
     
-    this.pedidoService.getPedidos().subscribe({
-      next: (dados) => {
-        this.pedidos.set(dados);
-        this.isLoading.set(false);
-      },
-      error: (erro) => {
-        console.error('Erro ao buscar pedidos:', erro);
-        // Aqui no futuro podemos integrar um ToastService para avisar o usuário
-        this.isLoading.set(false);
-      }
-    });
+    this.pedidoService.getPedidos()
+      .pipe(finalize(() => this.isLoading.set(false))) // DICA: O finalize desliga o loading em caso de sucesso OU erro
+      .subscribe({
+        next: (dados) => {
+          this.pedidos.set(dados);
+        },
+        error: (erro) => {
+          console.error('Erro ao buscar pedidos:', erro);
+          // TODO: Integrar ToastService
+        }
+      });
   }
 
-  // Métodos engatilhados pelo componente filho (Dumb Component)
   onNovoPedido(): void {
     this.selectedId.set(null);
     this.view.set('create');
@@ -59,5 +57,23 @@ export default class Pedidos implements OnInit {
   onSelecionarPedido(pedido: GetAllPedidosResponse): void {
     this.selectedId.set(pedido.id);
     this.view.set('detail');
+  }
+
+  // 3. Novo método para receber o command do componente filho e salvar na API
+  onSalvarPedido(command: any): void {
+    this.isLoading.set(true);
+    
+    // Assumindo que seu PedidoService tem o método createPedido mapeado para POST /api/pedido
+    this.pedidoService.createPedido(command)
+      .pipe(finalize(() => this.isLoading.set(false)))
+      .subscribe({
+        next: () => {
+          this.view.set('list');
+          this.carregarPedidos(); // Recarrega a tabela de pedidos para exibir o pedido novo
+        },
+        error: (erro) => {
+          console.error('Erro ao criar pedido:', erro);
+        }
+      });
   }
 }
