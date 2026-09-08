@@ -29,17 +29,17 @@
 <div class="table-container">
   <div class="table-responsive">
     <table>
-      <thead>
-        <tr>
-          <th>Pedido</th>
-          <th>Cliente</th>
-          <th>Criação</th>
-          <th>Entrega</th>
-          <th>Pagamento</th>
-          <th>Status</th>
-          <th class="text-right">Valor</th>
-        </tr>
-      </thead>
+     <thead>
+      <tr>
+        <th>Pedido</th>
+        <th>Cliente</th>
+        <th>Criação</th>
+        <th>Entrega</th>
+        <th>Pagamento</th>
+        <th>Status</th>
+        <th class="text-right">Valor</th>
+      </tr>
+    </thead>
       <tbody>
         <!-- DICA DE SÊNIOR: Iteramos sobre a lista paginada -->
         @for (pedido of pedidosPaginados(); track pedido.id) {
@@ -103,10 +103,13 @@
             </td>
           </tr>
         } @empty {
+          <!-- Este bloco só aparece se a lista de pedidos estiver vazia! -->
           <tr>
-            <td colspan="7" class="empty-state">
-              <span class="material-symbols-outlined">inbox</span>
-              Nenhum pedido encontrado.
+            <td colspan="7">
+              <div class="empty-state">
+                <span class="material-symbols-outlined">inbox</span>
+                <span>Nenhum pedido encontrado.</span>
+              </div>
             </td>
           </tr>
         }

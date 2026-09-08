@@ -207,18 +207,23 @@ tbody tr:hover {
 .status-pronto { background-color: #F3E5F5; color: #6A1B9A; }
 .status-concluido { background-color: #E8F5E9; color: #2E7D32; }
 
-/* ESTADO VAZIO */
+/* =========================================
+   ESTADO VAZIO (EMPTY STATE)
+========================================= */
 .empty-state {
-  text-align: center;
-  padding: 3rem 1rem;
-  color: var(--text-muted, #757575);
+  text-align: center;          /* Centraliza o texto horizontalmente */
+  padding: 3rem 1rem;          /* Dá um espaço confortável em cima e embaixo */
+  color: #757575;              /* Cinza padrão do Material Design */
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
+  flex-direction: column;      /* Coloca o ícone em cima e o texto embaixo */
+  align-items: center;         /* Centraliza os itens no eixo cruzado */
+  gap: 0.5rem;                 /* Espaço pequeno entre o ícone e o texto */
 }
 
-.empty-state .material-symbols-outlined { font-size: 2.5rem; opacity: 0.5; }
+.empty-state .material-symbols-outlined {
+  font-size: 2.5rem;           /* Aumenta o tamanho do ícone */
+  opacity: 0.6;                /* Deixa o ícone um pouco mais suave */
+}
 
 /* =========================================
    RODAPÉ E PAGINAÇÃO (TOTALMENTE BRANCO)
