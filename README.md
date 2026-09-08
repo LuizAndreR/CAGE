@@ -1,6 +1,6 @@
 ﻿# 🍰 Cake Gestão (CAGE)
 
-Sistema web de gerenciamento para boleira com controle integrado de estoque, finanças, receitas e pedidos.
+Sistema web de gerenciamento para confeitaria de bolos com controle integrado de estoque, finanças, receitas e pedidos.
 
 [![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
 [![Angular](https://img.shields.io/badge/Angular-17-DD0031?logo=angular)](https://angular.io/)
@@ -60,6 +60,7 @@ O projeto segue os princípios de **Domain-Driven Design (DDD)**, **SOLID** e **
 - **PostgreSQL 16** - Banco de dados
 - **FluentValidation** - Validação de dados
 - **FluentResults** - Tratamento de resultados
+- **BCrypt.Net** - Criptografia de senhas
 - **AutoMapper** - Mapeamento de objetos
 - **xUnit** - Testes unitários
 - **Swagger** - Documentação da API

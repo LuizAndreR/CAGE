@@ -16,21 +16,40 @@ internal class PedidoMap : IEntityTypeConfiguration<Pedido>
             .IsRequired()
             .HasMaxLength(200);
 
+        builder.Property(x => x.TelefoneCliente)
+            .HasMaxLength(20);
+
         builder.Property(x => x.Descricao)
             .HasMaxLength(1000);
 
-        builder.Property(x => x.DataPedido)
+        builder.Property(x => x.DataCriacao)
             .IsRequired();
 
         builder.Property(x => x.DataEntrega)
-            .IsRequired();
+            .IsRequired(false);
 
         builder.Property(x => x.ValorTotal)
-            .IsRequired()
-            .HasColumnType("decimal(10,2)");
+             .IsRequired()
+             .HasColumnType("decimal(10,2)")
+             .HasDefaultValue(0);
 
-        builder.Property(x => x.Status)
+        builder.Property(x => x.StatusPedido)
+            .IsRequired();
+
+        builder.Property(x => x.Pago)
             .IsRequired()
-            .HasMaxLength(50);
+            .HasDefaultValue(false);
+
+        builder.Property(x => x.DataPagamento)
+            .IsRequired(false);
+
+        builder.HasOne(x => x.Empresa)
+            .WithMany(x => x.Pedidos)
+            .HasForeignKey(x => x.EmpresaId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Metadata
+            .FindNavigation(nameof(Pedido.Itens))!
+            .SetPropertyAccessMode(PropertyAccessMode.Field);
     }
 }

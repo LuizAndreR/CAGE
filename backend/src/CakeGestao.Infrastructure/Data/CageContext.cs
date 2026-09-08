@@ -12,10 +12,13 @@ public class CageContext : DbContext
 
     public DbSet<Pedido> Pedidos { get; set; }
     public DbSet<Receita> Receitas { get; set; }
-    public DbSet<ItemEstoque> ItensEstoque { get; set; }
+    public DbSet<Estoque> Estoque { get; set; }
     public DbSet<ItemPedido> ItensPedido { get; set; }
     public DbSet<Ingrediente> Ingredientes { get; set; }
     public DbSet<TransacaoFinanceira> TransacoesFinanceiras { get; set; }
+    public DbSet<Usuario> Usuarios { get; set; }
+    public DbSet<TokenRefresh> TokensRefresh { get; set; }
+    public DbSet<Empresa> Empresas { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -1,14 +1,29 @@
-﻿namespace CakeGestao.Domain.Entities;
+﻿using CakeGestao.Domain.Enum;
+
+namespace CakeGestao.Domain.Entities;
 
 public class Ingrediente
 {
-    public Guid Id { get; set; }
-    public required decimal Quantidade { get; set; } = 0;
-    public required string UnidadeMedida { get; set; }
+    public int Id { get; private set; } 
+    public decimal Quantidade { get; private set; }
+    public UnidadeMedidaEnum UnidadeMedida { get; private set; }
 
-    public Guid ReceitaId { get; set; }
-    public required virtual Receita Receita { get; set; }
+    public int ReceitaId { get; private set; }
+    public virtual Receita Receita { get; private set; } = null!;
 
-    public Guid ItemId { get; set; }
-    public required virtual ItemEstoque Item { get; set; }  
+    public int ItemId { get; private set; }
+    public virtual Estoque Item { get; private set; } = null!;
+
+    
+    public Ingrediente(int itemId, decimal quantidade, UnidadeMedidaEnum unidadeMedida)
+    {
+        ItemId = itemId;
+        Quantidade = quantidade;
+        UnidadeMedida = unidadeMedida;
+    }
+
+    public void AtualizarQuantidade(decimal novaQuantidade)
+    {
+        Quantidade = novaQuantidade;
+    }
 }

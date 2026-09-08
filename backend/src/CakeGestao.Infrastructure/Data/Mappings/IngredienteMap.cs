@@ -17,8 +17,7 @@ internal class IngredienteMap : IEntityTypeConfiguration<Ingrediente>
             .HasColumnType("decimal(10,2)");
 
         builder.Property(x => x.UnidadeMedida)
-            .IsRequired()
-            .HasMaxLength(50);
+            .IsRequired();
 
         builder.HasOne(x => x.Receita)
             .WithMany(r => r.Ingredientes)
@@ -26,7 +25,7 @@ internal class IngredienteMap : IEntityTypeConfiguration<Ingrediente>
             .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(x => x.Item)
-            .WithMany(i => i.Ingredientes)
+            .WithMany(i => i.Ingredientes) 
             .HasForeignKey(x => x.ItemId)
             .OnDelete(DeleteBehavior.Restrict);
     }

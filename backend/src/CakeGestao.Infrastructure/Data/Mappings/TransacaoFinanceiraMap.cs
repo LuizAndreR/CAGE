@@ -13,6 +13,9 @@ internal class TransacaoFinanceiraMap : IEntityTypeConfiguration<TransacaoFinanc
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Tipo)
+            .IsRequired();
+
+        builder.Property(x => x.Categoria)
             .IsRequired()
             .HasMaxLength(50);
 
@@ -26,9 +29,25 @@ internal class TransacaoFinanceiraMap : IEntityTypeConfiguration<TransacaoFinanc
         builder.Property(x => x.Descricao)
             .HasMaxLength(1000);
 
+        builder.Property(x => x.IsCancelado)
+            .IsRequired()
+            .HasDefaultValue(false);
+
+        builder.Property(x => x.DataCancelamento)
+            .IsRequired(false);
+
+        builder.Property(x => x.MotivoCancelamento)
+            .HasMaxLength(500)
+            .IsRequired(false);
+
         builder.HasOne(x => x.Pedido)
             .WithMany(p => p.Transacoes)
             .HasForeignKey(t => t.PedidoId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        builder.HasOne(x => x.Empresa)
+            .WithMany(e => e.TransacaoFinanceiras)
+            .HasForeignKey(t => t.EmpresaId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }
