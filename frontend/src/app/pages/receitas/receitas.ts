@@ -1,5 +1,7 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { finalize } from 'rxjs/operators'; // DICA DE SÊNIOR: Importação adicionada
+
 import { ReceitaService } from '../../core/services/receita.service';
 import { ToastService } from '../../core/services/toast.service'; 
 import { ReceitaListResponse, ReceitaResponse } from '../../core/models/receita.interface';
@@ -17,11 +19,9 @@ import { ReceitaForm } from '../../shared/components/receita/receita-form/receit
 })
 export default class Receitas implements OnInit {
   private receitaService = inject(ReceitaService);
-  private toast = inject(ToastService); // INJEÇÃO DO SERVIÇO
+  private toast = inject(ToastService);
 
   view = signal<'list' | 'detail' | 'form'>('list');
-  
-  // NOVO: Controle de estado de carregamento da tela
   isLoading = signal<boolean>(true);
   
   receitas = signal<ReceitaListResponse[]>([]);
@@ -35,19 +35,17 @@ export default class Receitas implements OnInit {
   }
 
   carregarReceitas(): void {
-    this.isLoading.set(true); // Inicia o bloqueio da tela
+    this.isLoading.set(true);
 
-    this.receitaService.getReceitas().subscribe({
-      next: (dados) => {
-        this.receitas.set(dados);
-        this.isLoading.set(false); // Libera a tela
-      },
-      error: (erro) => {
-        console.error('Falha ao carregar as receitas da API:', erro);
-        this.toast.showError('Erro ao buscar as receitas no servidor.'); // FEEDBACK VISUAL
-        this.isLoading.set(false);
-      }
-    });
+    this.receitaService.getReceitas()
+      .pipe(finalize(() => this.isLoading.set(false))) // Loading centralizado
+      .subscribe({
+        next: (dados) => {
+          this.receitas.set(dados);
+        },
+        error: (erro) => console.error('Falha ao carregar as receitas da API:', erro)
+        // Toast de erro removido: o Interceptor já cuida disso.
+      });
   }
 
   filteredReceitas = computed(() => {
@@ -77,10 +75,8 @@ export default class Receitas implements OnInit {
         this.receitaDetalhe.set(dadosCompletos);
         this.view.set('detail'); 
       },
-      error: (erro) => {
-        console.error(`Falha ao carregar a receita ${id}:`, erro);
-        this.toast.showError('Não foi possível carregar os detalhes.'); // FEEDBACK VISUAL
-      }
+      error: (erro) => console.error(`Falha ao carregar a receita ${id}:`, erro)
+      // Toast de erro removido
     });
   }
 
@@ -93,11 +89,10 @@ export default class Receitas implements OnInit {
     );
 
     this.receitaService.mudarStatus(evento.id, novoStatus).subscribe({
-      next: () => this.toast.showSuccess('Status atualizado com sucesso!'), // FEEDBACK VISUAL
+      next: () => this.toast.showSuccess('Status atualizado com sucesso!'),
       error: (erro) => {
         console.error('Erro ao mudar status:', erro);
-        this.toast.showError('Falha ao alterar o status da receita.'); // FEEDBACK VISUAL
-        this.carregarReceitas(); // Reverte a lista buscando do banco novamente
+        this.carregarReceitas(); // Reverte a lista buscando do banco novamente, sem duplicar o Toast
       }
     });
   }
@@ -115,7 +110,7 @@ export default class Receitas implements OnInit {
 
   onSalvoComSucesso(): void {
     this.carregarReceitas();
-    this.toast.showSuccess('Receita salva com sucesso!'); // FEEDBACK VISUAL
+    this.toast.showSuccess('Receita salva com sucesso!');
     this.view.set('list');
   }
 
@@ -127,12 +122,10 @@ export default class Receitas implements OnInit {
         this.selectedId.set(null);
         this.view.set('list');
         
-        this.toast.showSuccess('Receita excluída permanentemente.'); // FEEDBACK VISUAL
+        this.toast.showSuccess('Receita excluída permanentemente.');
       },
-      error: (erro) => {
-        console.error('Falha ao excluir a receita na API:', erro);
-        this.toast.showError('Não foi possível excluir a receita.'); // FEEDBACK VISUAL
-      }
+      error: (erro) => console.error('Falha ao excluir a receita na API:', erro)
+      // Toast de erro removido
     });
   }
 }
