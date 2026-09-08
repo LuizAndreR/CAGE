@@ -18,14 +18,12 @@ export class PedidosForm implements OnInit {
   private fb = inject(FormBuilder);
   private receitaService = inject(ReceitaService); 
 
-  // Tipagem forte com a interface correta atualizada
   pedidoParaEditar = input<PedidoResponse | null>(null); 
   cancelar = output<void>();
   salvar = output<any>(); 
 
   pedidoForm!: FormGroup;
 
-  // Signal utilizando a interface ReceitaListResponse (Aplicando DRY - Clean Code)
   receitasDisponiveis = signal<ReceitaListResponse[]>([]);
 
   ngOnInit() {
@@ -46,9 +44,13 @@ export class PedidosForm implements OnInit {
 
   private iniciarFormulario() {
     this.pedidoForm = this.fb.group({
-      clienteNome: ['', Validators.required],
-      telefoneCliente: [''], // NOVO CAMPO ADCIONADO (Opcional)
-      descricao: [''],       // NOVO CAMPO ADCIONADO (Opcional)
+        clienteNome: ['', Validators.required],
+        telefoneCliente: ['', [
+          Validators.pattern('^[0-9]*$'), 
+          Validators.minLength(10),      
+          Validators.maxLength(11)        
+        ]],
+      descricao: [''],      
       dataEntrega: [''],
       itens: this.fb.array([])
     });
@@ -56,10 +58,8 @@ export class PedidosForm implements OnInit {
     const pedidoEdit = this.pedidoParaEditar();
     
     if (pedidoEdit) {
-      // Ajuste para o input datetime-local (YYYY-MM-DDTHH:mm)
       const dataFormatada = pedidoEdit.dataEntrega ? pedidoEdit.dataEntrega.substring(0, 16) : '';
 
-      // Atualizado para carregar o telefone e a descrição caso a usuária esteja editando
       this.pedidoForm.patchValue({
         clienteNome: pedidoEdit.clienteNome,
         telefoneCliente: pedidoEdit.telefoneCliente || '',
@@ -67,7 +67,6 @@ export class PedidosForm implements OnInit {
         dataEntrega: dataFormatada
       });
       
-      // Lógica de preenchimento dos itens quando a usuária for editar um pedido
       if (pedidoEdit.itens && pedidoEdit.itens.length > 0) {
         pedidoEdit.itens.forEach(item => {
           this.adicionarItem(item.receitaId, item.quantidade);
@@ -76,9 +75,21 @@ export class PedidosForm implements OnInit {
         this.adicionarItem(); 
       }
     } else {
-      // Se for um novo pedido, inicia com uma linha vazia
       this.adicionarItem(); 
     }
+  } 
+
+  onTelefoneInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    
+    // Remove tudo que não for número (0 a 9)
+    const apenasNumeros = input.value.replace(/[^0-9]/g, '');
+    
+    // Atualiza o controle do formulário silenciosamente
+    this.pedidoForm.get('telefoneCliente')?.setValue(apenasNumeros, { emitEvent: false });
+    
+    // Atualiza o valor visual na tela
+    input.value = apenasNumeros;
   }
 
   get itens(): FormArray {
@@ -119,11 +130,10 @@ export class PedidosForm implements OnInit {
     if (this.pedidoForm.valid) {
       const payload = this.pedidoForm.value;
       
-      // Monta o payload exatamente como o CreatePedidoCommand ou UpdatePedidoCommand espera
       const command = {
         clienteNome: payload.clienteNome,
-        telefoneCliente: payload.telefoneCliente || null, // Garante envio nulo se estiver vazio
-        descricao: payload.descricao || null,             // Garante envio nulo se estiver vazio
+        telefoneCliente: payload.telefoneCliente || null, 
+        descricao: payload.descricao || null,             
         dataEntrega: payload.dataEntrega ? new Date(payload.dataEntrega).toISOString() : null,
         itens: payload.itens.map((i: any) => ({
           receitaId: Number(i.receitaId),

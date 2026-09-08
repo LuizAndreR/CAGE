@@ -18,9 +18,14 @@
       <!-- Dados Principais (Linha 1) -->
       <div class="form-row">
         <div class="form-group flex-2">
-          <label>Nome do Cliente</label>
+          <label>Nome do Cliente <span class="text-rose">*</span></label>
           <input type="text" formControlName="clienteNome" placeholder="Ex: Maria Oliveira"
                  [class.is-invalid]="pedidoForm.get('clienteNome')?.invalid && pedidoForm.get('clienteNome')?.touched">
+          
+          <!-- DICA DE SÊNIOR: Mensagem de erro amigável -->
+          @if (pedidoForm.get('clienteNome')?.invalid && pedidoForm.get('clienteNome')?.touched) {
+            <small class="error-text" style="color: #e11d48; font-size: 0.75rem;">O nome é obrigatório.</small>
+          }
         </div>
 
         <div class="form-group flex-1">
@@ -33,7 +38,17 @@
       <div class="form-row">
         <div class="form-group flex-1">
           <label>Telefone (Opcional)</label>
-          <input type="text" formControlName="telefoneCliente" placeholder="Ex: (86) 99999-9999">
+          <input 
+            type="text" 
+            inputmode="numeric"
+            maxlength="11" 
+            formControlName="telefoneCliente" 
+            (input)="onTelefoneInput($event)"
+            placeholder="Ex: 86999999999">
+            
+          @if (pedidoForm.get('telefoneCliente')?.hasError('minlength')) {
+            <small class="error-text">O telefone precisa ter pelo menos 10 números.</small>
+          }
         </div>
 
         <div class="form-group flex-2">
@@ -44,7 +59,7 @@
 
       <!-- Sessão Dinâmica de Produtos -->
       <div class="section-header pt-4">
-        <label>Produtos (Receitas)</label>
+        <label>Produtos (Receitas) <span class="text-rose">*</span></label>
         <button type="button" class="btn-text-rose" (click)="adicionarItem()">
           <span class="material-symbols-outlined icon-small">add</span> Adicionar
         </button>
