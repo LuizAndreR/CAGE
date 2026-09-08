@@ -89,6 +89,23 @@ public class EstoqueRepository : IEstoqueRepository
         return Result.Ok(alertaEstoque);
     }
 
+    public async Task<bool> ExisteDependenciaComReceitaAsync(int itemId, int empresaId)
+    {
+        _logger.LogDebug("{LogPrefix} Verificando dependências para o ItemID: {ItemId} na EmpresaID: {EmpresaId}", LogPrefix, itemId, empresaId);
+
+        bool existeDependencia = await _context.Set<Receita>()
+            .AsNoTracking()
+            .AnyAsync(r => r.EmpresaId == empresaId && 
+                           r.Ingredientes.Any(i => i.ItemId == itemId));
+
+        if (existeDependencia)
+        {
+            _logger.LogWarning("{LogPrefix} Bloqueio: O ItemID {ItemId} está vinculado a uma ou mais receitas.", LogPrefix, itemId);
+        }
+
+        return existeDependencia;
+    }
+
     public async Task<Result> ExistItemByNome(string nome, int empresaId, string marca)
     {
         _logger.LogDebug("{LogPrefix} Verificando existência de ItemEstoque com nome: {Nome} e marca: {Marca}", LogPrefix, nome, marca);

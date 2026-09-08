@@ -33,6 +33,14 @@ public class DeleteItemEstoqueHandler : IRequestHandler<DeleteItemEstoqueCommand
             return Result.Fail(new ValidationError(errors));
         }
 
+        var estaEmUso = await _estoqueRepository.ExisteDependenciaComReceitaAsync(request.ItemId, request.EmpresaId);
+        if (estaEmUso)
+        {
+            _logger.LogWarning("{LogPrefix} Exclusão bloqueada. O item {ItemId} está vinculado a uma ou mais receitas.", LogPrefix, request.ItemId);
+            
+            return Result.Fail(new ValidationError("Este item não pode ser excluído pois está sendo utilizado em uma ou mais receitas cadastradas."));
+        }
+
         var itemEstoqueResult = await _estoqueRepository.GetItemEstoqueByIdAsync(request.ItemId, request.EmpresaId);
         if (itemEstoqueResult.IsFailed)
         {
