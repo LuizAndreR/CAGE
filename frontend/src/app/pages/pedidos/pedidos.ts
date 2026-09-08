@@ -6,7 +6,7 @@ import { GetAllPedidosResponse } from '../../core/models/pedido.interface'; // A
 import { PedidosList } from '../../shared/components/pedidos/pedidos-list/pedidos-list';
 
 @Component({
-  selector: 'app-pedido-page',
+  selector: 'app-pedidos-page',
   standalone: true,
   imports: [CommonModule, PedidosList],
   templateUrl: './pedidos.html',
