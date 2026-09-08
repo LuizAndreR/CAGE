@@ -1,15 +1,27 @@
 <div class="estoque-container">
   
+  <!-- CABEÇALHO MOVIDO PARA O PAI -->
+  <header class="page-header">
+    <div class="header-titles">
+      <h1>Estoque</h1>
+      <p>Controle seus ingredientes e embalagens.</p>
+    </div>
+    
+    <!-- Botão aciona a mudança de visão para o formulário de cadastro -->
+    <button class="btn-primary" type="button" (click)="changeView('form')">
+      <span class="material-symbols-outlined">add</span>
+      <span class="btn-text">Adicionar Novo Item</span>
+    </button>
+  </header>
+
   @switch (view()) {
     @case ('list') {
-      <!-- Se estiver carregando da API, exibe o loading -->
       @if (isLoading()) {
         <div class="loading-state">
           <span class="material-symbols-outlined spin-icon">progress_activity</span>
           <p>Carregando itens do estoque...</p>
         </div>
       } @else {
-        <!-- Se terminou de carregar, exibe a tabela -->
         <app-estoque-list
           [items]="filteredItems()"
           [activeTab]="activeTab()"

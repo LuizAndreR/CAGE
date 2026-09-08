@@ -1,15 +1,3 @@
-<header class="page-header">
-  <div class="header-titles">
-    <h1>Estoque</h1>
-    <p>Controle seus ingredientes e embalagens.</p>
-  </div>
-  <!-- Emitindo o evento para abrir o form de novo item -->
-  <button class="btn-primary" type="button" (click)="novoItem.emit()">
-    <span class="material-symbols-outlined">add</span>
-    <span class="btn-text">Adicionar Novo Item</span>
-  </button>
-</header>
-
 <div class="tabs">
   <button type="button" [class.active]="activeTab() === 'todos'" (click)="mudarAba.emit('todos')">
     Todos
@@ -19,6 +7,7 @@
   </button>
 </div>
 
+<!-- TABELA DE ESTOQUE COM PAGINAÇÃO -->
 <div class="table-card">
   <div class="table-responsive-wrapper">
     <table>
@@ -33,9 +22,7 @@
         </tr>
       </thead>
       <tbody>
-       <!-- Lendo o Signal items() -->
-        @for (item of items(); track item.id) {
-          <!-- 1. Colocamos o evento de detalhar diretamente na linha inteira -->
+        @for (item of itemsPaginados(); track item.id) {
           <tr class="table-row" (click)="selecionarItem.emit(item.id)">
             
             <td class="font-bold text-item-nome">
@@ -53,7 +40,6 @@
             
             <td class="text-muted">{{ item.quantidadeMinima ?? item.quantidadeMinina ?? 0 }} {{ item.unidadeMedida }}</td>
             
-            <!-- 2. Bloqueamos a propagação de cliques na célula inteira de Ações -->
             <td class="actions-cell" (click)="$event.stopPropagation()">
               <button 
                 class="btn-icon btn-add" 
@@ -79,5 +65,30 @@
         }
       </tbody>
     </table>
+  </div>
+
+  <!-- RODAPÉ DE PAGINAÇÃO -->
+  <div class="table-footer">
+    <span>Mostrando {{ itemsPaginados().length }} de {{ items().length }} itens</span>
+    
+    <div class="pagination-controls">
+      <button 
+        class="btn-page" 
+        type="button"
+        (click)="irParaPagina(paginaAtual() - 1)" 
+        [disabled]="paginaAtual() === 1">
+        Anterior
+      </button>
+      
+      <span class="page-info">Página {{ paginaAtual() }} de {{ totalPaginas() }}</span>
+      
+      <button 
+        class="btn-page" 
+        type="button"
+        (click)="irParaPagina(paginaAtual() + 1)" 
+        [disabled]="paginaAtual() === totalPaginas()">
+        Próxima
+      </button>
+    </div>
   </div>
 </div>
