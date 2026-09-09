@@ -1,7 +1,7 @@
 import { Component, input, output, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { GetAllPedidosResponse } from '../../../../core/models/pedido.interface'; // Ajuste o caminho conforme seu projeto
+import { AllPedidosResponse } from '../../../../core/models/pedido.interface'; // Ajuste o caminho conforme seu projeto
 
 @Component({
   selector: 'app-pedidos-list',
@@ -12,11 +12,11 @@ import { GetAllPedidosResponse } from '../../../../core/models/pedido.interface'
 })
 export class PedidosList {
   // Recebe a lista tipada exatamente como o DTO da API
-  pedidos = input.required<GetAllPedidosResponse[]>();
+  pedidos = input.required<AllPedidosResponse[]>();
 
   // Eventos emitidos para o Orquestrador
   novoPedido = output<void>();
-  selecionarPedido = output<GetAllPedidosResponse>();
+  selecionarPedido = output<AllPedidosResponse>();
 
   // Estado reativo da busca
   termoBusca = signal('');

@@ -1,6 +1,6 @@
 export type StatusPedido = 'Pendente' | 'EmProducao' | 'ProntoEntregue' | 'Concluido';
 
-export interface GetAllPedidosResponse {
+export interface AllPedidosResponse {
   id: number;
   clienteNome: string;
   dataCriacao: string; 
