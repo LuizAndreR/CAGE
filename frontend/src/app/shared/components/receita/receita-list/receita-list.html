@@ -1,4 +1,15 @@
 <div class="receita-list-container">
+  
+  <header class="page-header">
+    <div class="header-titles">
+      <h1>Receitas</h1>
+      <p>Catálogo de produtos e fichas técnicas.</p>
+    </div>
+    <button class="btn-primary" type="button" (click)="novaReceita.emit()">
+        <span class="material-symbols-outlined">add</span>
+        <span class="btn-text">Nova Receita</span>
+    </button>
+  </header>
 
   <!-- Filtros / Abas (Figma Design Limpo) -->
   <div class="tabs-container">
