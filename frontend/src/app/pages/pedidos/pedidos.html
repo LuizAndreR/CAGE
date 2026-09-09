@@ -20,18 +20,19 @@
       }
     }
 
-    <!-- TELA DE DETALHES (Placeholder) -->
     @case ('detail') {
-      @if (pedidoSelecionado()) {
-        <div class="placeholder-screen">
-          <h2>Detalhes do Pedido #{{ pedidoSelecionado()?.id }}</h2>
-          <p>Cliente: {{ pedidoSelecionado()?.clienteNome }}</p>
-          <button class="btn-secondary" (click)="view.set('list')">Voltar para a Lista</button>
-        </div>
+      @if (pedidoSelecionado(); as pedido) {
+        <app-pedido-detail
+          [pedido]="$any(pedido)" 
+          (voltar)="view.set('list')"
+          (editar)="view.set('create')"
+          (alterarStatus)="onAlterarStatus($event)"
+          (alterarPagamento)="onAlterarPagamento($event)"
+          (excluir)="onExcluirPedido($event)">
+        </app-pedido-detail>
       }
     }   
 
-    <!-- TELA DE FORMULÁRIO DE PEDIDO (Novo/Editar) -->
     @case ('create') {
       <app-pedidos-form
         [pedidoParaEditar]="$any(pedidoSelecionado())"

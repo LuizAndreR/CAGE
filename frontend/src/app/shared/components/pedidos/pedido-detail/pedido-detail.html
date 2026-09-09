@@ -1,0 +1,121 @@
+<div class="page-detail-container fade-in">
+  <div class="detail-card">
+    
+    <!-- CABEÇALHO ATUALIZADO -->
+    <div class="card-header border-bottom-rose">
+      <div class="header-title">
+        <button class="btn-back" (click)="voltar.emit()" title="Voltar para a lista">
+          <span class="material-symbols-outlined">arrow_back</span>
+        </button>
+        <h2>
+          <span class="material-symbols-outlined text-rose">shopping_bag</span>
+          Detalhes do Pedido #{{ pedido().id }}
+        </h2>
+      </div>
+      
+      <!-- AGRUPAMENTO DOS BOTÕES DE AÇÃO -->
+      <div class="header-actions">
+        <button class="btn-primary-outline" (click)="editar.emit()">
+          <span class="material-symbols-outlined icon-small">edit</span> Editar
+        </button>
+        <button class="btn-danger-outline" (click)="excluir.emit(pedido().id)">
+          <span class="material-symbols-outlined icon-small">delete</span> Excluir
+        </button>
+      </div>
+    </div>
+
+    <div class="card-body">
+      
+      <!-- GRID SUPERIOR: INFORMAÇÕES DO CLIENTE E AÇÕES -->
+      <div class="top-grid">
+        
+        <!-- Bloco do Cliente -->
+        <div class="info-block customer-info">
+          <div class="customer-header">
+            <div class="avatar-icon">
+              <span class="material-symbols-outlined">person</span>
+            </div>
+            <div>
+              <h3 class="customer-name">{{ pedido().clienteNome }}</h3>
+              <p class="info-text">
+                <span class="material-symbols-outlined icon-small">calendar_month</span> 
+                Criado em: {{ formatDate(pedido().dataCriacao) }}
+              </p>
+              @if (pedido().dataEntrega) {
+                <p class="info-text highlight-text">
+                  <span class="material-symbols-outlined icon-small">schedule</span> 
+                  Entrega: {{ formatDate(pedido().dataEntrega) }}
+                </p>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Bloco de Status e Pagamento -->
+        <div class="info-block status-grid">
+          <div class="form-group">
+            <label>Status da Produção</label>
+            <select [value]="pedido().statusPedido" (change)="onStatusChange($event)" class="select-status">
+              <option value="Pendente">Pendente</option>
+              <option value="EmProducao">Em Produção</option>
+              <option value="ProntoEntregue">Pronto / Entregue</option>
+              <option value="Concluido">Concluído</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Pagamento</label>
+            <select [value]="pedido().pago ? 'true' : 'false'" (change)="onPagamentoChange($event)" 
+                    class="select-pagamento" [class.is-pago]="pedido().pago">
+              <option value="false">Pendente</option>
+              <option value="true">Pago</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- LISTA DE ITENS DO PEDIDO -->
+      <div class="items-section pt-4">
+        <label class="section-label">Produtos Solicitados</label>
+        <div class="items-table-container">
+          <table class="items-table">
+            <thead>
+              <tr>
+                <th>Produto</th>
+                <th class="text-center">Qtd</th>
+                <th class="text-right">Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of pedido().itens; track item.receitaId) {
+                <tr>
+                  <td>
+                    <div class="flex-align">
+                      <span class="material-symbols-outlined text-emerald icon-small">check_circle</span>
+                      <span class="item-name">Receita #{{ item.receitaId }}</span>
+                    </div>
+                  </td>
+                  <td class="text-center item-qtd">{{ item.quantidade }}x</td>
+                  <td class="text-right item-subtotal">{{ formatCurrency(item.subTotal) }}</td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="3" class="empty-items text-center">Nenhum item encontrado neste pedido.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- VALOR TOTAL -->
+      <div class="total-section">
+        <div class="total-box">
+          <span class="total-label">Valor Total do Pedido</span>
+          <span class="total-value">{{ formatCurrency(pedido().valorTotal) }}</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
