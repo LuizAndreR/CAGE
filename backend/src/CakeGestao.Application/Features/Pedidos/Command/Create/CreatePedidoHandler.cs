@@ -28,11 +28,11 @@ public class CreatePedidoHandler : IRequestHandler<CreatePedidoCommand, Result>
     {
         _logger.LogInformation("{LogPrefix} Iniciando criação de pedido. Cliente: {ClienteNome} | EmpresaId: {EmpresaId}", LogPrefix, request.ClienteNome, request.EmpresaId);
         
-        var validatorResult = await _validator.ValidateAsync(request);
+        var validatorResult = await _validator.ValidateAsync(request, cancellationToken);
         if (!validatorResult.IsValid)
         {
             var errors = validatorResult.Errors.Select(x => x.ErrorMessage).ToList();
-            _logger.LogWarning("{LogPrefix} Validação falhou. Cliente: {ClienteNome}. Erros: {Errors}", LogPrefix, request.ClienteNome, string.Join(", ", errors));
+            _logger.LogWarning("{LogPrefix} Validação estrutural falhou. Cliente: {ClienteNome}. Erros: {Errors}", LogPrefix, request.ClienteNome, string.Join(", ", errors));
             return Result.Fail(new ValidationError(errors));
         }
         
@@ -44,25 +44,30 @@ public class CreatePedidoHandler : IRequestHandler<CreatePedidoCommand, Result>
             empresaId: request.EmpresaId
         );
         
-        
         foreach (var dto in request.Itens)
         {
             var receitaResult = await _receitaRepository.GetReceitaByIdAsync(dto.ReceitaId, request.EmpresaId);
             
             if (receitaResult.IsFailed)
             {
-                _logger.LogWarning(
-                    "{LogPrefix} Receita ID {ReceitaId} não encontrada ou não pertence à empresa {EmpresaId}.",
-                    LogPrefix, dto.ReceitaId, request.EmpresaId);
-                return Result.Fail(new NotFoundError($"Receita de id: {dto.ReceitaId} não encontrado."));
+                _logger.LogWarning("{LogPrefix} Receita ID {ReceitaId} não encontrada ou não pertence à empresa {EmpresaId}.", LogPrefix, dto.ReceitaId, request.EmpresaId);
+                return Result.Fail(new NotFoundError($"Receita de id: {dto.ReceitaId} não encontrada."));
             }
 
             var receita = receitaResult.Value;
 
+            if (!receita.Status)
+            {
+                _logger.LogWarning(
+                    "{LogPrefix} Bloqueio: Tentativa de adicionar receita inativa. Receita ID: {ReceitaId}", LogPrefix,
+                    dto.ReceitaId);
+                return Result.Fail(new ValidationError($"O pedido não pode ser criado pois a receita '{receita.Nome}' está desativada no cardápio."));
+            }
+             
             var itemPedido = new ItemPedido(receita.Id, dto.Quantidade, receita.PrecoVenda);
-            
             pedido.AdicionarItem(itemPedido);
         }
+
         _logger.LogInformation("{LogPrefix} Itens processados. Total do Pedido calculado: {ValorTotal}", LogPrefix, pedido.ValorTotal);
         
         await _pedidoRepository.CreatePedidoAsync(pedido);
