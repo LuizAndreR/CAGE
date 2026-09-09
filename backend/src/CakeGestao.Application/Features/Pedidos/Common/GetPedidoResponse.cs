@@ -19,6 +19,7 @@ public class GetPedidoResponse
 public class ItemPedidoDetailDto
 {
     public int ReceitaId { get; set; }
+    public string NomeReceita { get; set; } = string.Empty;
     public int Quantidade { get; set; }
     public decimal ValorUnitario { get; set; }
     public decimal SubTotal { get; set; } 

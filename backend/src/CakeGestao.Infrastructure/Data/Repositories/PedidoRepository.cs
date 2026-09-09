@@ -47,6 +47,7 @@ public class PedidoRepository : IPedidoRepository
     {
         var pedido = await _context.Pedidos
             .Include(p => p.Itens)
+            .ThenInclude(i => i.Receita) 
             .FirstOrDefaultAsync(p => p.Id == id && p.EmpresaId == empresaId);
 
         if (pedido == null)
