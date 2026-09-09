@@ -4,22 +4,21 @@
     
     <!-- TELA DE LISTAGEM -->
     @case ('list') {
-      <div [style.display]="isLoading() ? 'none' : 'block'">
-        <app-pedidos-list
-          [pedidos]="pedidos()"
-          (novoPedido)="onNovoPedido()"
-          (selecionarPedido)="onSelecionarPedido($event)">
-        </app-pedidos-list>
-      </div>
-
       @if (isLoading()) {
         <div class="loading-state">
           <span class="material-symbols-outlined spin-icon">progress_activity</span>
           <p>Carregando pedidos da boleria...</p>
         </div>
+      } @else {
+        <app-pedidos-list
+          [pedidos]="pedidos()"
+          (novoPedido)="onNovoPedido()"
+          (selecionarPedido)="onSelecionarPedido($event)">
+        </app-pedidos-list>
       }
     }
 
+    <!-- TELA DE DETALHES -->
     @case ('detail') {
       @if (pedidoSelecionado(); as pedido) {
         <app-pedido-detail
@@ -30,9 +29,16 @@
           (alterarPagamento)="onAlterarPagamento($event)"
           (excluir)="onExcluirPedido($event)">
         </app-pedido-detail>
+      } @else {
+        <!-- Adicionado o estado de carregamento para a tela de detalhes! -->
+        <div class="loading-state">
+          <span class="material-symbols-outlined spin-icon">progress_activity</span>
+          <p>Buscando detalhes do pedido...</p>
+        </div>
       }
     }   
 
+    <!-- TELA DE FORMULÁRIO -->
     @case ('create') {
       <app-pedidos-form
         [pedidoParaEditar]="$any(pedidoSelecionado())"

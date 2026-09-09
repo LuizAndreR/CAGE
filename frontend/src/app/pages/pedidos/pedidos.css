@@ -3,7 +3,7 @@
 ========================================= */
 .pedido-page-wrapper {
   padding: 2rem;
-  background-color: var(--bg-color, #FDFBF7); /* Cor de fundo global quente */
+  background-color: var(--bg-color, #FDFBF7); 
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
@@ -42,3 +42,33 @@
 }
 
 .btn-secondary:hover { background-color: #fafaf9; }
+
+/* =========================================
+   ESTADO DE CARREGAMENTO (LOADING)
+========================================= */
+.loading-state {
+  display: flex;
+  flex-direction: column;       
+  align-items: center;          
+  justify-content: center;      
+  min-height: 50vh; 
+  gap: 1rem;                    
+  color: #78716c;               
+}
+
+.loading-state p {
+  font-size: 1.125rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.spin-icon {
+  font-size: 3rem;              
+  color: #8B4513; /* Ajustei a cor do spinner para o Marrom predominante do módulo de pedidos */
+  animation: spin 1s linear infinite; 
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
