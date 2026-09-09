@@ -4,6 +4,45 @@
   height: 100%;
 }
 
+.btn-primary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--primary-color, #8B4513);
+  color: white;
+  border: none;
+  border-radius: 9999px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Os estados ficam separados da classe principal */
+.btn-primary:hover {
+  background-color: var(--primary-light, #A0522D);
+  transform: translateY(-1px);
+}
+
+.btn-primary:focus-visible {
+  outline: 2px solid var(--primary-color, #8B4513);
+  outline-offset: 2px;
+}
+
+/* A Media Query fica solta no arquivo, referenciando a classe */
+@media (max-width: 768px) {
+  .btn-primary {
+    padding: 0.75rem; 
+    border-radius: 50%; 
+    justify-content: center;
+  }
+  
+  .btn-primary .btn-text {
+    display: none; /* Esconde o texto no celular */
+  }
+}
+
 .page-container {
   display: flex;
   flex-direction: column;
@@ -29,26 +68,6 @@
   color: var(--text-muted, #757575);
   margin: 0;
   font-size: 0.875rem;
-}
-
-.btn-primary {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  background-color: var(--primary-color, #8B4513);
-  color: white;
-  border: none;
-  border-radius: 9999px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-
-.btn-primary:hover {
-  background-color: var(--primary-light, #A0522D);
-  transform: translateY(-1px);
 }
 
 /* TOOLBAR & BUSCA */
@@ -99,9 +118,9 @@
    TABELA (ESTILO CLEAN & BRANCO)
 ========================================= */
 .table-container {
-  background: #ffffff; /* Fundo totalmente branco */
+  background: #ffffff;
   border-radius: 1.5rem;
-  border: 1px solid var(--border-color, #E0E0E0); /* Apenas a borda externa que delimita o card */
+  border: 1px solid var(--border-color, #E0E0E0);
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
   display: flex;
   flex-direction: column;
@@ -128,7 +147,7 @@ th {
   text-transform: uppercase;
   color: #a8a29e;
   background-color: #fafaf9;
-  border-bottom: 1px solid #F5F5F5; /* Uma linha ultra-suave apenas para separar os títulos dos dados */
+  border-bottom: 1px solid #F5F5F5;
   white-space: nowrap;
 }
 
@@ -136,17 +155,16 @@ td {
   padding: 1rem 1.5rem;
   font-size: 0.875rem;
   color: var(--text-muted, #757575);
-  border: none !important; /* DICA DE SÊNIOR: Removemos completamente a borda da célula (td) */
+  border: none; /* DICA DE SÊNIOR: Removido o !important */
   white-space: nowrap;
 }
 
 tbody tr {
-  background-color: #ffffff; /* Linhas puramente brancas */
+  background-color: #ffffff;
   cursor: pointer;
   transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
-/* Hover extremamente suave apenas para indicar clique, sem perder o aspecto 'limpo' */
 tbody tr:hover {
   background-color: #FAFAFA;
 }
@@ -211,29 +229,29 @@ tbody tr:hover {
    ESTADO VAZIO (EMPTY STATE)
 ========================================= */
 .empty-state {
-  text-align: center;          /* Centraliza o texto horizontalmente */
-  padding: 3rem 1rem;          /* Dá um espaço confortável em cima e embaixo */
-  color: #757575;              /* Cinza padrão do Material Design */
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #757575;
   display: flex;
-  flex-direction: column;      /* Coloca o ícone em cima e o texto embaixo */
-  align-items: center;         /* Centraliza os itens no eixo cruzado */
-  gap: 0.5rem;                 /* Espaço pequeno entre o ícone e o texto */
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .empty-state .material-symbols-outlined {
-  font-size: 2.5rem;           /* Aumenta o tamanho do ícone */
-  opacity: 0.6;                /* Deixa o ícone um pouco mais suave */
+  font-size: 2.5rem;
+  opacity: 0.6;
 }
 
 /* =========================================
-   RODAPÉ E PAGINAÇÃO (TOTALMENTE BRANCO)
+   RODAPÉ E PAGINAÇÃO 
 ========================================= */
 .table-footer {
   padding: 1rem 1.5rem;
-  background-color: #ffffff; /* Fundo branco puro */
+  background-color: #ffffff;
   font-size: 0.875rem;
   color: var(--text-muted, #757575);
-  border-top: 1px solid #F5F5F5; /* Uma linha ultra-suave apenas separar a paginação dos dados */
+  border-top: 1px solid #F5F5F5;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -277,34 +295,12 @@ tbody tr:hover {
 .fade-in { animation: fadeIn 0.3s ease-out; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-.fab-mobile { display: none; }
-
 @media (max-width: 768px) {
   .page-header {
     flex-direction: row;
     align-items: center;
   }
   
-  .btn-primary { display: none; }
-  
-  .fab-mobile {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: fixed;
-    bottom: 2rem;
-    right: 1.5rem;
-    width: 3.5rem;
-    height: 3.5rem;
-    border-radius: 50%;
-    background-color: var(--primary-color, #8B4513);
-    color: white;
-    border: none;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    z-index: 50;
-    cursor: pointer;
-  }
-
   .table-footer {
     justify-content: center;
     text-align: center;

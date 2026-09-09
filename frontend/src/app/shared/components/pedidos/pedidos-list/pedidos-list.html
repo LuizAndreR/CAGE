@@ -6,6 +6,7 @@
       <p>Acompanhe as encomendas e vendas do dia.</p>
     </div>
     
+    <!-- Este único botão será inteligente o suficiente para ser texto no Desktop e redondo no Mobile -->
     <button class="btn-primary" (click)="novoPedido.emit()">
       <span class="material-symbols-outlined">add</span>
       <span class="btn-text">Novo Pedido</span>
@@ -41,7 +42,6 @@
       </tr>
     </thead>
       <tbody>
-        <!-- DICA DE SÊNIOR: Iteramos sobre a lista paginada -->
         @for (pedido of pedidosPaginados(); track pedido.id) {
           <tr (click)="selecionarPedido.emit(pedido)">
             
@@ -103,7 +103,6 @@
             </td>
           </tr>
         } @empty {
-          <!-- Este bloco só aparece se a lista de pedidos estiver vazia! -->
           <tr>
             <td colspan="7">
               <div class="empty-state">
@@ -117,7 +116,7 @@
     </table>
   </div>
 
-  <!-- NOVO RODAPÉ DE PAGINAÇÃO -->
+  <!-- RODAPÉ DE PAGINAÇÃO -->
   <div class="table-footer">
     <span>Mostrando {{ pedidosPaginados().length }} de {{ pedidosFiltrados().length }} pedidos</span>
     
@@ -140,9 +139,4 @@
     </div>
   </div>
 </div>
-
-  <!-- BOTÃO FLUTUANTE MOBILE -->
-  <button class="fab-mobile" (click)="novoPedido.emit()">
-    <span class="material-symbols-outlined">add</span>
-  </button>
 </div>
