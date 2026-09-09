@@ -92,7 +92,10 @@
                   <td>
                     <div class="flex-align">
                       <span class="material-symbols-outlined text-emerald icon-small">check_circle</span>
-                      <span class="item-name">Receita #{{ item.receitaId }}</span>
+                      
+                      <!-- DICA DE SÊNIOR: A interpolação agora aponta para o nome -->
+                      <span class="item-name">{{ item.nomeReceita }}</span>
+                      
                     </div>
                   </td>
                   <td class="text-center item-qtd">{{ item.quantidade }}x</td>

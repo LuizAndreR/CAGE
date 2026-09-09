@@ -12,6 +12,7 @@ export interface AllPedidosResponse {
 
 export interface ItemPedidoDetailDto {
   receitaId: number;
+  nomeReceita: string;
   quantidade: number;
   valorUnitario: number;
   subTotal: number; 
