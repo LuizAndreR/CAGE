@@ -23,7 +23,6 @@ public class AuthContoller : ApiControllerBase
     }
 
     [HttpPost("cadastro")]
-    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> CadastroDono([FromBody] CadastroCommand request, [FromQuery] int? id)
     {
         _logger.LogInformation("{LogPrefix} Recebendo requisição de cadastro administrativo (Admin/Dono). Email: {Email}", ControllerLogPrefix, request.Email);

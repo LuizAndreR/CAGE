@@ -19,6 +19,21 @@ public class FinanceiroRepository : IFinanceiroRepository
         _logger = logger;
     }
 
+    public async Task<decimal> GetTotalPorTipoMesAtualAsync(TipoTransacaoEnum tipo, int empresaId, CancellationToken cancellationToken)
+    {
+        var hoje = DateTime.UtcNow;
+
+        var inicioMes = new DateTime(hoje.Year, hoje.Month, 1, 0, 0, 0, DateTimeKind.Utc);
+
+        var total = await _context.TransacoesFinanceiras
+            .AsNoTracking()
+            .Where(t => t.EmpresaId == empresaId && 
+                        t.Tipo == tipo && 
+                        t.Data >= inicioMes)
+            .SumAsync(t => (decimal?)t.Valor, cancellationToken);
+        return total ?? 0m;
+    }
+    
     public async Task<Result<List<TransacaoFinanceira>>> GetAllTransacoesAsync(int empresaId, TipoTransacaoEnum? tipo, CategoriasEnum? categoria, int? mes, int? ano)
     {
         _logger.LogDebug("{LogPrefix} Listando financeiro. EmpresaId: {Id}", LogPrefix, empresaId);

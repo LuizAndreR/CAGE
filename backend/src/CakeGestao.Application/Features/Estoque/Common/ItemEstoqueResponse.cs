@@ -1,6 +1,4 @@
-﻿using CakeGestao.Domain.Enum;
-
-namespace CakeGestao.Application.UseCases.Estoque.Common;
+﻿namespace CakeGestao.Application.UseCases.Estoque.Common;
 
 public class ItemEstoqueResponse
 {

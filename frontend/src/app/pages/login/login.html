@@ -1,0 +1,69 @@
+<div class="login-container">
+  
+  <!-- Formas decorativas ao fundo -->
+  <div aria-hidden="true" class="decorative-blob blob-top-right"></div>
+  <div aria-hidden="true" class="decorative-blob blob-bottom-left"></div>
+
+  <!-- Card Central -->
+  <div class="login-card">
+
+    <div class="logo-section">
+      <div class="logo-icon">
+        <span>C</span>
+      </div>
+      <div class="logo-text">
+        <h1>Cake Gestão</h1>
+        <span class="subtitle">CAGE ERP</span>
+      </div>
+    </div>
+
+    <p class="welcome-text">Acesse sua conta para continuar.</p>
+
+    @if (errorMessage() !== null) {
+    <div class="error-message">
+        {{ errorMessage() }}
+    </div>
+    }
+
+    <!-- Formulário Reativo Angular -->
+    <form [formGroup]="loginForm" (ngSubmit)="handleEntrar()" class="login-form">
+      
+      <!-- Campo E-mail -->
+      <div class="form-group">
+        <label for="email">E-mail</label>
+        <input id="email" type="email" formControlName="email" autocomplete="email" placeholder="seu@email.com" />
+        
+        <!-- Validação Visual do Angular 22 -->
+        @if (loginForm.controls.email.invalid && loginForm.controls.email.touched) {
+          <span class="field-error">Por favor, insira um e-mail válido contendo '@'.</span>
+        }
+      </div>
+
+      <!-- Campo Senha -->
+      <div class="form-group">
+        <label for="senha">Senha</label>
+        <div class="password-input-wrapper">
+          <input id="senha" [type]="showSenha() ? 'text' : 'password'" formControlName="senha" autocomplete="current-password" placeholder="••••••••" />
+          
+          <button type="button" (click)="toggleSenha()" class="toggle-password-btn" tabindex="-1">
+            <span>{{ showSenha() ? 'Ocultar' : 'Ver' }}</span>
+          </button>
+        </div>
+        
+        <!-- Validação Visual do Angular 22 -->
+        @if (loginForm.controls.senha.invalid && loginForm.controls.senha.touched) {
+          <span class="field-error">A senha deve conter no mínimo 6 caracteres.</span>
+        }
+      </div>
+
+      <!-- Botão Entrar -->
+      <button type="submit" [disabled]="isLoading()" class="btn-submit">
+        {{ isLoading() ? 'Autenticando...' : 'Entrar' }}
+      </button>
+    </form>
+
+    <p class="footer-text">
+      Acesso restrito a colaboradores autorizados.
+    </p>
+  </div>
+</div>

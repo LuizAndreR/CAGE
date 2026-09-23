@@ -5,6 +5,8 @@ namespace CakeGestao.Domain.Interfaces.Repositories;
 
 public interface IReceitaRepository
 {
+    public Task<IEnumerable<Receita>> GetUltimasReceitasAsync(int empresaId, int quantidade,
+        CancellationToken cancellationToken);
     public Task<Result<List<Receita>>> GetAllReceitasAsync(int empresaId);
     public Task<Result<Receita>> GetReceitaByIdAsync(int id, int empresaId);
     public Task<Result> CreateReceitaAsync(Receita receita);

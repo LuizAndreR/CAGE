@@ -1,0 +1,94 @@
+<div class="tabs">
+  <button type="button" [class.active]="activeTab() === 'todos'" (click)="mudarAba.emit('todos')">
+    Todos
+  </button>
+  <button type="button" [class.active]="activeTab() === 'baixo'" (click)="mudarAba.emit('baixo')" class="tab-alert">
+    Baixo Estoque
+  </button>
+</div>
+
+<!-- TABELA DE ESTOQUE COM PAGINAÇÃO -->
+<div class="table-card">
+  <div class="table-responsive-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Marca</th>
+          <th>Quantidade</th>
+          <th>Valor Médio</th>
+          <th>Qtde Mínima</th>
+          <th class="text-right">Ações Rápidas</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of itemsPaginados(); track item.id) {
+          <tr class="table-row" (click)="selecionarItem.emit(item.id)">
+            
+            <td class="font-bold text-item-nome">
+              {{ item.nome }}
+            </td>
+            <td>{{ item.marca }}</td>
+            
+            <td>
+              <span [class.text-danger]="item.quantidadeAtual <= (item.quantidadeMinima ?? item.quantidadeMinina ?? 0)">
+                {{ item.quantidadeAtual }} {{ item.unidadeMedida }}
+              </span>
+            </td>
+            
+            <td>{{ formatCurrency(item.valorMedia) }}</td>
+            
+            <td class="text-muted">{{ item.quantidadeMinima ?? item.quantidadeMinina ?? 0 }} {{ item.unidadeMedida }}</td>
+            
+            <td class="actions-cell" (click)="$event.stopPropagation()">
+              <button 
+                class="btn-icon btn-add" 
+                type="button" 
+                (click)="acaoRapida.emit({ type: 'add', id: item.id })" 
+                title="Adicionar">
+                <span class="material-symbols-outlined">add</span>
+              </button>
+              
+              <button 
+                class="btn-icon btn-remove" 
+                type="button" 
+                (click)="acaoRapida.emit({ type: 'remove', id: item.id })" 
+                title="Retirar">
+                <span class="material-symbols-outlined">remove</span>
+              </button>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="6" class="text-center empty-state">Nenhum item encontrado.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- RODAPÉ DE PAGINAÇÃO -->
+  <div class="table-footer">
+    <span>Mostrando {{ itemsPaginados().length }} de {{ items().length }} itens</span>
+    
+    <div class="pagination-controls">
+      <button 
+        class="btn-page" 
+        type="button"
+        (click)="irParaPagina(paginaAtual() - 1)" 
+        [disabled]="paginaAtual() === 1">
+        Anterior
+      </button>
+      
+      <span class="page-info">Página {{ paginaAtual() }} de {{ totalPaginas() }}</span>
+      
+      <button 
+        class="btn-page" 
+        type="button"
+        (click)="irParaPagina(paginaAtual() + 1)" 
+        [disabled]="paginaAtual() === totalPaginas()">
+        Próxima
+      </button>
+    </div>
+  </div>
+</div>

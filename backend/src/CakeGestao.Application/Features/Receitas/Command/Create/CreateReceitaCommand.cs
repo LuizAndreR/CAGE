@@ -21,7 +21,7 @@ public class CreateReceitaCommand : IRequest<Result>
     public string Nome { get; set; } = string.Empty;
     public string ModoPreparo { get; set; } = string.Empty;
     public decimal PrecoVenda { get; set; }
-    public decimal PercentualCustoExtra { get; set; }
+    public decimal CustoExtra { get; set; }
     public decimal PercentualMargemLucro { get; set; }
 
     public List<IngredienteRequestDto> Ingredientes { get; set; } = new();

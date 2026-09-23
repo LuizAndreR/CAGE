@@ -15,7 +15,7 @@ namespace CakeGestao.API.Controllers;
 
 [ApiController]
 [Authorize]
-[Route("api/estoque/")]
+[Route("api/estoque")]
 public class EstoqueController : ApiControllerBase
 {
     private readonly ILogger<EstoqueController> _logger;
@@ -28,7 +28,7 @@ public class EstoqueController : ApiControllerBase
         _logger = logger;
     }
 
-    [HttpGet("getall")]
+    [HttpGet()]
     public async Task<IActionResult> GetAllEstoqueAsync()
     {
         _logger.LogInformation("{LogPrefix} Solicitando listagem geral de estoque.", ControllerLogPrefix);
@@ -44,7 +44,7 @@ public class EstoqueController : ApiControllerBase
         return HandleResult(result, _logger, ControllerLogPrefix);
     }
 
-    [HttpGet("get/{id}")]
+    [HttpGet("{id}")]
     public async Task<IActionResult> GetEstoqueByIdAsync([FromRoute] int id)
     {
         _logger.LogInformation("{LogPrefix} Buscando item de estoque. ID: {Id}", ControllerLogPrefix, id);
@@ -76,7 +76,7 @@ public class EstoqueController : ApiControllerBase
         return HandleResult(result, _logger, ControllerLogPrefix);
     }
 
-    [HttpPost("create")]
+    [HttpPost()]
     public async Task<IActionResult> CreateEstoque([FromBody] CreateEstoqueCommand request)
     {
         _logger.LogInformation("{LogPrefix} Criando novo item de estoque: {Nome}", ControllerLogPrefix, request.Nome);
@@ -94,7 +94,7 @@ public class EstoqueController : ApiControllerBase
         return HandleResult<object>(result, _logger, ControllerLogPrefix);
     }
 
-    [HttpPatch("update/{id}")]
+    [HttpPut("{id}")]
     public async Task<IActionResult> UpdateEstoque([FromRoute] int id, [FromBody] UpdateItemEstoqueCommand request)
     {
         _logger.LogInformation("{LogPrefix} Atualizando item de estoque. ID: {ItemId} | Novo Nome: {Nome}", ControllerLogPrefix, id, request.Nome);
@@ -113,7 +113,7 @@ public class EstoqueController : ApiControllerBase
         return HandleResult<object>(result, _logger, ControllerLogPrefix);
     }
 
-    [HttpPut("add-quantidade/{itemId}")]
+    [HttpPatch("{itemId}/entrada")]
     public async Task<IActionResult> AddQuantidadeEstoque([FromRoute] int itemId, [FromBody] AddQuantidadeEstoqueCommand request)
     {
         _logger.LogInformation("{LogPrefix} Adicionando estoque. ID: {ItemId} | Qtd: {Qtd} | Valor: {Valor}", ControllerLogPrefix, itemId, request.QuantidadeAdicionar, request.Valor);
@@ -132,7 +132,7 @@ public class EstoqueController : ApiControllerBase
         return HandleResult<object>(result, _logger, ControllerLogPrefix);
     }
 
-    [HttpPut("remove-quantidade/{itemId}")]
+    [HttpPatch("{itemId}/saida")]
     public async Task<IActionResult> RemoveQuantidadeEstoque([FromRoute] int itemId, [FromBody] RemoveQuantidadeEstoqueCommand request)
     {
         _logger.LogInformation("{LogPrefix} Baixa de estoque. ID: {ItemId} | Qtd: {Qtd}", ControllerLogPrefix, itemId, request.QuantidadeARemover);
@@ -151,7 +151,7 @@ public class EstoqueController : ApiControllerBase
         return HandleResult<object>(result, _logger, ControllerLogPrefix);
     }
 
-    [HttpDelete("delete/{id}")]
+    [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteItemEstoque([FromRoute] int id)
     {
         _logger.LogInformation("{LogPrefix} Excluindo item de estoque permanentemente. ID: {ItemId}", ControllerLogPrefix, id);

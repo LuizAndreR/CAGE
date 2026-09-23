@@ -1,0 +1,97 @@
+<div class="detail-view-container">
+          
+  <header class="detail-header-wrapper">
+    <div class="detail-header-left">
+      <!-- Emitindo o evento de Voltar -->
+      <button class="btn-back-pill" type="button" (click)="voltar.emit()">
+        <span class="material-symbols-outlined">chevron_left</span> Voltar
+      </button>
+      <h1 class="detail-title">{{ item().nome }}</h1>
+      <p class="detail-subtitle">{{ item().marca }}</p>
+    </div>
+    
+    <div class="detail-header-actions">
+      <!-- Emitindo o evento de Editar enviando o próprio item -->
+      <button class="btn-edit" type="button" (click)="editar.emit(item())">
+        <span class="material-symbols-outlined">edit</span> Editar
+      </button>
+      <!-- Emitindo o evento de Excluir -->
+      <button class="btn-delete" type="button" (click)="deletar.emit()">
+        <span class="material-symbols-outlined">delete</span> Excluir
+      </button>
+    </div>  
+  </header>
+
+  <div class="detail-content">
+    
+    <div class="detail-grid">
+      <!-- Card: Estoque Atual -->
+      <div class="detail-card">
+        <div class="card-label">
+          <span class="material-symbols-outlined">inventory_2</span>
+          <p>Estoque Atual</p>
+        </div>
+        <div class="card-value-wrapper">
+          <p class="value-large" [class.text-danger]="item().quantidadeAtual <= item().quantidadeMinima">
+            {{ item().quantidadeAtual }}
+          </p>
+          <p class="value-unit">{{ item().unidadeMedida }}</p>
+        </div>
+        @if (item().quantidadeAtual <= item().quantidadeMinima) {
+          <p class="alert-text">
+            <span class="material-symbols-outlined">warning</span> Estoque Baixo
+          </p>
+        }
+      </div>
+
+      <!-- Card: Estoque Mínimo -->
+      <div class="detail-card">
+        <div class="card-label">
+            <span class="material-symbols-outlined">scale</span>
+            <p>Estoque Mínimo</p>
+        </div>
+        <div class="card-value-wrapper">
+            <!-- Lê com M, se não existir, lê com N -->
+            <p class="value-large">{{ item().quantidadeMinima || item().quantidadeMinina }}</p>
+            <p class="value-unit">{{ item().unidadeMedida }}</p>
+        </div>
+      </div>
+
+      <!-- Card: Valor Médio -->
+      <div class="detail-card">
+        <div class="card-label">
+          <span class="material-symbols-outlined">payments</span>
+          <p>Valor Médio</p>
+        </div>
+        <!-- Busca o valorMedia (da API) com fallback de segurança -->
+        <p class="value-large">{{ formatCurrency(item().valorMedia || item().valor) }}</p>
+      </div>
+    </div>
+
+    <!-- Seção Condicional de Conversão -->
+    @if (item().pesoReferenciaEmGramas || item().unidadeMedidaReferenciaVolume) {
+      <div class="conversion-detail-card">
+        <h3>
+          <span class="material-symbols-outlined">sync_alt</span>
+          Referência de Peso/Volume
+        </h3>
+        
+        <div class="conversion-grid">
+          <div class="conversion-info">
+            <p class="conversion-label">Unidade de Volume</p>
+            <p class="conversion-value">{{ item().unidadeReferenciaVolume ?? 'Não informada' }}</p>
+          </div>
+          <div class="conversion-info">
+            <p class="conversion-label">Equivale a (em Gramas)</p>
+            <p class="conversion-value">{{ item().pesoReferenciaEmGramas ?? 0 }} g</p>
+          </div>
+        </div>
+        
+        <p class="conversion-help">
+          Esta conversão é utilizada para calcular o custo de receitas que utilizam medidas de volume para este ingrediente.
+        </p>
+      </div>
+    }
+    
+  </div>
+</div>

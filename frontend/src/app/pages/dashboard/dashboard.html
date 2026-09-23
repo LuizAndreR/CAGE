@@ -1,1 +1,59 @@
-<p>dashboard works!</p>
+<div class="dashboard-container">
+  
+  <header class="dashboard-header">
+    <div>
+      <h1>Olá, {{ nomeUsuario }}</h1>
+      <p>Aqui está o resumo da sua confeitaria hoje.</p>
+    </div>
+    <button class="btn-novo-pedido" routerLink="/pedidos">
+      <mat-icon>shopping_bag</mat-icon>
+      Novo Pedido
+    </button>
+  </header>
+
+  <!-- Clean Code: Cards declarados de forma explícita e legível -->
+  <section class="summary-grid">
+    <app-summary-card label="Estoque Total" icon="inventory_2" colorClass="card-blue" [value]="dashboardData.estoque"></app-summary-card>
+    <app-summary-card label="Receita (Mês)" icon="trending_up" colorClass="card-emerald" [value]="dashboardData.receita"></app-summary-card>
+    <app-summary-card label="Despesas (Mês)" icon="trending_down" colorClass="card-rose" [value]="dashboardData.despesas"></app-summary-card>
+    <app-summary-card label="Lucro Líquido" icon="account_balance_wallet" colorClass="card-indigo" [value]="dashboardData.lucro"></app-summary-card>
+  </section>
+
+  <section class="lists-grid">
+    <!-- Últimos Pedidos[cite: 1] -->
+    <app-list-panel title="Últimos Pedidos" iconName="shopping_bag" iconClass="icon-rose" linkPath="/pedidos" linkText="Ver todos">
+      <ul class="list-group">
+        @for (order of recentOrders; track order.id) {
+          <li class="list-item">
+            <div class="item-info">
+              <strong>#{{ order.id }} - {{ order.cliente }}</strong>
+              <span>{{ order.date }}</span>
+            </div>
+            <div class="item-actions">
+              <!-- Proteção adicionada: se não houver status, exibe 'Novo' -->
+              <span class="badge" [class.badge-emerald]="order.status === 'Entregue'" [class.badge-amber]="order.status === 'Em Preparo'">
+                {{ order.status || 'Novo' }}
+              </span>
+              <span class="item-price">{{ order.valor }}</span>
+            </div>
+          </li>
+        }
+      </ul>
+    </app-list-panel>
+
+    <!-- Últimas Receitas[cite: 1] -->
+    <app-list-panel title="Últimas Receitas" iconName="cake" iconClass="icon-rose" linkPath="/receitas" linkText="Ver todas">
+      <ul class="list-group">
+        @for (recipe of recentRecipes; track recipe.name) {
+          <li class="list-item recipe-item">
+            <div class="recipe-icon">
+              <mat-icon>cake</mat-icon>
+            </div>
+            <span class="recipe-name">{{ recipe.name }}</span>
+            <span class="item-price">{{ recipe.price }}</span>
+          </li>
+        }
+      </ul>
+    </app-list-panel>
+  </section>
+</div>

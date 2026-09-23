@@ -1,1 +1,25 @@
-<router-outlet></router-outlet>
+<div class="app-layout">
+  
+  <!-- NOSSO TOAST GLOBAL: Ficará invisível até ser chamado por alguma tela -->
+  <app-toast></app-toast>
+
+  @if (authService.isLoggedIn()) {
+    
+    <header class="mobile-header">
+      <button class="hamburger-btn" (click)="toggleMenu()">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
+      <span class="mobile-title">CAGE ERP</span>
+    </header>
+
+    <app-sidebar [class.open]="menuAberto()"></app-sidebar>
+
+    @if (menuAberto()) {
+      <div class="sidebar-overlay" (click)="toggleMenu()"></div>
+    }
+  }
+  
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

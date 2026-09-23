@@ -14,7 +14,7 @@ namespace CakeGestao.API.Controllers;
 
 [ApiController]
 [Authorize]
-[Route("api/user/")]
+[Route("api/user")]
 public class UserController : ApiControllerBase
 {
     private readonly ILogger<UserController> _logger;
@@ -27,7 +27,7 @@ public class UserController : ApiControllerBase
         _mediator = mediator;
     }
 
-    [HttpGet("getall")]
+    [HttpGet("")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetAllUsers()
     {
@@ -39,7 +39,7 @@ public class UserController : ApiControllerBase
         return HandleResult(userResult, _logger, ControllerLogPrefix);
     }
 
-    [HttpGet("getfuncionarios")]
+    [HttpGet("funcionarios")]
     [Authorize(Roles = "Dono")]
     public async Task<IActionResult> GetFuncionarios()
     {
@@ -56,7 +56,7 @@ public class UserController : ApiControllerBase
         return HandleResult(userResult, _logger, ControllerLogPrefix);
     }
 
-    [HttpGet("getuser")]
+    [HttpGet("me")]
     public async Task<IActionResult> GetUserById()
     {
         var id = User.GetUserId();
@@ -74,7 +74,7 @@ public class UserController : ApiControllerBase
         return HandleResult(userResult, _logger, ControllerLogPrefix);
     }
 
-    [HttpPut("update")]
+    [HttpPut("me")]
     public async Task<IActionResult> UpdateUsuario([FromBody] UpdateUsuarioCommand request)
     {
         var id = User.GetUserId();
@@ -94,7 +94,7 @@ public class UserController : ApiControllerBase
         return HandleResult<object>(userResult, _logger, ControllerLogPrefix);
     }
 
-    [HttpPut("updatesenha")]
+    [HttpPatch("me/senha")]
     public async Task<IActionResult> UpdateSenhaUsuario([FromBody] UpdateSenhaUsuarioCommand request)
     {
         var id = User.GetUserId();
@@ -113,7 +113,7 @@ public class UserController : ApiControllerBase
         return HandleResult<object>(userResult, _logger, ControllerLogPrefix);
     }
 
-    [HttpPatch("updatefuncionario/{id}")]
+    [HttpPatch("{id}/funcao")]
     [Authorize(Roles = "Admin, Dono")]
     public async Task<IActionResult> UpdateFuncaoUsuario([FromBody] UpdateFuncionarioCommand request, [FromRoute] int id, [FromQuery] int empresaId)
     {
@@ -137,7 +137,7 @@ public class UserController : ApiControllerBase
         return HandleResult<object>(userResult, _logger, ControllerLogPrefix);
     }
 
-    [HttpDelete("delete/{id}")]
+    [HttpDelete("{id}")]
     [Authorize(Roles = "Admin, Dono")]
     public async Task<IActionResult> DeleteUsuario([FromRoute] int id, [FromQuery]int empresaid)
     {

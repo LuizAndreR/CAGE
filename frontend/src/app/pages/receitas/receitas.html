@@ -1,1 +1,51 @@
-<p>receitas works!</p>
+<div class="receita-page-wrapper">
+  
+  @switch (view()) {
+    
+    <!-- TELA 1: LISTAGEM -->
+    @case ('list') {
+      <!-- Validação do loading para evitar lista vazia enquanto a API processa -->
+      @if (isLoading()) {
+        <div class="loading-state">
+          <span class="material-symbols-outlined spin-icon">progress_activity</span>
+          <p>Carregando lista de receitas...</p>
+        </div>
+      } @else {
+        <app-receita-list
+          [receitas]="filteredReceitas()"
+          [activeTab]="activeTab()"
+          (mudarAba)="onMudarAba($event)"
+          (novaReceita)="onNovaReceita()"
+          (selecionarReceita)="onSelecionarReceita($event)"
+          (alternarStatus)="onAlternarStatus($event)">
+        </app-receita-list>
+      }
+    }
+
+    <!-- TELA 2: DETALHES -->
+    @case ('detail') {
+      @if (receitaDetalhe()) {
+        <app-receita-detail
+          [receita]="receitaDetalhe()!"
+          (voltar)="onVoltar()"
+          (editar)="onEditar($event)"
+          (excluir)="onExcluir($event)">
+        </app-receita-detail>
+      } @else {
+        <div class="loading-state">
+          <span class="material-symbols-outlined spin-icon">progress_activity</span>
+          <p>Carregando ficha técnica...</p>
+        </div>
+      }
+    }
+
+    <!-- TELA 3: FORMULÁRIO -->
+    @case ('form') {
+      <app-receita-form
+        [receitaId]="selectedId()"
+        (voltar)="onVoltar()"
+        (salvo)="onSalvoComSucesso()">
+      </app-receita-form>
+    }
+  }
+</div>

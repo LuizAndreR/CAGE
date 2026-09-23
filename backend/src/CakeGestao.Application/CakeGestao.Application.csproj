@@ -24,4 +24,8 @@
     <Folder Include="Features\Financeiro\Query\NovaPasta\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Features\Dashboard\Common\Common.cs" />
+  </ItemGroup>
+
 </Project>

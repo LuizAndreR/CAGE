@@ -1,0 +1,345 @@
+.receita-form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  animation: slideInRight 0.3s ease-out;
+}
+
+/* =========================================
+   CABEÇALHO
+========================================= */
+.form-header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  @media (min-width: 768px) {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+}
+
+.header-titles {
+  display: flex;
+  flex-direction: column;
+
+  h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text-primary, #1c1917);
+    margin: 0.5rem 0 0.25rem 0;
+  }
+
+  p {
+    color: var(--text-secondary, #78716c);
+    margin: 0;
+  }
+}
+
+.btn-back {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--text-muted, #a8a29e);
+  background: transparent;
+  border: none;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.2s;
+
+  &:hover { color: var(--cor-marca-primaria, #8B0836); }
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.btn-cancel {
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  border: 1px solid var(--border-light, #e7e5e4);
+  background-color: transparent;
+  color: var(--text-secondary, #78716c);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover { background-color: var(--bg-surface-secondary, #fafaf9); }
+}
+
+.btn-save {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--primary-color, #1c1917);
+  color: white;
+  border-radius: 9999px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 6px -1px rgba(28, 25, 23, 0.3);
+}
+
+.btn-save:hover { 
+  background-color: #292524; 
+  transform: translateY(-1px); 
+}
+
+/* =========================================
+   GRID DO FORMULÁRIO
+========================================= */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+
+  @media (min-width: 1024px) { grid-template-columns: 7fr 5fr; }
+}
+
+.left-col, .right-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.card-section {
+  background-color: white;
+  border-radius: 2rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  border: 1px solid var(--bg-surface, #f5f5f4);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-primary, #1c1917);
+  margin: 0;
+}
+
+/* =========================================
+   INPUTS
+========================================= */
+
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  background-color: var(--bg-surface-secondary, #fafaf9);
+  border: 1px solid var(--border-light, #e7e5e4);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  transition: all 0.2s;
+}
+
+/* O brilho do foco agora fica no wrapper inteiro */
+.input-wrapper:focus-within {
+  border-color: #fbcfe8;
+  box-shadow: 0 0 0 3px rgba(251, 207, 232, 0.5);
+}
+
+.input-wrapper input {
+  border: none; /* Removemos a borda do input nativo */
+  background: transparent;
+  padding: 0.75rem 1rem;
+  width: 100%;
+  flex: 1;
+}
+
+/* Evita que o input nativo brilhe por dentro do wrapper */
+.input-wrapper input:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Estilo das caixinhas de R$ e % */
+.prefix, .suffix {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 1rem;
+  color: var(--text-muted, #a8a29e);
+  font-weight: 700;
+  background-color: var(--bg-surface, #f5f5f4);
+  align-self: stretch; /* Faz o fundo preencher a altura toda */
+}
+
+.prefix {
+  border-right: 1px solid var(--border-light, #e7e5e4);
+}
+
+.suffix {
+  border-left: 1px solid var(--border-light, #e7e5e4);
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-secondary, #78716c);
+  }
+
+  input, textarea, select {
+    width: 100%;
+    background-color: var(--bg-surface-secondary, #fafaf9);
+    border: 1px solid var(--border-light, #e7e5e4);
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    color: var(--text-primary, #1c1917);
+    font-family: inherit;
+    transition: all 0.2s;
+
+    &:focus {
+      outline: none;
+      border-color: #fbcfe8;
+      box-shadow: 0 0 0 3px rgba(251, 207, 232, 0.5);
+    }
+  }
+
+  textarea { resize: vertical; }
+
+  .input-success {
+    color: #047857;
+    font-weight: bold;
+  }
+}
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  @media (min-width: 768px) { grid-template-columns: repeat(3, 1fr); }
+}
+
+.row-group {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.flex-1 { flex: 1; }
+
+/* =========================================
+   BOX DE ADICIONAR INGREDIENTES
+========================================= */
+.ingredients-card {
+  min-height: 500px;
+}
+
+.add-ingredient-box {
+  background-color: var(--bg-surface-secondary, #fafaf9);
+  padding: 1rem;
+  border-radius: 1rem;
+  border: 1px solid var(--border-light, #e7e5e4);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.btn-add-ingredient {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #292524;
+  color: white;
+  border-radius: 0.75rem;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover { background-color: #1c1917; }
+}
+
+/* =========================================
+   TABELA
+========================================= */
+.ingredients-list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.custom-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 0.5rem;
+  text-align: left;
+
+  thead th {
+    padding: 0.5rem 1rem;
+    font-size: 0.625rem;
+    font-weight: 800;
+    color: var(--text-muted, #a8a29e);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  tbody tr {
+    background-color: white;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    transition: all 0.2s;
+
+    &:hover { background-color: #fff1f2; }
+
+    td {
+      padding: 0.75rem 1rem;
+      border-top: 1px solid var(--border-light, #e7e5e4);
+      border-bottom: 1px solid var(--border-light, #e7e5e4);
+      font-size: 0.875rem;
+
+      &:first-child { border-left: 1px solid var(--border-light, #e7e5e4); border-top-left-radius: 0.75rem; border-bottom-left-radius: 0.75rem; }
+      &:last-child { border-right: 1px solid var(--border-light, #e7e5e4); border-top-right-radius: 0.75rem; border-bottom-right-radius: 0.75rem; }
+    }
+  }
+}
+
+.text-right { text-align: right; }
+.text-center { text-align: center; }
+.font-bold { font-weight: 700; }
+.font-medium { font-weight: 600; }
+.text-stone { color: #292524; }
+.text-muted { color: #78716c; }
+
+.item-id-hint {
+  font-size: 0.75rem;
+  color: #a8a29e;
+  font-weight: 400;
+  margin-right: 0.25rem;
+}
+
+.btn-icon-danger {
+  background: transparent;
+  border: none;
+  color: var(--text-muted, #a8a29e);
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 50%;
+  transition: all 0.2s;
+  display: inline-flex;
+
+  &:hover {
+    color: #e11d48;
+    background-color: #ffe4e6;
+  }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}

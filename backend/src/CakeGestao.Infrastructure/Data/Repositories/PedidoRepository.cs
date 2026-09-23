@@ -17,7 +17,17 @@ public class PedidoRepository : IPedidoRepository
         _context = context;
         _logger = logger;
     }
-
+    
+    public async Task<IEnumerable<Pedido>> GetUltimosPedidosAsync(int empresaId, int quantidade, CancellationToken cancellationToken)
+    {
+        return await _context.Pedidos
+            .AsNoTracking()
+            .Where(p => p.EmpresaId == empresaId)
+            .OrderByDescending(p => p.DataCriacao) 
+            .Take(quantidade)
+            .ToListAsync(cancellationToken);
+    }
+    
     public async Task<Result<List<Pedido>>> GetAllByEmpresaIdAsync(int empresaId)
     {
         var listPedido =  await _context.Pedidos
@@ -37,6 +47,7 @@ public class PedidoRepository : IPedidoRepository
     {
         var pedido = await _context.Pedidos
             .Include(p => p.Itens)
+            .ThenInclude(i => i.Receita) 
             .FirstOrDefaultAsync(p => p.Id == id && p.EmpresaId == empresaId);
 
         if (pedido == null)

@@ -106,6 +106,23 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
+var politicaCors = "_permitirFrontendAngular";
+var rotaDoFrontend = builder.Configuration["ROTA_DO_FRONTEND"];
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: politicaCors,
+                      policy =>
+                      {
+                          if (!string.IsNullOrEmpty(rotaDoFrontend))
+                          {
+                              policy.WithOrigins(rotaDoFrontend) 
+                                    .AllowAnyHeader()
+                                    .AllowAnyMethod();
+                          }
+                      });
+});
+
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionMiddleware>();
@@ -122,6 +139,10 @@ app.Lifetime.ApplicationStarted.Register(() =>
     }
 });
 
+app.UseRouting();
+
+app.UseCors(politicaCors);
+
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -133,8 +154,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-app.UseAuthorization();
 
 app.MapControllers();
 

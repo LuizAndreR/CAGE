@@ -6,7 +6,7 @@ public class Receita
     public string Nome { get; private set; }
     public string ModoPreparo { get; private set; }
     public decimal PrecoVenda { get; private set; }
-    public decimal PercentualCustoExtra { get; private set; }
+    public decimal PercentualCustoExtra { get; private set; } //Não e mais Percentual e Sim um valor interio 
     public decimal PercentualMargemLucro { get; private set; }
     public decimal PrecoIngredientes { get; private set; }
     public decimal CustoTotal { get; private set; }
@@ -45,24 +45,22 @@ public class Receita
         _ingredientes.Add(ingrediente);
     }
 
-    public void CalcularPrecificacao(decimal custoIngredientes, decimal percCustoExtra, decimal percMargemLucro, decimal precoVendaInformado)
+    public void CalcularPrecificacao(decimal custoIngredientes, decimal ValorCustoExtra, decimal percMargemLucro, decimal precoVendaInformado)
     {
-        PercentualCustoExtra = percCustoExtra;
-        PrecoIngredientes = custoIngredientes;
-        
-        decimal valorCustoExtra = custoIngredientes * (PercentualCustoExtra / 100);
-        CustoTotal = custoIngredientes + valorCustoExtra;
+        PercentualCustoExtra = ValorCustoExtra;
+        CustoTotal = custoIngredientes + ValorCustoExtra;
 
         if (precoVendaInformado > 0)
         {
             PrecoVenda = precoVendaInformado;
             if (CustoTotal > 0)
             {
-                PercentualMargemLucro = ((PrecoVenda / CustoTotal) - 1) * 100;
-            }
-            else
-            {
-                PercentualMargemLucro = percMargemLucro;
+                PercentualMargemLucro = ((PrecoVenda / CustoTotal) - 1m) * 100m;
+            
+                if (PercentualMargemLucro > 999.99m)
+                {
+                    PercentualMargemLucro = 999.99m;
+                }
             }
         }
         else
@@ -71,7 +69,7 @@ public class Receita
 
             if (CustoTotal > 0)
             {
-                PrecoVenda = CustoTotal + (CustoTotal * (PercentualMargemLucro / 100));
+                PrecoVenda = CustoTotal + (CustoTotal * (PercentualMargemLucro / 100m));
             }
             else
             {

@@ -1,0 +1,109 @@
+<div class="detail-container fade-in">
+  <!-- Botão Voltar -->
+  <button class="btn-back" (click)="voltar.emit()">
+    <span class="material-symbols-outlined">chevron_left</span>
+    Voltar
+  </button>
+
+  <!-- Card Principal -->
+  <div class="detail-card">
+    
+    @if (transacao().isCancelado) {
+      <div class="badge-cancelled">
+        <span class="material-symbols-outlined">block</span> Cancelada
+      </div>
+    }
+
+    <!-- Cabeçalho (Ícone, Valor, Descrição) -->
+    <div class="detail-header">
+      <div class="icon-circle" [class.is-entrada]="transacao().tipo === 'Entrada'" [class.is-saida]="transacao().tipo === 'Saida'" [class.is-disabled]="transacao().isCancelado">
+        <span class="material-symbols-outlined">
+          {{ transacao().tipo === 'Entrada' ? 'arrow_circle_up' : 'arrow_circle_down' }}
+        </span>
+      </div>
+      
+      <h1 class="transacao-valor" [class.text-cancelled]="transacao().isCancelado">
+        {{ formatCurrency(transacao().valor) }}
+      </h1>
+      <p class="transacao-descricao">{{ transacao().descricao }}</p>
+    </div>
+
+    <!-- Informações Detalhadas -->
+    <div class="detail-info-section">
+      <h3>Detalhes da Transação</h3>
+      
+      <div class="info-grid">
+        <div class="info-group">
+          <label>Tipo</label>
+          <p>{{ transacao().tipo }}</p>
+        </div>
+        <div class="info-group">
+          <label>Categoria</label>
+          <p>{{ transacao().categoria }}</p>
+        </div>
+        <div class="info-group">
+          <label>Data</label>
+          <p class="with-icon">
+            <span class="material-symbols-outlined">calendar_today</span>
+            {{ formatDate(transacao().data) }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Motivo do Cancelamento (Apenas se estiver cancelado) -->
+      @if (transacao().isCancelado && transacao().motivoCancelamento) {
+        <div class="alert-box error">
+          <span class="material-symbols-outlined">error</span>
+          <div>
+            <h4>Motivo do Cancelamento</h4>
+            <p>{{ transacao().motivoCancelamento }}</p>
+          </div>
+        </div>
+      }
+
+      <!-- Ações (Apenas se NÃO estiver cancelado) -->
+      @if (!transacao().isCancelado) {
+        <div class="detail-actions">
+          <button class="btn-cancel-action" (click)="abrirModalCancelamento()">
+            <span class="material-symbols-outlined">block</span> Cancelar Transação
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- MODAL DE CANCELAMENTO -->
+  @if (showCancelModal()) {
+    <div class="modal-overlay">
+      <div class="modal-dialog zoom-in">
+        <div class="modal-header">
+          <span class="material-symbols-outlined">warning</span>
+          <h2>Cancelar Transação</h2>
+        </div>
+        
+        <p class="modal-text">
+          Tem certeza que deseja cancelar esta transação? Esta ação não pode ser desfeita e irá alterar o seu fluxo de caixa.
+        </p>
+        
+        <div class="modal-form">
+          <label>Motivo do Cancelamento</label>
+          <textarea 
+            [(ngModel)]="cancelReason" 
+            rows="3" 
+            placeholder="Ex: Lançamento duplicado..."
+          ></textarea>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-secondary" (click)="fecharModalCancelamento()">Voltar</button>
+          <button 
+            class="btn-danger" 
+            [disabled]="!cancelReason().trim()" 
+            (click)="confirmarCancelamento()">
+            Confirmar Cancelamento
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

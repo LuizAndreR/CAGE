@@ -1,0 +1,162 @@
+<div class="receita-form-container">
+  
+  <header class="form-header">
+    <div class="header-titles">
+      <button type="button" class="btn-back" (click)="onVoltar()">
+        <span class="material-symbols-outlined">chevron_left</span>
+        Voltar
+      </button>
+      <h1>{{ isEditing() ? 'Editar Receita' : 'Nova Receita' }}</h1>
+      <p>{{ isEditing() ? 'Atualize os dados da ficha técnica.' : 'Preencha os dados da ficha técnica.' }}</p>
+    </div>
+    
+    <div class="header-actions">
+      <!-- CORREÇÃO AQUI: onVoltar() -->
+      <button type="button" class="btn-cancel" (click)="onVoltar()">Cancelar</button>
+      <button type="button" class="btn-save" (click)="salvar()">
+        <span class="material-symbols-outlined">save</span>
+        Salvar Receita
+      </button>
+    </div>
+  </header>
+
+  <form [formGroup]="receitaForm" class="form-grid">
+    
+    <!-- Coluna Esquerda: Dados Básicos e Precificação -->
+    <div class="left-col">
+      <div class="card-section">
+        
+        <div class="input-group">
+          <label>Nome da Receita</label>
+          <input type="text" formControlName="nome" placeholder="Ex: Bolo Red Velvet">
+        </div>
+
+        <div class="input-group">
+          <label>Modo de Preparo</label>
+          <textarea rows="6" formControlName="modoPreparo" placeholder="Descreva o passo a passo da receita..."></textarea>
+        </div>
+
+      </div>
+
+      <div class="card-section">
+        <h2 class="section-title">Precificação</h2>
+        
+        <div class="pricing-grid">
+          
+          <div class="input-group">
+            <label>Preço de Venda</label>
+            <!-- Wrapper para adicionar o R$ na frente -->
+            <div class="input-wrapper">
+              <span class="prefix">R$</span>
+              <input type="number" formControlName="precoVenda" placeholder="0,00" class="input-success">
+            </div>
+          </div>
+          
+        <div class="input-group">
+          <label>Custo Extra</label>
+          <div class="input-wrapper">
+            <span class="prefix">R$</span>
+            <input type="number" formControlName="custoExtra" placeholder="0,00" class="input-success">
+          </div>
+        </div>
+          
+          <div class="input-group">
+            <label>Margem Lucro</label>
+            <!-- Wrapper para adicionar o % no final -->
+            <div class="input-wrapper">
+              <input type="number" formControlName="percentualMargemLucro" placeholder="60">
+              <span class="suffix">%</span>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+
+    <!-- Coluna Direita: Gerenciamento de Ingredientes -->
+    <div class="right-col">
+      <div class="card-section ingredients-card">
+        <h2 class="section-title">Ingredientes</h2>
+        
+        <!-- Formulário de Inclusão Rápida -->
+        <div class="add-ingredient-box" [formGroup]="novoIngredienteForm">
+          <div class="input-group">
+            <label>Selecionar Item (Estoque)</label>
+            <select formControlName="itemId" (change)="onItemSelect($event)">
+              <option value="" disabled selected>Selecione um ingrediente...</option>
+              
+              <!-- Laço dinâmico lendo os dados da API -->
+              @for (item of estoqueItens(); track item.id) {
+                <option [value]="item.id">{{ item.id }} - {{ item.nome }}</option>
+              } @empty {
+                <option value="" disabled>Nenhum item disponível no estoque.</option>
+              }
+              
+            </select>
+          </div>
+          
+          <div class="row-group">
+            <div class="input-group flex-1">
+              <label>Quantidade</label>
+              <input type="number" formControlName="quantidade" placeholder="0">
+            </div>
+            <div class="input-group flex-1">
+              <label>Medida</label>
+              <select formControlName="unidadeMedida">
+                <!-- Laço dinâmico lendo as opções permitidas -->
+                @for (und of unidadesPermitidas(); track und.valor) {
+                  <option [value]="und.valor">{{ und.label }}</option>
+                } @empty {
+                  <option value="" disabled selected>Selecione o ingrediente...</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <button type="button" class="btn-add-ingredient" (click)="adicionarIngrediente()">
+            <span class="material-symbols-outlined">add</span>
+            Adicionar à Receita
+          </button>
+        </div>
+
+        <!-- Tabela de Ingredientes Adicionados -->
+        <div class="ingredients-list">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>ID / Item</th>
+                <th class="text-right">Qtd</th>
+                <th>Medida</th>
+                <th class="text-center">Ação</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Iterando o FormArray -->
+              @for (ingCtrl of ingredientesArray.controls; track $index) {
+                <tr>
+                  <td class="font-medium text-stone">
+                    <span class="item-id-hint">#{{ ingCtrl.value.itemId }}</span>
+                    {{ ingCtrl.value.nome }}
+                  </td>
+                  <td class="font-bold text-right">{{ ingCtrl.value.quantidade }}</td>
+                  <td class="text-muted">{{ ingCtrl.value.unidadeMedida }}</td>
+                  <td class="text-center">
+                    <button type="button" class="btn-icon-danger" (click)="removerIngrediente($index)" title="Remover">
+                      <span class="material-symbols-outlined">delete</span>
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="4" class="text-center text-muted py-6">Nenhum ingrediente adicionado.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+
+  </form>
+</div>

@@ -1,0 +1,45 @@
+<section class="form-card" aria-labelledby="dados-empresa-titulo" [attr.aria-busy]="salvando()">
+  <header class="card-header">
+    <h2 id="dados-empresa-titulo">Dados da empresa</h2>
+    <p>Informações exibidas em documentos e relatórios.</p>
+  </header>
+
+  <form [formGroup]="empresaForm" (ngSubmit)="salvarEmpresa()">
+    <fieldset [disabled]="salvando()">
+      <legend class="sr-only">Informações da empresa</legend>
+
+      <div class="form-group">
+        <label for="empresa-nome">Nome da empresa</label>
+        <input id="empresa-nome" type="text" formControlName="nome" autocomplete="organization"
+          placeholder="Nome da sua empresa" required maxlength="150"
+          [attr.aria-invalid]="empresaForm.controls.nome.touched && empresaForm.controls.nome.invalid"
+          [attr.aria-describedby]="empresaForm.controls.nome.touched && empresaForm.controls.nome.invalid ? 'empresa-nome-erro' : null" />
+        @if (empresaForm.controls.nome.touched && empresaForm.controls.nome.invalid) {
+          <span id="empresa-nome-erro" class="field-error">
+            {{ empresaForm.controls.nome.hasError('maxlength') ? 'O nome deve ter no máximo 150 caracteres.' : 'Informe o nome da empresa.' }}
+          </span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="empresa-endereco">Endereço</label>
+        <input id="empresa-endereco" type="text" formControlName="endereco" autocomplete="street-address"
+          placeholder="Rua, número, bairro, cidade e estado" required maxlength="250"
+          [attr.aria-invalid]="empresaForm.controls.endereco.touched && empresaForm.controls.endereco.invalid"
+          [attr.aria-describedby]="empresaForm.controls.endereco.touched && empresaForm.controls.endereco.invalid ? 'empresa-endereco-erro' : null" />
+        @if (empresaForm.controls.endereco.touched && empresaForm.controls.endereco.invalid) {
+          <span id="empresa-endereco-erro" class="field-error">
+            {{ empresaForm.controls.endereco.hasError('maxlength') ? 'O endereço deve ter no máximo 250 caracteres.' : 'Informe o endereço da empresa.' }}
+          </span>
+        }
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-primary" [disabled]="salvando()">
+          <span class="material-symbols-outlined" [class.spin-icon]="salvando()" aria-hidden="true">{{ salvando() ? 'progress_activity' : 'save' }}</span>
+          {{ salvando() ? 'Salvando...' : 'Salvar dados da empresa' }}
+        </button>
+      </div>
+    </fieldset>
+  </form>
+</section>

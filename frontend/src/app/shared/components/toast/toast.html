@@ -1,0 +1,29 @@
+<!-- Container fixo no canto inferior direito -->
+<div class="toast-container">
+  
+  @for (toast of toastService.toasts(); track toast.id) {
+    <div class="toast-card" [class]="toast.type === 'success' ? 'toast-success' : 'toast-error'">
+      
+      <!-- Ícone -->
+      <span class="material-symbols-outlined toast-icon">
+        {{ toast.type === 'success' ? 'check_circle' : 'error' }}
+      </span>
+
+      <!-- Mensagem -->
+      <span class="toast-message">
+        {{ toast.message }}
+      </span>
+
+      <!-- Botão de Fechar -->
+      <button 
+        (click)="toastService.remove(toast.id)" 
+        aria-label="Fechar" 
+        class="toast-close-btn"
+      >
+        <span class="material-symbols-outlined icon-small">close</span>
+      </button>
+
+    </div>
+  }
+
+</div>

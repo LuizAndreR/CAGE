@@ -73,7 +73,7 @@ public class UpdateReceitaHandler: IRequestHandler<UpdateReceitaCommand, Result>
 
         receita.CalcularPrecificacao(
             custoIngredientes: custoIngredientesParaCalculo,
-            percCustoExtra: request.PercentualCustoExtra,
+            ValorCustoExtra: request.CustoExtra,
             percMargemLucro: request.PercentualMargemLucro,
             precoVendaInformado: request.PrecoVenda
         );

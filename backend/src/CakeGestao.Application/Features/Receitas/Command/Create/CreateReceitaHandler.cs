@@ -82,11 +82,11 @@ public class CreateReceitaHandler : IRequestHandler<CreateReceitaCommand, Result
 
         }
 
-        _logger.LogInformation("{Custo}, {Magem}, {extra}", custoDaReceitaIngrediente, request.PercentualMargemLucro, request.PercentualCustoExtra);
+        _logger.LogInformation("{Custo}, {Magem}, {extra}", custoDaReceitaIngrediente, request.PercentualMargemLucro, request.CustoExtra);
 
         receita.CalcularPrecificacao(
             custoIngredientes: custoDaReceitaIngrediente,
-            percCustoExtra: request.PercentualCustoExtra,
+            ValorCustoExtra: request.CustoExtra,
             percMargemLucro: request.PercentualMargemLucro,
             precoVendaInformado: request.PrecoVenda
         );
