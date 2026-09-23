@@ -1,7 +1,7 @@
 :host {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem; /* Cria o espaçamento exato entre o Header, Summary, Filtros e Tabela */
+  gap: 1.5rem;
   width: 100%;
   min-height: 100%;
   padding-bottom: 2rem;
@@ -138,11 +138,14 @@
   border: 1px solid #f5f5f4;
   overflow: hidden;
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
 }
 
 table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   text-align: left;
 }
 
@@ -161,23 +164,33 @@ td {
   font-size: 0.875rem;
   color: #57534e;
   border-bottom: 1px solid #f5f5f4;
-  transition: background-color 0.2s;
 }
 
-tbody tr { cursor: pointer; }
-tbody tr:hover { background-color: #fafaf9; }
-tbody tr:last-child td { border-bottom: none; }
+tbody tr { 
+  background-color: #ffffff;
+  cursor: pointer; 
+  transition: background-color 0.2s ease; 
+}
 
-/* Isolamento estrito do estilo de cancelado */
+tbody tr:hover { 
+  background-color: #f5f5f4; 
+}
+
+tbody tr:last-child td { 
+  border-bottom: none; 
+}
+
 tr.is-cancelled { 
   opacity: 0.6; 
   background-color: #f5f5f4; 
 }
+
 tr.is-cancelled .desc-cell, 
 tr.is-cancelled .value-cell { 
   text-decoration: line-through !important; 
   color: #a8a29e !important; 
 }
+
 tr.is-cancelled .icon-up, 
 tr.is-cancelled .icon-down { 
   color: #a8a29e !important; 
@@ -213,6 +226,54 @@ tr.is-cancelled .icon-down {
   color: #a8a29e;
 }
 
+/* =========================================
+   RODAPÉ E PAGINAÇÃO (NOVO)
+========================================= */
+.table-footer {
+  padding: 1rem 1.5rem;
+  background-color: #fafaf9;
+  font-size: 0.875rem;
+  color: #78716c;
+  border-top: 1px solid #f5f5f4;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.page-info {
+  font-weight: 600;
+  color: #44403c;
+}
+
+.btn-page {
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.375rem;
+  border: 1px solid #e7e5e4;
+  background-color: white;
+  color: #57534e;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-page:hover:not(:disabled) {
+  background-color: #f5f5f4;
+  color: #1c1917;
+}
+
+.btn-page:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
@@ -223,7 +284,6 @@ tr.is-cancelled .icon-down {
 ========================================= */
 @media (max-width: 768px) {
   .page-header { 
-    /* Mantém o título e o botão na mesma linha */
     flex-direction: row; 
     align-items: center; 
     justify-content: space-between;
@@ -231,36 +291,34 @@ tr.is-cancelled .icon-down {
   }
 
   .btn-primary { 
-    /* Transforma o botão em um círculo perfeito de 48x48 pixels (tamanho ideal para toque) */
     width: 48px; 
     height: 48px;
     padding: 0; 
     justify-content: center; 
     border-radius: 50%; 
-    flex-shrink: 0; /* Impede que o botão seja espremido se o título for grande */
+    flex-shrink: 0;
   }
   
-.table-responsive {
-  width: 100%;
-  overflow-x: auto; /* Cria a barra de rolagem horizontal apenas se necessário */
-  -webkit-overflow-scrolling: touch; /* Dica de Sênior: Deixa a rolagem suave no iPhone/iOS */
-  
-  /* Opcional: manter o design com bordas arredondadas que usamos no projeto */
-  background: white;
-  border-radius: 1.5rem;
-  border: 1px solid #f5f5f4;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-}
+  .table-responsive {
+    width: 100%;
+    overflow-x: auto; 
+    -webkit-overflow-scrolling: touch; 
+    /* Removemos as bordas e fundos extras aqui para evitar conflito com o pai */
+  }
 
-/* Garante que a tabela não tente se espremer e mantenha um tamanho mínimo legível */
-.table-responsive table {
-  min-width: 600px; /* Se a tela for menor que 600px, a rolagem ativa automaticamente */
-  width: 100%;
-  border-collapse: collapse;
-}
+  .table-responsive table {
+    min-width: 600px; 
+    width: 100%;
+    border-collapse: separate;
+  }
 
-  /* Esconde o texto do botão, deixando apenas o ícone de + visível */
   .btn-primary .btn-text {
     display: none;
+  }
+
+  /* Ajuste do rodapé para mobile */
+  .table-footer {
+    justify-content: center;
+    text-align: center;
   }
 }

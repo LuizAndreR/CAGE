@@ -2,7 +2,7 @@
 using FluentResults;
 using MediatR;
 
-namespace CakeGestao.Application.Features.Financeiro.Query.GetEntrada;
+namespace CakeGestao.Application.Features.Financeiro.Query.GetResumo;
 
 public class GetFinanceiroResumoQuery : IRequest<Result<TransacaoResumo>>
 {

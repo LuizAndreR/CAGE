@@ -1,1 +1,25 @@
-<p>configuracoes works!</p>
+<div class="configuracoes-page">
+  <header class="page-header">
+    <h1>Configurações</h1>
+    <p>Gerencie seu perfil, equipe e dados da empresa.</p>
+  </header>
+
+  <nav class="config-nav" aria-label="Seções de configurações">
+    @for (aba of abas; track aba.id) {
+      <button type="button" [class.active]="abaAtiva() === aba.id"
+        [attr.aria-current]="abaAtiva() === aba.id ? 'page' : null"
+        [disabled]="salvando()" (click)="abaAtiva.set(aba.id)">
+        <span class="material-symbols-outlined" aria-hidden="true">{{ aba.icone }}</span>
+        {{ aba.titulo }}
+      </button>
+    }
+  </nav>
+
+  <div class="config-content">
+    @switch (abaAtiva()) {
+      @case ('perfil') { <app-config-perfil (salvandoChange)="salvando.set($event)" /> }
+      @case ('usuarios') { <app-config-usuarios (salvandoChange)="salvando.set($event)" /> }
+      @case ('empresa') { <app-config-empresa (salvandoChange)="salvando.set($event)" /> }
+    }
+  </div>
+</div>

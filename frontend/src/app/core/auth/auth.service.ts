@@ -4,6 +4,7 @@ import { Observable, tap, catchError, throwError, interval, Subscription } from 
 import { environment } from '../../../environments/environment';
 import { Router } from '@angular/router';
 import { TokenService, AuthTokens } from './token.service';
+import { CadastroFuncionarioRequest } from '../models/usuario.interface';
 
 export interface LoginCommand {
   email: string;
@@ -33,6 +34,10 @@ export class AuthService {
 
   isLoggedIn(): boolean {
     return this.tokenService.hasTokens();
+  }
+
+  cadastrarFuncionario(payload: CadastroFuncionarioRequest): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/cadastrofunc`, payload);
   }
 
   login(credentials: LoginCommand): Observable<AuthTokens> {

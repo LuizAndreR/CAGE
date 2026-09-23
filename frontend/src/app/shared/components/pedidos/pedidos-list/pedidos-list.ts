@@ -1,7 +1,7 @@
 import { Component, input, output, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { GetAllPedidosResponse } from '../../../../core/models/pedido.interface'; // Ajuste o caminho conforme seu projeto
+import { AllPedidosResponse } from '../../../../core/models/pedido.interface'; // Ajuste o caminho conforme seu projeto
 
 @Component({
   selector: 'app-pedidos-list',
@@ -12,11 +12,11 @@ import { GetAllPedidosResponse } from '../../../../core/models/pedido.interface'
 })
 export class PedidosList {
   // Recebe a lista tipada exatamente como o DTO da API
-  pedidos = input.required<GetAllPedidosResponse[]>();
+  pedidos = input.required<AllPedidosResponse[]>();
 
   // Eventos emitidos para o Orquestrador
   novoPedido = output<void>();
-  selecionarPedido = output<GetAllPedidosResponse>();
+  selecionarPedido = output<AllPedidosResponse>();
 
   // Estado reativo da busca
   termoBusca = signal('');
@@ -49,5 +49,28 @@ export class PedidosList {
       hour: '2-digit',
       minute: '2-digit'
     });
+  }
+
+  // Configurações de Paginação
+  paginaAtual = signal<number>(1);
+  itensPorPagina = signal<number>(15);
+
+  // Computed para fatiar a lista que já passou pelo filtro de busca
+  pedidosPaginados = computed(() => {
+    const inicio = (this.paginaAtual() - 1) * this.itensPorPagina();
+    const fim = inicio + this.itensPorPagina();
+    
+    return this.pedidosFiltrados().slice(inicio, fim);
+  });
+
+  totalPaginas = computed(() => {
+    return Math.ceil(this.pedidosFiltrados().length / this.itensPorPagina()) || 1;
+  });
+
+  // Método para navegar entre as páginas
+  irParaPagina(novaPagina: number): void {
+    if (novaPagina >= 1 && novaPagina <= this.totalPaginas()) {
+      this.paginaAtual.set(novaPagina);
+    }
   }
 }
