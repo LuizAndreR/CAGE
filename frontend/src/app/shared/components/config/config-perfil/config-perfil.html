@@ -1,0 +1,125 @@
+<div class="perfil-content">
+  <section class="form-card" aria-labelledby="dados-pessoais-titulo" [attr.aria-busy]="carregando() || salvandoPerfil()">
+    <header class="card-header">
+      <h2 id="dados-pessoais-titulo">Dados pessoais</h2>
+      <p>Atualize seu nome e e-mail.</p>
+    </header>
+
+    @if (carregando()) {
+      <div class="status-state" role="status">
+        <span class="material-symbols-outlined spin-icon" aria-hidden="true">progress_activity</span>
+        <p>Carregando seu perfil...</p>
+      </div>
+    } @else if (!perfilCarregado()) {
+      <div class="status-state" role="alert">
+        <span class="material-symbols-outlined" aria-hidden="true">cloud_off</span>
+        <p>Não foi possível carregar seu perfil.</p>
+        <button type="button" class="btn-retry" (click)="carregarPerfil()">Tentar novamente</button>
+      </div>
+    } @else {
+      <form [formGroup]="perfilForm" (ngSubmit)="salvarPerfil()">
+        <fieldset [disabled]="salvandoPerfil()">
+          <legend class="sr-only">Informações pessoais</legend>
+          <div class="form-group">
+            <label for="perfil-nome">Nome</label>
+            <input id="perfil-nome" type="text" formControlName="nome" autocomplete="name"
+              placeholder="Seu nome" required
+              [attr.aria-invalid]="perfilForm.controls.nome.touched && perfilForm.controls.nome.invalid"
+              [attr.aria-describedby]="perfilForm.controls.nome.touched && perfilForm.controls.nome.invalid ? 'nome-erro' : null" />
+            @if (perfilForm.controls.nome.touched && perfilForm.controls.nome.invalid) {
+              <span id="nome-erro" class="field-error">Informe seu nome.</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="perfil-email">E-mail</label>
+            <input id="perfil-email" type="email" formControlName="email" autocomplete="email"
+              placeholder="seu@email.com" required
+              [attr.aria-invalid]="perfilForm.controls.email.touched && perfilForm.controls.email.invalid"
+              [attr.aria-describedby]="perfilForm.controls.email.touched && perfilForm.controls.email.invalid ? 'email-erro' : null" />
+            @if (perfilForm.controls.email.touched && perfilForm.controls.email.invalid) {
+              <span id="email-erro" class="field-error">Informe um e-mail válido.</span>
+            }
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-primary" [disabled]="salvandoPerfil()">
+              <span class="material-symbols-outlined" [class.spin-icon]="salvandoPerfil()" aria-hidden="true">{{ salvandoPerfil() ? 'progress_activity' : 'save' }}</span>
+              {{ salvandoPerfil() ? 'Salvando...' : 'Salvar alterações' }}
+            </button>
+          </div>
+        </fieldset>
+      </form>
+    }
+  </section>
+
+  <section class="form-card" aria-labelledby="alterar-senha-titulo" [attr.aria-busy]="salvandoSenha()">
+    <header class="card-header">
+      <h2 id="alterar-senha-titulo">Alterar senha</h2>
+      <p>Escolha uma senha forte e não a reutilize.</p>
+    </header>
+
+    <form [formGroup]="senhaForm" (ngSubmit)="alterarSenha()">
+      <fieldset [disabled]="salvandoSenha()">
+        <legend class="sr-only">Alteração de senha</legend>
+        <div class="form-group">
+          <label for="senha-atual">Senha atual</label>
+          <div class="password-input-wrapper">
+            <input id="senha-atual" [type]="mostrarSenhaAtual() ? 'text' : 'password'"
+              formControlName="senhaAtual" autocomplete="current-password" placeholder="Sua senha atual" required
+              [attr.aria-invalid]="senhaForm.controls.senhaAtual.touched && senhaForm.controls.senhaAtual.invalid"
+              [attr.aria-describedby]="senhaForm.controls.senhaAtual.touched && senhaForm.controls.senhaAtual.invalid ? 'senha-atual-erro' : null" />
+            <button type="button" class="toggle-password" (click)="mostrarSenhaAtual.set(!mostrarSenhaAtual())"
+              [attr.aria-label]="mostrarSenhaAtual() ? 'Ocultar senha atual' : 'Mostrar senha atual'" [attr.aria-pressed]="mostrarSenhaAtual()">
+              <span class="material-symbols-outlined" aria-hidden="true">{{ mostrarSenhaAtual() ? 'visibility_off' : 'visibility' }}</span>
+            </button>
+          </div>
+          @if (senhaForm.controls.senhaAtual.touched && senhaForm.controls.senhaAtual.invalid) {
+            <span id="senha-atual-erro" class="field-error">Informe sua senha atual com pelo menos 6 caracteres.</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="nova-senha">Nova senha</label>
+          <div class="password-input-wrapper">
+            <input id="nova-senha" [type]="mostrarNovaSenha() ? 'text' : 'password'"
+              formControlName="novaSenha" autocomplete="new-password" placeholder="Mínimo 6 caracteres" required
+              [attr.aria-invalid]="senhaForm.controls.novaSenha.touched && senhaForm.controls.novaSenha.invalid"
+              [attr.aria-describedby]="senhaForm.controls.novaSenha.touched && senhaForm.controls.novaSenha.invalid ? 'nova-senha-erro' : null" />
+            <button type="button" class="toggle-password" (click)="mostrarNovaSenha.set(!mostrarNovaSenha())"
+              [attr.aria-label]="mostrarNovaSenha() ? 'Ocultar nova senha' : 'Mostrar nova senha'" [attr.aria-pressed]="mostrarNovaSenha()">
+              <span class="material-symbols-outlined" aria-hidden="true">{{ mostrarNovaSenha() ? 'visibility_off' : 'visibility' }}</span>
+            </button>
+          </div>
+          @if (senhaForm.controls.novaSenha.touched && senhaForm.controls.novaSenha.invalid) {
+            <span id="nova-senha-erro" class="field-error">A nova senha deve conter pelo menos 6 caracteres.</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="confirmar-nova-senha">Confirmar nova senha</label>
+          <div class="password-input-wrapper">
+            <input id="confirmar-nova-senha" [type]="mostrarConfirmacao() ? 'text' : 'password'"
+              formControlName="confirmarNovaSenha" autocomplete="new-password" placeholder="Repita a nova senha" required
+              [attr.aria-invalid]="senhaForm.controls.confirmarNovaSenha.touched && (senhaForm.controls.confirmarNovaSenha.invalid || senhaForm.hasError('senhasDiferentes'))"
+              [attr.aria-describedby]="senhaForm.controls.confirmarNovaSenha.touched && (senhaForm.controls.confirmarNovaSenha.invalid || senhaForm.hasError('senhasDiferentes')) ? 'confirmacao-erro' : null" />
+            <button type="button" class="toggle-password" (click)="mostrarConfirmacao.set(!mostrarConfirmacao())"
+              [attr.aria-label]="mostrarConfirmacao() ? 'Ocultar confirmação da senha' : 'Mostrar confirmação da senha'" [attr.aria-pressed]="mostrarConfirmacao()">
+              <span class="material-symbols-outlined" aria-hidden="true">{{ mostrarConfirmacao() ? 'visibility_off' : 'visibility' }}</span>
+            </button>
+          </div>
+          @if (senhaForm.controls.confirmarNovaSenha.touched && (senhaForm.controls.confirmarNovaSenha.invalid || senhaForm.hasError('senhasDiferentes'))) {
+            <span id="confirmacao-erro" class="field-error">A confirmação deve ser igual à nova senha.</span>
+          }
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary btn-password" [disabled]="salvandoSenha()">
+            <span class="material-symbols-outlined" [class.spin-icon]="salvandoSenha()" aria-hidden="true">{{ salvandoSenha() ? 'progress_activity' : 'save' }}</span>
+            {{ salvandoSenha() ? 'Atualizando...' : 'Atualizar senha' }}
+          </button>
+        </div>
+      </fieldset>
+    </form>
+  </section>
+</div>

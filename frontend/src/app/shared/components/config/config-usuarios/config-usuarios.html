@@ -1,0 +1,67 @@
+<section class="usuarios-content" aria-labelledby="equipe-titulo" [attr.aria-busy]="carregando()">
+  <header class="section-header">
+    <div>
+      <h2 id="equipe-titulo">Equipe</h2>
+      @if (!carregando() && !erro()) {
+        <p>{{ usuarios().length }} {{ usuarios().length === 1 ? 'colaborador cadastrado' : 'colaboradores cadastrados' }}</p>
+      }
+    </div>
+    <button type="button" class="btn-new-user" [disabled]="carregando() || salvandoCadastro()" (click)="abrirCadastro()">
+      <span class="material-symbols-outlined" aria-hidden="true">add</span>
+      Novo usuário
+    </button>
+  </header>
+
+  @if (carregando()) {
+    <div class="status-state" role="status">
+      <span class="material-symbols-outlined spin-icon" aria-hidden="true">progress_activity</span>
+      <p>Carregando usuários da empresa...</p>
+    </div>
+  } @else if (erro()) {
+    <div class="status-state" role="alert">
+      <span class="material-symbols-outlined" aria-hidden="true">error_outline</span>
+      <p>{{ erro() }}</p>
+      <button type="button" class="btn-retry" (click)="carregarUsuarios()">Tentar novamente</button>
+    </div>
+  } @else {
+    <div class="table-card">
+      <div class="table-responsive" role="region" aria-label="Lista de usuários da empresa" tabindex="0">
+        <table>
+          <caption class="sr-only">Usuários cadastrados nesta empresa</caption>
+          <thead>
+            <tr>
+              <th scope="col">Nome</th>
+              <th scope="col">E-mail</th>
+              <th scope="col">Função</th>
+              <th scope="col">Data de início</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (usuario of usuarios(); track usuario.id; let indice = $index) {
+              <tr>
+                <td>
+                  <div class="user-cell">
+                    <span class="user-avatar" [attr.data-cor]="indice % 7" aria-hidden="true">{{ extrairIniciais(usuario.nome) }}</span>
+                    <span class="user-name">{{ usuario.nome }}</span>
+                  </div>
+                </td>
+                <td>{{ usuario.email }}</td>
+                <td><span class="role-badge" [attr.data-role]="usuario.role">{{ usuario.role }}</span></td>
+                <td class="date-cell">{{ formatarDataInicio(usuario.dataInicio) }}</td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="4" class="empty-state">Nenhum usuário cadastrado nesta empresa.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+</section>
+
+@if (modalCadastroAberto()) {
+  <app-config-usuario-form [salvando]="salvandoCadastro()" [erro]="erroCadastro()"
+    (cancelar)="fecharCadastro()" (cadastrar)="cadastrarUsuario($event)" />
+}

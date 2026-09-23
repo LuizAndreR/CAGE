@@ -1,0 +1,74 @@
+<dialog #modal class="cadastro-modal" aria-labelledby="cadastro-usuario-titulo" aria-modal="true" (cancel)="onEscape($event)">
+  <header class="modal-header">
+    <h2 id="cadastro-usuario-titulo">Novo usuário</h2>
+    <button type="button" class="btn-close" aria-label="Fechar cadastro" [disabled]="salvando()" (click)="fechar()">
+      <span class="material-symbols-outlined" aria-hidden="true">close</span>
+    </button>
+  </header>
+
+  @if (erro()) {
+    <p class="error-message" role="alert">{{ erro() }}</p>
+  }
+
+  <form [formGroup]="usuarioForm" (ngSubmit)="salvar()" [attr.aria-busy]="salvando()">
+    <fieldset [disabled]="salvando()">
+      <legend class="sr-only">Dados do novo usuário</legend>
+      <div class="form-group">
+        <label for="cadastro-nome">Nome</label>
+        <input id="cadastro-nome" type="text" formControlName="nome" autocomplete="off" placeholder="Nome completo" required autofocus
+          [attr.aria-invalid]="usuarioForm.controls.nome.touched && usuarioForm.controls.nome.invalid"
+          [attr.aria-describedby]="usuarioForm.controls.nome.touched && usuarioForm.controls.nome.invalid ? 'cadastro-nome-erro' : null" />
+        @if (usuarioForm.controls.nome.touched && usuarioForm.controls.nome.invalid) {
+          <span id="cadastro-nome-erro" class="field-error">Informe o nome do usuário.</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="cadastro-email">E-mail</label>
+        <input id="cadastro-email" type="email" formControlName="email" autocomplete="off" placeholder="email@exemplo.com" required
+          [attr.aria-invalid]="usuarioForm.controls.email.touched && usuarioForm.controls.email.invalid"
+          [attr.aria-describedby]="usuarioForm.controls.email.touched && usuarioForm.controls.email.invalid ? 'cadastro-email-erro' : null" />
+        @if (usuarioForm.controls.email.touched && usuarioForm.controls.email.invalid) {
+          <span id="cadastro-email-erro" class="field-error">Informe um e-mail válido.</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="cadastro-funcao">Função</label>
+        <select id="cadastro-funcao" formControlName="role" required
+          [attr.aria-invalid]="usuarioForm.controls.role.touched && usuarioForm.controls.role.invalid"
+          [attr.aria-describedby]="usuarioForm.controls.role.touched && usuarioForm.controls.role.invalid ? 'cadastro-funcao-erro' : null">
+          @for (funcao of funcoes; track funcao) { <option [value]="funcao">{{ funcao }}</option> }
+        </select>
+        @if (usuarioForm.controls.role.touched && usuarioForm.controls.role.invalid) {
+          <span id="cadastro-funcao-erro" class="field-error">Selecione uma função válida.</span>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="cadastro-senha">Senha</label>
+        <div class="password-input-wrapper">
+          <input id="cadastro-senha" [type]="mostrarSenha() ? 'text' : 'password'" formControlName="senha"
+            autocomplete="new-password" placeholder="Mínimo 6 caracteres" required
+            [attr.aria-invalid]="usuarioForm.controls.senha.touched && usuarioForm.controls.senha.invalid"
+            [attr.aria-describedby]="usuarioForm.controls.senha.touched && usuarioForm.controls.senha.invalid ? 'cadastro-senha-erro' : null" />
+          <button type="button" class="toggle-password" (click)="mostrarSenha.set(!mostrarSenha())"
+            [attr.aria-label]="mostrarSenha() ? 'Ocultar senha' : 'Mostrar senha'" [attr.aria-pressed]="mostrarSenha()">
+            <span class="material-symbols-outlined" aria-hidden="true">{{ mostrarSenha() ? 'visibility_off' : 'visibility' }}</span>
+          </button>
+        </div>
+        @if (usuarioForm.controls.senha.touched && usuarioForm.controls.senha.invalid) {
+          <span id="cadastro-senha-erro" class="field-error">A senha deve conter pelo menos 6 caracteres.</span>
+        }
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-cancel" (click)="fechar()">Cancelar</button>
+        <button type="submit" class="btn-primary" [disabled]="salvando()">
+          @if (salvando()) { <span class="material-symbols-outlined spin-icon" aria-hidden="true">progress_activity</span> }
+          {{ salvando() ? 'Cadastrando...' : 'Cadastrar usuário' }}
+        </button>
+      </div>
+    </fieldset>
+  </form>
+</dialog>

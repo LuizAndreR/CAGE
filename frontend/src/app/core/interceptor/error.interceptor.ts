@@ -13,7 +13,10 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         const mensagemApi = error.error.errors[0]; 
         toast.showError(mensagemApi);
       } 
-      // Captura o Erro Interno (500)
+      else if (error.status === 409 && error.error?.error) {
+        const mensagemApi = error.error.error;
+        toast.showError(Array.isArray(mensagemApi) ? mensagemApi[0] : mensagemApi);
+      }
       else if (error.status === 500 && error.error?.error) {
         toast.showError(error.error.error);
       } 

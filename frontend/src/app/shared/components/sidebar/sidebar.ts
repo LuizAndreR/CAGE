@@ -1,4 +1,5 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RouterModule } from '@angular/router';
 import { UserService } from '../../../core/services/user.service'; 
 import { UsuarioResponse } from '../../../core/models/usuario.interface';
@@ -15,6 +16,13 @@ export class Sidebar implements OnInit {
 
   usuario = signal<UsuarioResponse | null>(null);
   iniciais = signal<string>('..'); 
+
+  constructor() {
+    this.userService.perfilAtualizado$.pipe(takeUntilDestroyed()).subscribe((perfil) => {
+      this.usuario.update(usuario => usuario ? { ...usuario, ...perfil } : null);
+      this.iniciais.set(this.extrairIniciais(perfil.nome));
+    });
+  }
 
   navItems = [
     { path: '/dashboard', label: 'Dashboard', icon: 'dashboard' },
@@ -43,7 +51,7 @@ export class Sidebar implements OnInit {
 
   private extrairIniciais(nome: string): string {
     if (!nome) return '';
-    const partes = nome.trim().split(' ');
+    const partes = nome.trim().split(/\s+/);
     if (partes.length >= 2) {
       return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase();
     }
