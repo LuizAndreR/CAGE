@@ -12,6 +12,9 @@ public class UpdateFuncionarioCommand : IRequest<Result>
     [JsonIgnore]
     public int Id { get; set; }
 
+    [JsonIgnore]
+    public bool AdminRole { get; set; }
+
     public required string Nome { get; set; }
     public required string Role { get; set; }
 }

@@ -117,16 +117,10 @@ public class UserController : ApiControllerBase
     [Authorize(Roles = "Admin, Dono")]
     public async Task<IActionResult> UpdateFuncaoUsuario([FromBody] UpdateFuncionarioCommand request, [FromRoute] int id, [FromQuery] int empresaId)
     {
-        if (empresaId <= 0)
-        {
-            var empresaidResult = User.GetEmpresaId();
-            if (empresaidResult.IsFailed)
-            {
-                _logger.LogWarning("{LogPrefix} Tentativa de alteração de cargo/função sem ID de empresa válido.", ControllerLogPrefix);
-                return Unauthorized("Token inválido.");
-            }
-            empresaId = empresaidResult.Value;
-        }
+        var empresaError = ResolveEmpresa(empresaId, out var empresaAutorizada);
+        if (empresaError != null) return empresaError;
+        empresaId = empresaAutorizada;
+        request.AdminRole = User.IsInRole("Admin");
 
         _logger.LogInformation("{LogPrefix} Alteração de cargo/função de funcionário solicitada. Solitado pelo usuario de id: {Id}", ControllerLogPrefix, id);
         request.Id = id;
@@ -142,19 +136,28 @@ public class UserController : ApiControllerBase
     public async Task<IActionResult> DeleteUsuario([FromRoute] int id, [FromQuery]int empresaid)
     {
         _logger.LogInformation("{LogPrefix} Solicitação de exclusão de usuário. ID Alvo: {TargetId}", ControllerLogPrefix, id);
-        if (empresaid <= 0)
-        {
-            var empresaidResult = User.GetEmpresaId();
-            if (empresaidResult.IsFailed)
-            {
-                _logger.LogWarning("{LogPrefix} Tentativa de exclusão de usuário sem ID de empresa válido.", ControllerLogPrefix);
-                return Unauthorized("Token inválido.");
-            }
-            empresaid = empresaidResult.Value;
-        }
+        var empresaError = ResolveEmpresa(empresaid, out var empresaAutorizada);
+        if (empresaError != null) return empresaError;
+        empresaid = empresaAutorizada;
 
-        var userResult = await _mediator.Send(new DeleteUsuarioCommand { Id = id , EmpresaId = empresaid});
+        var userResult = await _mediator.Send(new DeleteUsuarioCommand { Id = id, EmpresaId = empresaid, AdminRole = User.IsInRole("Admin") });
 
         return HandleResult<object>(userResult, _logger, ControllerLogPrefix);
+    }
+    private IActionResult? ResolveEmpresa(int requestedEmpresaId, out int empresaId)
+    {
+        empresaId = 0;
+        if (User.IsInRole("Admin"))
+        {
+            if (requestedEmpresaId <= 0) return BadRequest("Informe um ID de empresa válido.");
+            empresaId = requestedEmpresaId;
+            return null;
+        }
+
+        var tokenEmpresa = User.GetEmpresaId();
+        if (tokenEmpresa.IsFailed || tokenEmpresa.Value <= 0) return Unauthorized("Token inválido.");
+        if (requestedEmpresaId > 0 && requestedEmpresaId != tokenEmpresa.Value) return Forbid();
+        empresaId = tokenEmpresa.Value;
+        return null;
     }
 }

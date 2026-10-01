@@ -23,10 +23,12 @@ public class AuthContoller : ApiControllerBase
     }
 
     [HttpPost("cadastro")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> CadastroDono([FromBody] CadastroCommand request, [FromQuery] int? id)
     {
         _logger.LogInformation("{LogPrefix} Recebendo requisição de cadastro administrativo (Admin/Dono). Email: {Email}", ControllerLogPrefix, request.Email);
 
+        request.AdminRole = User.IsInRole("Admin");
         request.EmpresaId = id >= 0 ? id.Value : 0;
         var result = await _mediator.Send(request);
 
@@ -40,12 +42,13 @@ public class AuthContoller : ApiControllerBase
         _logger.LogInformation("{LogPrefix} Recebendo requisição de cadastro de funcionário. Email: {Email}", ControllerLogPrefix, request.Email);
 
         var empresaId = User.GetEmpresaId();
-        if (empresaId.IsFailed)
+        if (empresaId.IsFailed || empresaId.Value <= 0)
         {
             _logger.LogWarning("{LogPrefix} Falha ao obter EmpresaId do token para o email: {Email}. Erro: {Error}", ControllerLogPrefix, request.Email, empresaId.Errors);
             return Unauthorized();
         }
 
+        request.AdminRole = false;
         request.EmpresaId = empresaId.Value;
         var result = await _mediator.Send(request);
 

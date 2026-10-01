@@ -42,7 +42,11 @@ public class UpdateFuncionarioHandler : IRequestHandler<UpdateFuncionarioCommand
         }
         var usuario = usuarioResult.Value;
 
-        var role = Enum.Parse<UserRole>(request.Role);
+        var role = Enum.Parse<UserRole>(request.Role, ignoreCase: true);
+        if (!request.AdminRole && (role is UserRole.Admin or UserRole.Dono || usuario.Role is UserRole.Admin or UserRole.Dono))
+        {
+            return Result.Fail(new ForbiddenError("Somente Admin pode alterar contas ou conceder funções Admin/Dono."));
+        }
         usuario.AtualizarFuncionario(request.Nome, role);
 
         await _usuarioRepository.UpdateUsuarioAsync(usuario);

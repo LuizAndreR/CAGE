@@ -40,6 +40,11 @@ public class DeleteUsuarioHandler : IRequestHandler<DeleteUsuarioCommand, Result
             return Result.Fail(new NotFoundError("Usuário não encontrado."));
         }
 
+        if (!request.AdminRole && usuarioResult.Value.Role is CakeGestao.Domain.Enum.UserRole.Admin or CakeGestao.Domain.Enum.UserRole.Dono)
+        {
+            return Result.Fail(new ForbiddenError("Somente Admin pode excluir contas Admin/Dono."));
+        }
+
         await _usuarioRepository.DeleteAsync(usuarioResult.Value);
 
         _logger.LogInformation("{LogPrefix} Usuário excluído permanentemente. ID: {Id}", LogPrefix, request.Id);
