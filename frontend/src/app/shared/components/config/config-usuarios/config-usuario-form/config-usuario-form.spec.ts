@@ -77,7 +77,7 @@ describe('Configurações — Cadastro de funcionário', () => {
     fixture.detectChanges();
   }
 
-  it('abre somente pelo botão e oferece funções compatíveis com adminRole false', () => {
+  it('abre somente pelo botão e oferece funções de funcionário e Dono', () => {
     expect(fixture.nativeElement.querySelector('dialog')).toBeNull();
     abrir();
     expect(fixture.nativeElement.querySelector('dialog').open).toBe(true);
@@ -125,13 +125,16 @@ describe('Configurações — Cadastro de funcionário', () => {
     http.expectNone(cadastroUrl);
   });
 
-  it('envia o contrato autenticado, impede duplicação e recarrega a lista sem trocar a sessão', () => {
+  it.each(['Confeiteiro', 'Dono'])('cadastra %s, impede duplicação e recarrega a lista sem trocar a sessão', (role) => {
     abrir();
     preencher();
+    const select: HTMLSelectElement = fixture.nativeElement.querySelector('#cadastro-funcao');
+    select.value = role;
+    select.dispatchEvent(new Event('change'));
     enviar();
     enviar();
     const req = http.expectOne({ method: 'POST', url: cadastroUrl });
-    expect(req.request.body).toEqual({ adminRole: false, nome: 'Ana Souza', email: 'ana@example.com', senha: ' senha123 ', role: 'Confeiteiro' });
+    expect(req.request.body).toEqual({ nome: 'Ana Souza', email: 'ana@example.com', senha: ' senha123 ', role });
     expect(req.request.headers.get('Authorization')).toBe('Bearer token-do-dono');
     expect(fixture.nativeElement.querySelector('dialog fieldset').disabled).toBe(true);
     expect(fixture.nativeElement.querySelector('.btn-close').disabled).toBe(true);

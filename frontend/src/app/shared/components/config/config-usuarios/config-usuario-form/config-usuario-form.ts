@@ -56,6 +56,6 @@ export class ConfigUsuarioForm implements AfterViewInit, OnDestroy {
       return;
     }
 
-    this.cadastrar.emit({ adminRole: false, ...this.usuarioForm.getRawValue() });
+    this.cadastrar.emit(this.usuarioForm.getRawValue());
   }
 }
