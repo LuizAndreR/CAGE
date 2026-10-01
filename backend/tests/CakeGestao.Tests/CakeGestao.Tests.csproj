@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="../../src/CakeGestao.API/CakeGestao.API.csproj" />
     <Using Include="Xunit" />
   </ItemGroup>
 
