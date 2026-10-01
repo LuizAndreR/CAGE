@@ -19,7 +19,6 @@ export interface AlterarSenhaRequest {
 export const FUNCOES_FUNCIONARIO = ['Dono', 'Confeiteiro', 'Auxiliar', 'Decorador', 'Atendente', 'Caixa'] as const;
 
 export interface CadastroFuncionarioRequest {
-  adminRole: false;
   nome: string;
   email: string;
   senha: string;
