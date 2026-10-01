@@ -37,6 +37,10 @@ public abstract class ApiControllerBase : ControllerBase
                 traceId
             });
         }
+        if (error is ForbiddenError)
+        {
+            return StatusCode(403, new { title = "Acesso negado", status = 403, error = error.Message, traceId });
+        }
         if (error is ConflictError conflictError)
         {
             return Conflict(new

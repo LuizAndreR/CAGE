@@ -24,7 +24,7 @@ public class CadastroUserValidator : AbstractValidator<CadastroCommand>
 
         RuleFor(x => x.Role)
            .NotEmpty().WithMessage("O Role é obrigatório.")
-           .Must(role => Enum.TryParse<UserRole>(role, true, out _)).WithMessage($"Role inválido. Valores permitidos: {string.Join(", ", Enum.GetNames(typeof(UserRole)))}.");
+           .IsEnumName(typeof(UserRole), caseSensitive: false).WithMessage($"Role inválido. Valores permitidos: {string.Join(", ", Enum.GetNames(typeof(UserRole)))}.");
 
         When(x => !string.Equals(x.Role, "Admin", StringComparison.OrdinalIgnoreCase), () =>
         {

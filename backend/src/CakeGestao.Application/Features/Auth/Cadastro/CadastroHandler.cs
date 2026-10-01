@@ -36,10 +36,10 @@ public class CadastroHandler : IRequestHandler<CadastroCommand, Result>
         }
 
         var userRole = Enum.Parse<UserRole>(request.Role, true);
-        if (userRole == UserRole.Admin && request.AdminRole == false)
+        if (!request.AdminRole && userRole == UserRole.Admin)
         {
-            _logger.LogWarning("{LogPrefix} Conflito: Somente Admin pode cadastra novo usuario role Admin", LogPrefix);
-            return Result.Fail(new ConflictError("Somente Admin pode cadastra novo usuario role Admin"));
+            _logger.LogWarning("{LogPrefix} Acesso negado: somente Admin pode cadastrar usuários Admin.", LogPrefix);
+            return Result.Fail(new ForbiddenError("Somente Admin pode cadastrar usuários Admin."));
         }
 
         var usuarioExistenteResult = await _usuarioRepository.GetUsuarioByEmailAsync(request.Email);
