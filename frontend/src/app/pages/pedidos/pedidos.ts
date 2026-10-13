@@ -68,14 +68,21 @@ export default class Pedidos implements OnInit {
   onSalvarPedido(command: any): void {
     this.isLoading.set(true);
     
-    this.pedidoService.createPedido(command)
+    const pedidoId = this.selectedId();
+    const operacao = pedidoId !== null
+      ? this.pedidoService.updatePedido(pedidoId, command)
+      : this.pedidoService.createPedido(command);
+
+    operacao
       .pipe(finalize(() => this.isLoading.set(false)))
       .subscribe({
         next: () => {
           this.view.set('list');
+          this.selectedId.set(null);
+          this.pedidoSelecionado.set(null);
           this.carregarPedidos(); 
         },
-        error: (erro) => console.error('Erro ao criar pedido:', erro)
+        error: (erro) => console.error('Erro ao salvar pedido:', erro)
       });
   }
 
