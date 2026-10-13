@@ -1,3 +1,5 @@
+using CakeGestao.Application.Features.Pedidos.Command.UpdateStatus;
+using CakeGestao.Domain.Enum;
 using CakeGestao.Application.Features.Financeiro.Command.Cancelamento;
 using CakeGestao.Domain.Entities;
 using CakeGestao.Domain.Exceptions;
@@ -84,6 +86,21 @@ public class UpdatePedidoHandler : IRequestHandler<UpdatePedidoCommand, Result>
                     return Result.Fail(cancelResult.Errors);
             }
 
+            if (pedido.StatusPedido == StatusPedidoEnum.EmProducao)
+            {
+                // A devolução precisa usar os itens antigos, antes de substituí-los.
+                var statusResult = await _mediator.Send(new UpdateStatusPedidoCommand
+                {
+                    PedidoId = pedido.Id,
+                    EmpresaId = request.EmpresaId,
+                    Status = nameof(StatusPedidoEnum.Pendente)
+                }, cancellationToken);
+
+                if (statusResult.IsFailed)
+                    return Result.Fail(statusResult.Errors);
+            }
+
+            pedido.AlterarStatus(StatusPedidoEnum.Pendente);
             pedido.LimparItens();
             foreach (var item in novosItens)
                 pedido.AdicionarItem(item);
