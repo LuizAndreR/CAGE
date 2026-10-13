@@ -191,4 +191,26 @@ public class ControllerTests
         var refresh = new RefreshTokenCommand { RefreshToken = "refresh-antigo" };
         Assert.Same(tokens, Assert.IsType<OkObjectResult>(await c.RefreshToken(refresh)).Value); Assert.Same(refresh, _sent);
     }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task EdicaoPedidoObtemResponsavelDoToken(bool possuiUsuario)
+    {
+        var c = new PedidoController(NullLogger<FinanceiroController>.Instance, _mediator.Object) { ControllerContext = TestData.Context() };
+        var request = new CakeGestao.Application.Features.Pedidos.Command.Update.UpdatePedidoCommand
+            { Id = 99, EmpresaId = 99, UsuarioId = 99, ClienteNome = "Cliente" };
+        if (!possuiUsuario)
+        {
+            var identity = (System.Security.Claims.ClaimsIdentity)c.User.Identity!;
+            identity.RemoveClaim(identity.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier));
+            Assert.IsType<UnauthorizedResult>(await c.UpdatePedido(request, 1));
+            _mediator.VerifyNoOtherCalls();
+            return;
+        }
+        CommandResult(Result.Ok());
+        Assert.IsType<OkObjectResult>(await c.UpdatePedido(request, 1));
+        Assert.Equal(1, request.Id); Assert.Equal(10, request.EmpresaId); Assert.Equal(7, request.UsuarioId);
+        Assert.Same(request, _sent);
+    }
 }

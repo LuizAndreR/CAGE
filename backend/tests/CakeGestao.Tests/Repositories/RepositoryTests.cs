@@ -214,4 +214,23 @@ public class RepositoryTests : IDisposable
         }
         Assert.True((await repo.GetRefreshTokenAsync("inexistente")).IsFailed);
     }
+
+    [Fact]
+    public async Task PagamentoDoPedidoIgnoraCanceladosOutrasEmpresasESaidas()
+    {
+        var cancelado = new TransacaoFinanceira(TipoTransacaoEnum.Entrada, CategoriasEnum.Vendas, 100, DateTime.UtcNow, "Anterior", 1, 10) { Id = 1 };
+        cancelado.Cancelar("Estorno", 7);
+        _db.TransacoesFinanceiras.AddRange(cancelado,
+            new(TipoTransacaoEnum.Entrada, CategoriasEnum.Vendas, 100, DateTime.UtcNow, "Ativo", 1, 10) { Id = 2 },
+            new(TipoTransacaoEnum.Entrada, CategoriasEnum.Vendas, 100, DateTime.UtcNow, "Outra empresa", 1, 20) { Id = 3 },
+            new(TipoTransacaoEnum.Saida, CategoriasEnum.Compras, 100, DateTime.UtcNow, "Saída", 1, 10) { Id = 4 });
+        await _db.SaveChangesAsync();
+        var repo = new FinanceiroRepository(_db, NullLogger<FinanceiroRepository>.Instance);
+        Assert.Equal(2, (await repo.GetTransacaoByPedidoId(1, 10)).Value.Id);
+        Assert.True((await repo.GetTransacaoByPedidoId(1, 99)).IsFailed);
+        var ativo = (await repo.GetTransacaoByPedidoId(1, 10)).Value;
+        ativo.Cancelar("Edição", 7);
+        await repo.UpdateTransacaoAsync(ativo);
+        Assert.True((await repo.GetTransacaoByPedidoId(1, 10)).IsFailed);
+    }
 }

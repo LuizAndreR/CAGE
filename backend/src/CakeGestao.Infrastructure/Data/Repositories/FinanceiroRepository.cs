@@ -110,7 +110,10 @@ public class FinanceiroRepository : IFinanceiroRepository
         _logger.LogDebug("{LogPrefix} Buscando transação pelo pedido de id: {Id}. EmpresaId: {EmpresaId}", LogPrefix, pedidoId, empresaId);
         
         var query = _context.TransacoesFinanceiras.AsQueryable();
-        var transacao = await query.FirstOrDefaultAsync(x => x.PedidoId == pedidoId);
+        var transacao = await query
+            .Where(x => x.PedidoId == pedidoId && x.EmpresaId == empresaId && !x.IsCancelado && x.Tipo == TipoTransacaoEnum.Entrada)
+            .OrderByDescending(x => x.Id)
+            .FirstOrDefaultAsync();
 
         if (transacao == null)
         {

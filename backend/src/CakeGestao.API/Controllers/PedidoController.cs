@@ -87,7 +87,8 @@ public class PedidoController : ApiControllerBase
         _logger.LogInformation("{LogPrefix} Recebida requisição para atualizar o pedido de id: {PedidoId}.", ControllerLogPrefix, pedidoId);
         
         var empresaId = User.GetEmpresaId();
-        if (empresaId.IsFailed)
+        var usuarioId = User.GetUserId();
+        if (empresaId.IsFailed || usuarioId.IsFailed || usuarioId.Value <= 0)
         {
             _logger.LogWarning("{LogPrefix} Falha de autorização: Token sem EmpresaId válido.", ControllerLogPrefix);
             return Unauthorized();
@@ -95,6 +96,7 @@ public class PedidoController : ApiControllerBase
         
         request.EmpresaId = empresaId.Value;
         request.Id = pedidoId;
+        request.UsuarioId = usuarioId.Value;
         
         var pedidoResult = await _mediator.Send(request);
         return HandleResult<object>(pedidoResult, _logger, ControllerLogPrefix);
