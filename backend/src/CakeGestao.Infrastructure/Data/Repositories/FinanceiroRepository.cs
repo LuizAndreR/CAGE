@@ -28,7 +28,8 @@ public class FinanceiroRepository : IFinanceiroRepository
         var total = await _context.TransacoesFinanceiras
             .AsNoTracking()
             .Where(t => t.EmpresaId == empresaId && 
-                        t.Tipo == tipo && 
+                        t.Tipo == tipo &&
+                        !t.IsCancelado &&
                         t.Data >= inicioMes)
             .SumAsync(t => (decimal?)t.Valor, cancellationToken);
         return total ?? 0m;
