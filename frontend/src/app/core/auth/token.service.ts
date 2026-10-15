@@ -25,6 +25,19 @@ export class TokenService {
     return localStorage.getItem(this.REFRESH_KEY);
   }
 
+  getRole(): string | null {
+    const token = this.getAccessToken();
+    if (!token) return null;
+    try {
+      const payload = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+      const claims = JSON.parse(atob(payload.padEnd(Math.ceil(payload.length / 4) * 4, '=')));
+      const role = claims['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] ?? claims.role;
+      return typeof role === 'string' ? role : null;
+    } catch {
+      return null;
+    }
+  }
+
   hasTokens(): boolean {
     return !!this.getAccessToken();
   }

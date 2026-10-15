@@ -1,3 +1,4 @@
+import { TokenService } from '../../core/auth/token.service';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
@@ -26,7 +27,8 @@ describe('Configurações — Perfil', () => {
         provideRouter([]),
         provideHttpClient(withInterceptors([errorInterceptor])),
         provideHttpClientTesting(),
-        { provide: ToastService, useValue: toast }
+        { provide: ToastService, useValue: toast },
+        { provide: TokenService, useValue: { getRole: () => 'Dono', hasTokens: () => false } }
       ]
     }).compileComponents();
     http = TestBed.inject(HttpTestingController);
@@ -73,6 +75,7 @@ describe('Configurações — Perfil', () => {
     botoes[2].click();
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('app-config-empresa')).not.toBeNull();
+    http.expectOne({ method: 'GET', url: `${environment.apiUrl}/empresa/me` }).flush({ nome: 'Empresa', endereco: 'Rua A' });
     botoes[0].click();
     fixture.detectChanges();
     carregarPerfil();
@@ -219,7 +222,8 @@ describe('Configurações — Empresa', () => {
         provideRouter([]),
         provideHttpClient(withInterceptors([errorInterceptor])),
         provideHttpClientTesting(),
-        { provide: ToastService, useValue: toast }
+        { provide: ToastService, useValue: toast },
+        { provide: TokenService, useValue: { getRole: () => 'Dono', hasTokens: () => false } }
       ]
     }).compileComponents();
     http = TestBed.inject(HttpTestingController);
@@ -230,6 +234,32 @@ describe('Configurações — Empresa', () => {
   });
 
   afterEach(() => http.verify());
+
+  function carregarEmpresa(): void {
+    http.expectOne({ method: 'GET', url }).flush({ id: 10, nome: 'Empresa atual', endereco: 'Rua atual' });
+    fixture.detectChanges();
+  }
+
+  it('carrega nome e endereço atuais e impede salvar antes da consulta', () => {
+    empresa.salvarEmpresa();
+    http.expectNone({ method: 'PUT', url });
+    expect(fixture.nativeElement.querySelector('fieldset').disabled).toBe(true);
+    carregarEmpresa();
+    expect(fixture.nativeElement.querySelector('#empresa-nome').value).toBe('Empresa atual');
+    expect(fixture.nativeElement.querySelector('#empresa-endereco').value).toBe('Rua atual');
+    expect(empresa.empresaForm.pristine).toBe(true);
+  });
+
+  it('permite repetir a consulta após falha e explica acesso negado', () => {
+    http.expectOne({ method: 'GET', url }).flush(null, { status: 403, statusText: 'Forbidden' });
+    fixture.detectChanges();
+    expect(toast.showError).toHaveBeenCalledWith('Você não tem permissão para realizar esta ação.');
+    empresa.salvarEmpresa();
+    http.expectNone({ method: 'PUT', url });
+    fixture.nativeElement.querySelector('.btn-retry').click();
+    carregarEmpresa();
+    expect(empresa.empresaCarregada()).toBe(true);
+  });
 
   function preencher(nome: string, endereco: string): void {
     for (const [id, valor] of [['empresa-nome', nome], ['empresa-endereco', endereco]]) {
@@ -245,6 +275,7 @@ describe('Configurações — Empresa', () => {
   }
 
   it('exibe somente nome e endereço e valida campos vazios', () => {
+    carregarEmpresa();
     expect(fixture.nativeElement.textContent).not.toContain('CNPJ');
     expect(fixture.nativeElement.querySelectorAll('input').length).toBe(2);
     preencher('   ', '   ');
@@ -255,6 +286,7 @@ describe('Configurações — Empresa', () => {
   });
 
   it('respeita os limites de 150 caracteres para nome e 250 para endereço', () => {
+    carregarEmpresa();
     preencher('a'.repeat(151), 'b'.repeat(251));
     enviar();
     expect(fixture.nativeElement.textContent).toContain('O nome deve ter no máximo 150 caracteres.');
@@ -263,6 +295,7 @@ describe('Configurações — Empresa', () => {
   });
 
   it('envia o contrato exato, bloqueia reenvio e navegação e confirma sucesso', () => {
+    carregarEmpresa();
     preencher('  Confeitaria da Ana  ', '  Rua das Flores, 123  ');
     enviar();
     empresa.salvarEmpresa();
@@ -278,6 +311,7 @@ describe('Configurações — Empresa', () => {
   });
 
   it('preserva a edição após erro e permite uma nova tentativa', () => {
+    carregarEmpresa();
     preencher('Confeitaria da Ana', 'Rua das Flores, 123');
     enviar();
     http.expectOne({ method: 'PUT', url }).flush({ errors: ['Dados inválidos.'] }, { status: 400, statusText: 'Bad Request' });
@@ -290,5 +324,21 @@ describe('Configurações — Empresa', () => {
     enviar();
     http.expectOne({ method: 'PUT', url }).flush(null);
     expect(toast.showSuccess).toHaveBeenCalledOnce();
+  });
+});
+
+describe('Configurações — permissões da empresa', () => {
+  it.each(['Caixa', 'Admin', null])('oculta a aba e não consulta empresa para %s', async role => {
+    await TestBed.configureTestingModule({
+      imports: [Configuracoes],
+      providers: [provideHttpClient(), provideHttpClientTesting(),
+        { provide: TokenService, useValue: { getRole: () => role } }]
+    }).compileComponents();
+    const fixture = TestBed.createComponent(Configuracoes);
+    fixture.componentInstance.abaAtiva.set('empresa');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.config-nav').textContent).not.toContain('Empresa');
+    expect(fixture.nativeElement.querySelector('app-config-empresa')).toBeNull();
+    TestBed.inject(HttpTestingController).verify();
   });
 });
