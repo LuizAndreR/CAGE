@@ -270,4 +270,34 @@ public class RepositoryTests : IDisposable
         Assert.Equal(0m, await repo.GetTotalPorTipoMesAtualAsync(tipo, 10, default));
         Assert.True((await repo.GetTransacaoAsync(cancelada.Id, 10)).Value.IsCancelado);
     }
+
+    [Fact]
+    public async Task ExclusaoPedidoPreservaLancamentosEDesvinculaPedido()
+    {
+        var pedido = TestData.Pedido();
+        _db.Pedidos.Add(pedido);
+        var ativa = new TransacaoFinanceira(TipoTransacaoEnum.Entrada, CategoriasEnum.Vendas, 90, DateTime.UtcNow, "Pagamento do Pedido #1", 1, 10) { Id = 1 };
+        var antiga = new TransacaoFinanceira(TipoTransacaoEnum.Entrada, CategoriasEnum.Vendas, 90, DateTime.UtcNow, "Anterior do Pedido #1", 1, 10) { Id = 2 };
+        antiga.Cancelar("Estorno anterior", 7);
+        _db.TransacoesFinanceiras.AddRange(ativa, antiga,
+            new(TipoTransacaoEnum.Entrada, CategoriasEnum.Vendas, 50, DateTime.UtcNow, "Outro pedido", 2, 10) { Id = 3 },
+            new(TipoTransacaoEnum.Entrada, CategoriasEnum.Vendas, 50, DateTime.UtcNow, "Outra empresa", 2, 20) { Id = 4 });
+        await _db.SaveChangesAsync();
+        var financeiro = new FinanceiroRepository(_db, NullLogger<FinanceiroRepository>.Instance);
+        var ativos = await financeiro.GetTransacoesAtivasByPedidoIdAsync(1, 10);
+        Assert.Equal(1, Assert.Single(ativos.Value).Id);
+        Assert.Empty((await financeiro.GetTransacoesAtivasByPedidoIdAsync(1, 20)).Value);
+        ativa.Cancelar("Exclusão do Pedido #1", 7);
+        await financeiro.UpdateTransacaoAsync(ativa);
+        await new PedidoRepository(_db, NullLogger<EmpresaRepository>.Instance).DeletePedidoAsync(pedido);
+        using var read = Reload();
+        Assert.Null(await read.Pedidos.FindAsync(1));
+        var historico = await read.TransacoesFinanceiras.Where(t => t.Id <= 2).ToListAsync();
+        Assert.Equal(2, historico.Count);
+        Assert.All(historico, t => { Assert.Null(t.PedidoId); Assert.True(t.IsCancelado); Assert.Equal(90, t.Valor); Assert.Contains("Pedido #1", t.Descricao); });
+        Assert.Equal(4, await read.TransacoesFinanceiras.CountAsync());
+        var fk = _db.Model.FindEntityType(typeof(TransacaoFinanceira))!.GetForeignKeys()
+            .Single(f => f.Properties.Any(p => p.Name == nameof(TransacaoFinanceira.PedidoId)));
+        Assert.Equal(DeleteBehavior.SetNull, fk.DeleteBehavior);
+    }
 }

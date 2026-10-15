@@ -11,4 +11,7 @@ public class DeletePedidoCommand : IRequest<Result>
 
     [JsonIgnore]
     public int PedidoId { get; set; }
+
+    [JsonIgnore]
+    public int UsuarioId { get; set; }
 }

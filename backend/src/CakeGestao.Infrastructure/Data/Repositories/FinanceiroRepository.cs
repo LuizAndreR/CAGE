@@ -106,6 +106,15 @@ public class FinanceiroRepository : IFinanceiroRepository
         return Result.Ok(totalSaida);
     }
 
+    public async Task<Result<List<TransacaoFinanceira>>> GetTransacoesAtivasByPedidoIdAsync(int pedidoId, int empresaId)
+    {
+        var transacoes = await _context.TransacoesFinanceiras
+            .Where(t => t.PedidoId == pedidoId && t.EmpresaId == empresaId && !t.IsCancelado)
+            .OrderBy(t => t.Id)
+            .ToListAsync();
+        return Result.Ok(transacoes);
+    }
+
     public async Task<Result<TransacaoFinanceira>> GetTransacaoByPedidoId(int pedidoId, int empresaId)
     {
         _logger.LogDebug("{LogPrefix} Buscando transação pelo pedido de id: {Id}. EmpresaId: {EmpresaId}", LogPrefix, pedidoId, empresaId);

@@ -213,4 +213,24 @@ public class ControllerTests
         Assert.Equal(1, request.Id); Assert.Equal(10, request.EmpresaId); Assert.Equal(7, request.UsuarioId);
         Assert.Same(request, _sent);
     }
+
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task ExclusaoPedidoUsaResponsavelDoToken(bool autenticado)
+    {
+        var c = new PedidoController(NullLogger<FinanceiroController>.Instance, _mediator.Object) { ControllerContext = TestData.Context() };
+        if (!autenticado)
+        {
+            var identity = (System.Security.Claims.ClaimsIdentity)c.User.Identity!;
+            identity.RemoveClaim(identity.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier));
+            Assert.IsType<UnauthorizedResult>(await c.DeletePedido(1));
+            _mediator.VerifyNoOtherCalls();
+            return;
+        }
+        CommandResult(Result.Ok());
+        Assert.IsType<OkObjectResult>(await c.DeletePedido(1));
+        var command = Assert.IsType<CakeGestao.Application.Features.Pedidos.Command.Delete.DeletePedidoCommand>(_sent);
+        Assert.Equal(1, command.PedidoId); Assert.Equal(10, command.EmpresaId); Assert.Equal(7, command.UsuarioId);
+    }
 }
