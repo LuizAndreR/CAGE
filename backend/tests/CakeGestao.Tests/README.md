@@ -22,6 +22,11 @@ dotnet test backend/tests/CakeGestao.Tests/CakeGestao.Tests.csproj --filter 'Ful
 - `Commands/AuthCommandTests.cs`: validação de credenciais, emissão de tokens, rejeição de refresh tokens ausentes/expirados/usados/revogados e rotação de sessão.
 - `Queries/QueryHandlerTests.cs`: consultas de empresas, usuários, funcionários, estoque, receitas, pedidos, financeiro e dashboard. Usa os mapeamentos reais do AutoMapper e validadores reais, com repositories simulados. Verifica valores e erros, incluindo nome da receita, subtotal, data de início, filtros e saldo negativo.
 - `Repositories/RepositoryTests.cs`: os sete repositories reais com EF Core InMemory; persistência e releitura por outro contexto, filtros por empresa, relações carregadas com `Include`, limites do mês, cancelamento financeiro e atualização de refresh tokens. Cada teste usa um banco independente.
+- `Controllers/EmpresaAuthorizationTests.cs`: políticas combinadas de controller/action para Admin, Dono, Caixa e usuário anônimo; consulta e atualização da própria empresa pelo ID do token.
+- `Commands/UpdatePedidoTests.cs` e `UpdatePedidoProducaoTests.cs`: comparação de receitas/quantidades, cancelamento do pagamento e retorno para pendente na edição dos itens.
+- `Commands/UpdateStatusPedidoTests.cs`: devolução de ingredientes na transição de produção para pendente.
+- `Commands/UpdatePagamentoPedidoTests.cs`: seleção e validação do pagamento ativo do pedido e da empresa.
+- `Commands/DeletePedidoTests.cs`: cancelamento de transações antes da exclusão do pedido e interrupção diante de falhas.
 - `UserSecurityTests.cs`: regressões de autorização e isolamento adicionadas anteriormente, incluindo cadastro de outro Dono na própria empresa.
 - `Support/TestData.cs`: dados de exemplo, identidade de teste e configuração do AutoMapper.
 
@@ -29,12 +34,18 @@ dotnet test backend/tests/CakeGestao.Tests/CakeGestao.Tests.csproj --filter 'Ful
 
 Esta suíte amplia a cobertura de cenários; não cobre todos os métodos ou caminhos do backend.
 
-Os testes de controllers são unitários: chamam as actions diretamente e simulam o MediatR. Não executam o pipeline HTTP, autenticação JWT, políticas de autorização ou model binding. Os testes dos handlers executam regras e validadores reais, mas simulam as dependências externas.
+Os testes de controllers são unitários: chamam as actions diretamente e simulam o MediatR. Não executam o pipeline HTTP, autenticação JWT ou model binding. Separadamente, `EmpresaAuthorizationTests` combina os atributos de autorização do controller e das actions e avalia as políticas com o serviço de autorização do ASP.NET Core. Os testes dos handlers executam regras e validadores reais, mas simulam as dependências externas.
 
 Os testes dos repositories são testes de integração com EF Core InMemory, não testes de um PostgreSQL real. Não precisam de conexão nem alteram dados de desenvolvimento ou produção. O provider em memória não comprova tradução de SQL, migrations, constraints, unicidade, cascatas relacionais, transações ou concorrência. Uma suíte de integração com PostgreSQL continua necessária para validar esses aspectos.
 
-Não foram alteradas regras da aplicação nesta ampliação dos testes. O sucesso da suíte não representa validação completa para produção.
+O sucesso da suíte não representa validação completa para produção.
 
 ## Última execução
 
-Em 01/10/2026: **128 testes passaram, 0 falhas e 0 ignorados** (88 novos cenários e 40 de segurança existentes).
+Em **16/10/2026**, a execução de `dotnet test backend/CakeGestao.sln --no-restore` concluiu com **233 testes passando, 0 falhas e 0 ignorados**. As dependências já estavam restauradas.
+
+Para coletar cobertura com o collector configurado no projeto:
+
+```bash
+dotnet test backend/CakeGestao.sln --collect:"XPlat Code Coverage"
+```
