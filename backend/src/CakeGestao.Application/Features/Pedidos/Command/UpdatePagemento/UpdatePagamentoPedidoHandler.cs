@@ -75,32 +75,34 @@ public class UpdatePagamentoPedidoHandler : IRequestHandler<UpdatePagamentoPedid
         }
         else if (!request.Pagamento && pedido.Pago)
         {
-            pedido.EstornarPagamento();
-
             var transacaoResult = await _transacaoRepository.GetTransacaoByPedidoId(pedido.Id, request.EmpresaId);
-            TransacaoFinanceira transacao = transacaoResult.Value;
-            
-            if (transacaoResult.IsSuccess)
+            if (transacaoResult.IsFailed)
+                return Result.Fail(new ConflictError("Não foi encontrado um pagamento ativo para estornar neste pedido."));
+
+            var transacao = transacaoResult.Value;
+            if (transacao.IsCancelado || transacao.PedidoId != pedido.Id ||
+                transacao.EmpresaId != request.EmpresaId || transacao.Tipo != CakeGestao.Domain.Enum.TipoTransacaoEnum.Entrada)
+                return Result.Fail(new ConflictError("A transação encontrada não é um pagamento ativo deste pedido e empresa."));
+
+            var cancelCommand = new CancelTransacaoCommand
             {
-                var cancelCommand = new CancelTransacaoCommand
-                {
-                    TransacaoId = transacao.Id,
-                    EmpresaId = pedido.EmpresaId,
-                    UsuarioId = request.UsuarioId,
-                    Motivo = $"Estorno automático gerado pelo desfazimento do pagamento do Pedido #{pedido.Id} - Cliente: {pedido.ClienteNome}"
-                };
+                TransacaoId = transacao.Id,
+                EmpresaId = pedido.EmpresaId,
+                UsuarioId = request.UsuarioId,
+                Motivo = $"Estorno automático gerado pelo desfazimento do pagamento do Pedido #{pedido.Id} - Cliente: {pedido.ClienteNome}"
+            };
 
-                var cancelResult = await _mediator.Send(cancelCommand, cancellationToken);
-
-                if (cancelResult.IsFailed)
-                {
-                    _logger.LogWarning("{LogPrefix}  Falha ao cancelar a transação financeira {TransacaoId} para o pedido {PedidoId}.", LogPrefix, transacao.Id, pedido.Id);
-                    return Result.Fail("Não foi possível estornar a transação financeira no caixa.").WithErrors(cancelResult.Errors);
-                }
-
-                _logger.LogInformation("{LogPrefix}  Pagamento do pedido {Id} estornado. Transação financeira cancelada com sucesso.", LogPrefix, pedido.Id);
+            var cancelResult = await _mediator.Send(cancelCommand, cancellationToken);
+            if (cancelResult.IsFailed)
+            {
+                _logger.LogWarning("{LogPrefix} Falha ao cancelar a transação financeira {TransacaoId} para o pedido {PedidoId}.", LogPrefix, transacao.Id, pedido.Id);
+                return Result.Fail(cancelResult.Errors);
             }
+
+            pedido.EstornarPagamento();
+            _logger.LogInformation("{LogPrefix} Pagamento do pedido {Id} estornado. Transação financeira cancelada com sucesso.", LogPrefix, pedido.Id);
         }
+
         await _pedidoRepository.UpdatePedidoAsync(pedido); 
         return Result.Ok();
     }

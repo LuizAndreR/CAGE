@@ -12,6 +12,7 @@ public interface IFinanceiroRepository
         CategoriasEnum? categoria, int? mes, int? ano);
     public Task<Result<decimal>> GetEntradaAsync(int empresaId);
     public Task<Result<decimal>> GetSaidaAsync(int empresaId);
+    public Task<Result<List<TransacaoFinanceira>>> GetTransacoesAtivasByPedidoIdAsync(int pedidoId, int empresaId);
     public Task<Result<TransacaoFinanceira>> GetTransacaoByPedidoId(int pedidoId, int empresaId);
     public Task<Result<TransacaoFinanceira>> GetTransacaoAsync(int id, int? empresaId);
     public Task CreateTransacaoAsync(TransacaoFinanceira transacao);

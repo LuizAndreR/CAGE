@@ -17,7 +17,7 @@ public class TransacaoFinanceira
     public int? CanceladoPorUsuarioId { get; private set; }
 
     public int? PedidoId { get; private set; }
-    public virtual Pedido Pedido { get; set; } = null!;
+    public virtual Pedido? Pedido { get; set; }
     
     public int EmpresaId { get; private set; }
     public virtual Empresa Empresa { get; set; } = null!;

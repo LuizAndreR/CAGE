@@ -13,7 +13,7 @@ namespace CakeGestao.API.Controllers;
 
 [ApiController]
 [Route("api/empresa")]
-[Authorize(Roles = "Admin")]
+[Authorize]
 public class EmpresaController : ApiControllerBase
 {
     private readonly IMediator _mediator;
@@ -27,6 +27,7 @@ public class EmpresaController : ApiControllerBase
     }
 
     [HttpGet("")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetAllEmpresas()
     {
         _logger.LogInformation("{LogPrefix} Listando todas as empresas cadastradas.", ControllerLogPrefix);
@@ -37,6 +38,7 @@ public class EmpresaController : ApiControllerBase
     }
 
     [HttpGet("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetEmpresaById(int id)
     {
         _logger.LogInformation("{LogPrefix} Buscando detalhes da empresa. ID: {Id}", ControllerLogPrefix, id);
@@ -46,7 +48,20 @@ public class EmpresaController : ApiControllerBase
         return HandleResult(result, _logger, ControllerLogPrefix);
     }
 
+    [HttpGet("me")]
+    [Authorize(Roles = "Dono")]
+    public async Task<IActionResult> GetMinhaEmpresa()
+    {
+        var idResult = User.GetEmpresaId();
+        if (idResult.IsFailed || idResult.Value <= 0)
+            return Unauthorized("Token inválido.");
+
+        var result = await _mediator.Send(new GetEmpresaQuery { Id = idResult.Value });
+        return HandleResult(result, _logger, ControllerLogPrefix);
+    }
+
     [HttpPost("")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> CreateEmpresa([FromBody] CreateEmpresaCommand request)
     {
         _logger.LogInformation("{LogPrefix} Iniciando criação de nova empresa. Nome: {Nome}", ControllerLogPrefix, request.Nome);
@@ -57,6 +72,7 @@ public class EmpresaController : ApiControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> UpdateEmpresa([FromBody] UpdateEmpresaCommand request, [FromRoute] int id)
     {
         _logger.LogInformation("{LogPrefix} Atualizando dados cadastrais da empresa. ID: {Id}", ControllerLogPrefix, id);
@@ -72,7 +88,7 @@ public class EmpresaController : ApiControllerBase
     public async Task<IActionResult> UpdateEmpresaDono([FromBody] UpdateEmpresaCommand request)
     {
         var idResult = User.GetEmpresaId();
-        if (idResult.IsFailed)
+        if (idResult.IsFailed || idResult.Value <= 0)
         {
             _logger.LogWarning("{LogPrefix} Tentativa de alteração de cargo/função sem ID de empresa válido.", ControllerLogPrefix);
             return Unauthorized("Token inválido.");
@@ -86,6 +102,7 @@ public class EmpresaController : ApiControllerBase
     }
 
     [HttpPatch("{id}/status")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> UpdateStatusEmpresa([FromBody] UpdateStatusEmpresaCommand request, [FromRoute] int id)
     {
         _logger.LogInformation("{LogPrefix} Alterando status da empresa. ID: {Id}", ControllerLogPrefix, id);
@@ -96,7 +113,8 @@ public class EmpresaController : ApiControllerBase
         return HandleResult<object>(result, _logger, ControllerLogPrefix);
     }
 
-    [HttpDelete("{id}")] 
+    [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteEmpresa([FromRoute] int id)
     {
         _logger.LogInformation("{LogPrefix} Iniciando exclusão de empresa. ID: {Id}", ControllerLogPrefix, id);

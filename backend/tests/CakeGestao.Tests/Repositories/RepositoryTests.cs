@@ -214,4 +214,90 @@ public class RepositoryTests : IDisposable
         }
         Assert.True((await repo.GetRefreshTokenAsync("inexistente")).IsFailed);
     }
+
+    [Fact]
+    public async Task PagamentoDoPedidoIgnoraCanceladosOutrasEmpresasESaidas()
+    {
+        var cancelado = new TransacaoFinanceira(TipoTransacaoEnum.Entrada, CategoriasEnum.Vendas, 100, DateTime.UtcNow, "Anterior", 1, 10) { Id = 1 };
+        cancelado.Cancelar("Estorno", 7);
+        _db.TransacoesFinanceiras.AddRange(cancelado,
+            new(TipoTransacaoEnum.Entrada, CategoriasEnum.Vendas, 100, DateTime.UtcNow, "Ativo", 1, 10) { Id = 2 },
+            new(TipoTransacaoEnum.Entrada, CategoriasEnum.Vendas, 100, DateTime.UtcNow, "Outra empresa", 1, 20) { Id = 3 },
+            new(TipoTransacaoEnum.Saida, CategoriasEnum.Compras, 100, DateTime.UtcNow, "Saída", 1, 10) { Id = 4 });
+        await _db.SaveChangesAsync();
+        var repo = new FinanceiroRepository(_db, NullLogger<FinanceiroRepository>.Instance);
+        Assert.Equal(2, (await repo.GetTransacaoByPedidoId(1, 10)).Value.Id);
+        Assert.True((await repo.GetTransacaoByPedidoId(1, 99)).IsFailed);
+        var ativo = (await repo.GetTransacaoByPedidoId(1, 10)).Value;
+        ativo.Cancelar("Edição", 7);
+        await repo.UpdateTransacaoAsync(ativo);
+        Assert.True((await repo.GetTransacaoByPedidoId(1, 10)).IsFailed);
+    }
+
+    [Theory]
+    [InlineData(TipoTransacaoEnum.Entrada)]
+    [InlineData(TipoTransacaoEnum.Saida)]
+    public async Task TotalMensalIgnoraCanceladasEPreservaHistorico(TipoTransacaoEnum tipo)
+    {
+        var agora = DateTime.UtcNow;
+        var inicioMes = new DateTime(agora.Year, agora.Month, 1, 0, 0, 0, DateTimeKind.Utc);
+        var outroTipo = tipo == TipoTransacaoEnum.Entrada ? TipoTransacaoEnum.Saida : TipoTransacaoEnum.Entrada;
+        var cancelada = TestData.Transacao(2, tipo: tipo, valor: 900, data: inicioMes);
+        cancelada.Cancelar("Estorno", 7);
+        _db.TransacoesFinanceiras.AddRange(
+            TestData.Transacao(1, tipo: tipo, valor: 100, data: inicioMes),
+            cancelada,
+            TestData.Transacao(3, empresa: 20, tipo: tipo, valor: 500, data: inicioMes),
+            TestData.Transacao(4, tipo: tipo, valor: 400, data: inicioMes.AddTicks(-1)),
+            TestData.Transacao(5, tipo: outroTipo, valor: 300, data: inicioMes));
+        await _db.SaveChangesAsync();
+        var repo = new FinanceiroRepository(_db, NullLogger<FinanceiroRepository>.Instance);
+        Assert.Equal(100m, await repo.GetTotalPorTipoMesAtualAsync(tipo, 10, default));
+        var historico = await repo.GetAllTransacoesAsync(10, tipo, null, agora.Month, agora.Year);
+        Assert.Contains(historico.Value, t => t.Id == 2 && t.IsCancelado);
+    }
+
+    [Theory]
+    [InlineData(TipoTransacaoEnum.Entrada)]
+    [InlineData(TipoTransacaoEnum.Saida)]
+    public async Task TotalMensalRetornaZeroQuandoTodasEstaoCanceladas(TipoTransacaoEnum tipo)
+    {
+        var cancelada = TestData.Transacao(tipo: tipo, data: DateTime.UtcNow);
+        cancelada.Cancelar("Estorno", 7);
+        _db.TransacoesFinanceiras.Add(cancelada);
+        await _db.SaveChangesAsync();
+        var repo = new FinanceiroRepository(_db, NullLogger<FinanceiroRepository>.Instance);
+        Assert.Equal(0m, await repo.GetTotalPorTipoMesAtualAsync(tipo, 10, default));
+        Assert.True((await repo.GetTransacaoAsync(cancelada.Id, 10)).Value.IsCancelado);
+    }
+
+    [Fact]
+    public async Task ExclusaoPedidoPreservaLancamentosEDesvinculaPedido()
+    {
+        var pedido = TestData.Pedido();
+        _db.Pedidos.Add(pedido);
+        var ativa = new TransacaoFinanceira(TipoTransacaoEnum.Entrada, CategoriasEnum.Vendas, 90, DateTime.UtcNow, "Pagamento do Pedido #1", 1, 10) { Id = 1 };
+        var antiga = new TransacaoFinanceira(TipoTransacaoEnum.Entrada, CategoriasEnum.Vendas, 90, DateTime.UtcNow, "Anterior do Pedido #1", 1, 10) { Id = 2 };
+        antiga.Cancelar("Estorno anterior", 7);
+        _db.TransacoesFinanceiras.AddRange(ativa, antiga,
+            new(TipoTransacaoEnum.Entrada, CategoriasEnum.Vendas, 50, DateTime.UtcNow, "Outro pedido", 2, 10) { Id = 3 },
+            new(TipoTransacaoEnum.Entrada, CategoriasEnum.Vendas, 50, DateTime.UtcNow, "Outra empresa", 2, 20) { Id = 4 });
+        await _db.SaveChangesAsync();
+        var financeiro = new FinanceiroRepository(_db, NullLogger<FinanceiroRepository>.Instance);
+        var ativos = await financeiro.GetTransacoesAtivasByPedidoIdAsync(1, 10);
+        Assert.Equal(1, Assert.Single(ativos.Value).Id);
+        Assert.Empty((await financeiro.GetTransacoesAtivasByPedidoIdAsync(1, 20)).Value);
+        ativa.Cancelar("Exclusão do Pedido #1", 7);
+        await financeiro.UpdateTransacaoAsync(ativa);
+        await new PedidoRepository(_db, NullLogger<EmpresaRepository>.Instance).DeletePedidoAsync(pedido);
+        using var read = Reload();
+        Assert.Null(await read.Pedidos.FindAsync(1));
+        var historico = await read.TransacoesFinanceiras.Where(t => t.Id <= 2).ToListAsync();
+        Assert.Equal(2, historico.Count);
+        Assert.All(historico, t => { Assert.Null(t.PedidoId); Assert.True(t.IsCancelado); Assert.Equal(90, t.Valor); Assert.Contains("Pedido #1", t.Descricao); });
+        Assert.Equal(4, await read.TransacoesFinanceiras.CountAsync());
+        var fk = _db.Model.FindEntityType(typeof(TransacaoFinanceira))!.GetForeignKeys()
+            .Single(f => f.Properties.Any(p => p.Name == nameof(TransacaoFinanceira.PedidoId)));
+        Assert.Equal(DeleteBehavior.SetNull, fk.DeleteBehavior);
+    }
 }

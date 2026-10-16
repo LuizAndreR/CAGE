@@ -1,11 +1,18 @@
-<section class="form-card" aria-labelledby="dados-empresa-titulo" [attr.aria-busy]="salvando()">
+<section class="form-card" aria-labelledby="dados-empresa-titulo" [attr.aria-busy]="salvando() || carregando()">
   <header class="card-header">
     <h2 id="dados-empresa-titulo">Dados da empresa</h2>
     <p>Informações exibidas em documentos e relatórios.</p>
   </header>
 
-  <form [formGroup]="empresaForm" (ngSubmit)="salvarEmpresa()">
-    <fieldset [disabled]="salvando()">
+  @if (carregando()) {
+    <p role="status">Carregando dados da empresa...</p>
+  } @else if (!empresaCarregada()) {
+    <p role="alert">Não foi possível carregar os dados da empresa.</p>
+    <button type="button" class="btn-retry" (click)="carregarEmpresa()">Tentar novamente</button>
+  }
+
+  <form [hidden]="!empresaCarregada()" [formGroup]="empresaForm" (ngSubmit)="salvarEmpresa()">
+    <fieldset [disabled]="salvando() || !empresaCarregada()">
       <legend class="sr-only">Informações da empresa</legend>
 
       <div class="form-group">
@@ -35,7 +42,7 @@
       </div>
 
       <div class="form-actions">
-        <button type="submit" class="btn-primary" [disabled]="salvando()">
+        <button type="submit" class="btn-primary" [disabled]="salvando() || !empresaCarregada()">
           <span class="material-symbols-outlined" [class.spin-icon]="salvando()" aria-hidden="true">{{ salvando() ? 'progress_activity' : 'save' }}</span>
           {{ salvando() ? 'Salvando...' : 'Salvar dados da empresa' }}
         </button>

@@ -43,7 +43,7 @@ internal class TransacaoFinanceiraMap : IEntityTypeConfiguration<TransacaoFinanc
         builder.HasOne(x => x.Pedido)
             .WithMany(p => p.Transacoes)
             .HasForeignKey(t => t.PedidoId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.SetNull);
         
         builder.HasOne(x => x.Empresa)
             .WithMany(e => e.TransacaoFinanceiras)

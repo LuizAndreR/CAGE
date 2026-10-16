@@ -19,7 +19,9 @@
     @switch (abaAtiva()) {
       @case ('perfil') { <app-config-perfil (salvandoChange)="salvando.set($event)" /> }
       @case ('usuarios') { <app-config-usuarios (salvandoChange)="salvando.set($event)" /> }
-      @case ('empresa') { <app-config-empresa (salvandoChange)="salvando.set($event)" /> }
+      @case ('empresa') {
+        @if (podeEditarEmpresa) { <app-config-empresa (salvandoChange)="salvando.set($event)" /> }
+      }
     }
   </div>
 </div>

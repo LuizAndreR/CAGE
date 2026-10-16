@@ -46,7 +46,7 @@ public class UpdateStatusPedidoHandler : IRequestHandler<UpdateStatusPedidoComma
             return Result.Fail(new NotFoundError("Pedido não encontrado."));
         }
         Pedido pedido = pedidoResult.Value;
-        StatusPedidoEnum statusPedido = Enum.Parse<StatusPedidoEnum>(request.Status);
+        StatusPedidoEnum statusPedido = Enum.Parse<StatusPedidoEnum>(request.Status, ignoreCase: true);
 
         if (pedido.StatusPedido == StatusPedidoEnum.Pendente && statusPedido == StatusPedidoEnum.EmProducao)
         {
@@ -78,6 +78,39 @@ public class UpdateStatusPedidoHandler : IRequestHandler<UpdateStatusPedidoComma
             }
         }
         
+        if (pedido.StatusPedido == StatusPedidoEnum.EmProducao && statusPedido == StatusPedidoEnum.Pendente)
+        {
+            var quantidades = new Dictionary<int, decimal>();
+            foreach (var itemPedido in pedido.Itens)
+            {
+                var receitaResult = await _receitaRepository.GetReceitaByIdAsync(itemPedido.ReceitaId, request.EmpresaId);
+                if (receitaResult.IsFailed)
+                    return Result.Fail(new NotFoundError($"Receita {itemPedido.ReceitaId} não encontrada para devolver os ingredientes."));
+
+                foreach (var ingrediente in receitaResult.Value.Ingredientes)
+                    quantidades[ingrediente.ItemId] = quantidades.GetValueOrDefault(ingrediente.ItemId)
+                        + ingrediente.Quantidade * itemPedido.Quantidade;
+            }
+
+            // Confira todos os itens antes de iniciar a devolução.
+            var devolucoes = new List<(CakeGestao.Domain.Entities.Estoque Item, decimal Quantidade)>();
+            foreach (var quantidade in quantidades)
+            {
+                var estoqueResult = await _estoqueRepository.GetItemEstoqueByIdAsync(quantidade.Key, request.EmpresaId);
+                if (estoqueResult.IsFailed)
+                    return Result.Fail(new NotFoundError($"Item de estoque {quantidade.Key} não encontrado para devolução."));
+                devolucoes.Add((estoqueResult.Value, quantidade.Value));
+            }
+
+            foreach (var devolucao in devolucoes)
+            {
+                devolucao.Item.DevolverQuantidade(devolucao.Quantidade);
+                await _estoqueRepository.UpdateItemEstoqueAsync(devolucao.Item);
+                _logger.LogInformation("{LogPrefix} Devolução de estoque do pedido {PedidoId}: {Quantidade} {Unidade} de {Nome}.",
+                    LogPrefix, pedido.Id, devolucao.Quantidade, devolucao.Item.UnidadeMedida, devolucao.Item.Nome);
+            }
+        }
+
         pedido.AlterarStatus(statusPedido);
         
         await _pedidoRepository.UpdatePedidoAsync(pedido);  
