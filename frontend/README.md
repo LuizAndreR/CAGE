@@ -1,59 +1,63 @@
-# Frontend
+# Frontend do CAGE
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.0.4.
+Interface Angular 22 para gestão de confeitaria. Usa TypeScript 6, Angular Material/CDK, RxJS, componentes standalone, signals e formulários reativos.
 
-## Development server
+## Executar
 
-To start a local development server, run:
+Use Node 22.22.3+ na linha 22, 24.15.0+ na linha 24 ou 26+, conforme o `package-lock.json`. O `package.json` declara npm 11.16.0. Não é necessário Angular CLI global.
 
-```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Dentro de `frontend/`:
 
 ```bash
-ng generate component component-name
+npm ci --legacy-peer-deps
+npm start
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+A interface fica em `http://localhost:4200`. A API e um usuário previamente cadastrado são necessários para utilizar os módulos; veja a [configuração completa e o primeiro acesso](../README.md).
+
+## Páginas e estrutura
+
+- `/login`: autenticação por e-mail e senha.
+- `/dashboard`: resumo mensal e registros recentes.
+- `/estoque`: itens, alertas, entradas e saídas.
+- `/receitas`: ingredientes, custos, preço de venda e situação da receita.
+- `/pedidos`: cadastro, edição, pagamento e status dos pedidos.
+- `/financeiro`: transações, filtros, resumo e cancelamento.
+- `/configuracoes`: perfil, senha, usuários e dados da empresa.
+
+As páginas ficam em `src/app/pages`; componentes compartilhados em `src/app/shared/components`; autenticação, guards, interceptors, modelos e serviços HTTP em `src/app/core`.
+
+As rotas internas usam `authGuard`. A API determina as permissões de cada operação; a aba Empresa é visível somente para o Dono. Access token e refresh token são armazenados em `localStorage`; o interceptor inclui o Bearer token e o serviço de autenticação renova a sessão.
+
+## Endereço da API
+
+| Comando | Configuração |
+| --- | --- |
+| `npm start` | `src/environments/environment.development.ts` |
+| `npm run build` | `src/environments/environment.ts` |
+
+Os dois arquivos usam atualmente `http://localhost:8080/api`. Essa configuração é incorporada ao build, não lida de variáveis do container em tempo de execução. A origem do frontend também deve ser permitida pelo CORS da API (`ROTA_DO_FRONTEND`).
+
+## Build e Docker
 
 ```bash
-ng generate --help
+npm run build
 ```
 
-## Building
+O build de produção gera os arquivos estáticos em `dist/frontend/browser`.
 
-To build the project run:
+O `Dockerfile` usa Node 22 para o build e Nginx para servir a aplicação na porta 80. O `nginx.conf` faz fallback para `index.html`, permitindo abrir diretamente rotas como `/pedidos`. O Compose na raiz publica o frontend na porta 4200.
+
+## Testes
 
 ```bash
-ng build
+# Interativo
+npm test
+
+# Uma execução
+npm test -- --watch=false
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Os testes usam Vitest e o ambiente de testes do Angular. Há testes de componentes e fluxos HTTP simulados, incluindo configurações de perfil, usuários, empresa e edição de pedidos. Não há uma suíte de ponta a ponta configurada.
 
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Em **16/10/2026**, o build de produção passou. A suíte completa de testes parou na compilação: `src/app/pages/financeiro/financeiro.spec.ts` importa `Financeiro` como exportação nomeada, mas o componente usa exportação padrão. Essa pendência precisa ser corrigida antes de validar a suíte completa; nenhuma alteração de código funcional foi feita nesta revisão de documentação.

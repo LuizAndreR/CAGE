@@ -17,6 +17,9 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         const mensagemApi = error.error.error;
         toast.showError(Array.isArray(mensagemApi) ? mensagemApi[0] : mensagemApi);
       }
+      else if (error.status === 403) {
+        toast.showError('Você não tem permissão para realizar esta ação.');
+      }
       else if (error.status === 500 && error.error?.error) {
         toast.showError(error.error.error);
       } 

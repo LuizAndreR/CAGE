@@ -12,6 +12,9 @@ public class UpdatePedidoCommand : IRequest<Result>
     [JsonIgnore]
     public int Id { get; set; }
 
+    [JsonIgnore]
+    public int UsuarioId { get; set; }
+
     public required string ClienteNome { get; set; }
     public string? TelefoneCliente { get; set; }
     public string? Descricao { get; set; }

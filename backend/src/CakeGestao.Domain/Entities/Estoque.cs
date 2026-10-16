@@ -61,6 +61,11 @@ public class Estoque
         QuantidadeAtual = novaQuantidadeTotal;
     }   
 
+    public void DevolverQuantidade(decimal quantidade)
+    {
+        QuantidadeAtual += quantidade;
+    }
+
     public void RemoverQuantidade(decimal quantidadeRemover)
     {
         QuantidadeAtual -= quantidadeRemover;

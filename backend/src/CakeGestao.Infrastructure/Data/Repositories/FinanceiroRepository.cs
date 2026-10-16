@@ -28,7 +28,8 @@ public class FinanceiroRepository : IFinanceiroRepository
         var total = await _context.TransacoesFinanceiras
             .AsNoTracking()
             .Where(t => t.EmpresaId == empresaId && 
-                        t.Tipo == tipo && 
+                        t.Tipo == tipo &&
+                        !t.IsCancelado &&
                         t.Data >= inicioMes)
             .SumAsync(t => (decimal?)t.Valor, cancellationToken);
         return total ?? 0m;
@@ -105,12 +106,24 @@ public class FinanceiroRepository : IFinanceiroRepository
         return Result.Ok(totalSaida);
     }
 
+    public async Task<Result<List<TransacaoFinanceira>>> GetTransacoesAtivasByPedidoIdAsync(int pedidoId, int empresaId)
+    {
+        var transacoes = await _context.TransacoesFinanceiras
+            .Where(t => t.PedidoId == pedidoId && t.EmpresaId == empresaId && !t.IsCancelado)
+            .OrderBy(t => t.Id)
+            .ToListAsync();
+        return Result.Ok(transacoes);
+    }
+
     public async Task<Result<TransacaoFinanceira>> GetTransacaoByPedidoId(int pedidoId, int empresaId)
     {
         _logger.LogDebug("{LogPrefix} Buscando transação pelo pedido de id: {Id}. EmpresaId: {EmpresaId}", LogPrefix, pedidoId, empresaId);
         
         var query = _context.TransacoesFinanceiras.AsQueryable();
-        var transacao = await query.FirstOrDefaultAsync(x => x.PedidoId == pedidoId);
+        var transacao = await query
+            .Where(x => x.PedidoId == pedidoId && x.EmpresaId == empresaId && !x.IsCancelado && x.Tipo == TipoTransacaoEnum.Entrada)
+            .OrderByDescending(x => x.Id)
+            .FirstOrDefaultAsync();
 
         if (transacao == null)
         {
