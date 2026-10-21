@@ -25,7 +25,7 @@ public class CadastroHandler : IRequestHandler<CadastroCommand, Result>
 
     public async Task<Result> Handle(CadastroCommand request, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("{LogPrefix} Iniciando processo de cadastro. Email: {Email} | Role: {Role}", LogPrefix, request.Email, request.Role);
+        _logger.LogInformation("{LogPrefix} Iniciando processo de cadastro. Email: {Email} | Role: {Role} | EmpresaId: {EmpresaId}", LogPrefix, request.Email, request.Role, request.EmpresaId);
 
         var validationResult = await _validator.ValidateAsync(request, cancellationToken);
         if (!validationResult.IsValid)
