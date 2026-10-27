@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment'; 
 // DICA DE SÊNIOR: Não esqueça de importar a interface detalhada!
-import { AllPedidosResponse, PedidoResponse } from '../models/pedido.interface'; 
+import { AllPedidosResponse, PedidoResponse, UpdateStatusResponse } from '../models/pedido.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -37,7 +37,7 @@ export class PedidoService {
     return this.http.patch(`${this.apiUrl}/${id}/pagamento`, { pagamento });
   }
 
-  updateStatus(id: number, status: string): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/${id}/status`, { status });
+  updateStatus(id: number, status: string): Observable<UpdateStatusResponse> {
+    return this.http.patch<UpdateStatusResponse>(`${this.apiUrl}/${id}/status`, { status });
   }
 }

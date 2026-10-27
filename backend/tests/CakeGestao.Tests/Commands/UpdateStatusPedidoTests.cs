@@ -42,7 +42,7 @@ public class UpdateStatusPedidoTests
         Assert.True(result.IsSuccess); Assert.Equal(destino, pedido.StatusPedido);
         Assert.Equal(baixa ? 1.4m : devolucao ? 2.6m : 2m, estoque.QuantidadeAtual);
         Assert.Equal(5m, estoque.ValorMedia);
-        estoques.Verify(r => r.UpdateItemEstoqueAsync(It.IsAny<Estoque>()), baixa || devolucao ? Times.Once() : Times.Never());
+        estoques.Verify(r => r.UpdateItemEstoqueAsync(It.IsAny<Estoque>()), Times.Never());
         if (!baixa && !devolucao) { receitas.VerifyNoOtherCalls(); estoques.VerifyNoOtherCalls(); }
     }
 

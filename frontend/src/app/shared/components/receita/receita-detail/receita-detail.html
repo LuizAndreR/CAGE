@@ -89,11 +89,34 @@
                 <tr>
                   <td class="font-medium text-stone">
                     <span class="item-id-hint">#{{ ingrediente.itemId }}</span>
-                    {{ ingrediente.nome }}
+                    <span class="principal-name">{{ ingrediente.nome }}</span>
+                    <span class="principal-brand">{{ ingrediente.marca }} · Principal</span>
                   </td>
                   <td class="font-bold text-right">{{ ingrediente.quantidade }}</td>
                   <td class="text-muted">{{ ingrediente.unidadeMedida }}</td>
                 </tr>
+                @if (ingrediente.alternativas?.length) {
+                  <tr class="alternatives-detail-row">
+                    <td colspan="3">
+                      <div class="alternatives-detail">
+                        <h3>Alternativas de {{ ingrediente.nome }}</h3>
+                        <p>Ordem de uso quando o principal não for suficiente.</p>
+                        <ol>
+                          @for (alternativa of ingrediente.alternativas; track alternativa.itemId; let ordem = $index) {
+                            <li>
+                              <span class="detail-position" aria-hidden="true">{{ ordem + 1 }}</span>
+                              <div class="detail-alternative-name">
+                                <strong>{{ alternativa.nome }}</strong>
+                                <span>{{ alternativa.marca }}</span>
+                              </div>
+                              <span class="detail-unit">{{ alternativa.unidadeMedida }}</span>
+                            </li>
+                          }
+                        </ol>
+                      </div>
+                    </td>
+                  </tr>
+                }
               } @empty {
                 <tr>
                   <td colspan="3" class="text-center text-muted py-4">Nenhum ingrediente cadastrado.</td>

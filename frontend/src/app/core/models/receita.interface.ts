@@ -1,5 +1,8 @@
 export interface IngredienteResponse {
   itemId: number;
+  marca: string;
+  alternativasIds: number[];
+  alternativas?: { itemId: number; nome: string; marca: string; unidadeMedida: string }[];
   nome: string;
   quantidade: number;
   unidadeMedida: string;

@@ -77,6 +77,8 @@
     <div class="right-col">
       <div class="card-section ingredients-card">
         <h2 class="section-title">Ingredientes</h2>
+        <p>O custo estimado usa o item principal. As alternativas são usadas na ordem abaixo quando faltar estoque.</p>
+        @if (erro()) { <p role="alert" class="form-error">{{ erro() }}</p> }
         
         <!-- Formulário de Inclusão Rápida -->
         <div class="add-ingredient-box" [formGroup]="novoIngredienteForm">
@@ -87,7 +89,7 @@
               
               <!-- Laço dinâmico lendo os dados da API -->
               @for (item of estoqueItens(); track item.id) {
-                <option [value]="item.id">{{ item.id }} - {{ item.nome }}</option>
+                <option [value]="item.id">{{ item.id }} - {{ item.nome }} — {{ item.marca }} ({{ item.unidadeMedida }})</option>
               } @empty {
                 <option value="" disabled>Nenhum item disponível no estoque.</option>
               }
@@ -119,40 +121,69 @@
           </button>
         </div>
 
-        <!-- Tabela de Ingredientes Adicionados -->
         <div class="ingredients-list">
-          <table class="custom-table">
-            <thead>
-              <tr>
-                <th>ID / Item</th>
-                <th class="text-right">Qtd</th>
-                <th>Medida</th>
-                <th class="text-center">Ação</th>
-              </tr>
-            </thead>
-            <tbody>
-              <!-- Iterando o FormArray -->
-              @for (ingCtrl of ingredientesArray.controls; track $index) {
-                <tr>
-                  <td class="font-medium text-stone">
-                    <span class="item-id-hint">#{{ ingCtrl.value.itemId }}</span>
-                    {{ ingCtrl.value.nome }}
-                  </td>
-                  <td class="font-bold text-right">{{ ingCtrl.value.quantidade }}</td>
-                  <td class="text-muted">{{ ingCtrl.value.unidadeMedida }}</td>
-                  <td class="text-center">
-                    <button type="button" class="btn-icon-danger" (click)="removerIngrediente($index)" title="Remover">
-                      <span class="material-symbols-outlined">delete</span>
-                    </button>
-                  </td>
-                </tr>
-              } @empty {
-                <tr>
-                  <td colspan="4" class="text-center text-muted py-6">Nenhum ingrediente adicionado.</td>
-                </tr>
-              }
-            </tbody>
-          </table>
+          @for (ingCtrl of ingredientesArray.controls; track $index; let ingredienteIndex = $index) {
+            <article class="ingredient-card">
+              <header class="ingredient-main">
+                <div class="ingredient-description">
+                  <span class="ingredient-label">Ingrediente principal</span>
+                  <strong>{{ nomeItem(ingCtrl.value.itemId, ingCtrl.value.nome) }}</strong>
+                </div>
+                <span class="ingredient-quantity">{{ ingCtrl.value.quantidade }} {{ ingCtrl.value.unidadeMedida }}</span>
+                <button type="button" class="btn-icon-danger" (click)="removerIngrediente(ingredienteIndex)"
+                  [attr.aria-label]="'Remover ingrediente ' + ingCtrl.value.nome" title="Remover ingrediente">
+                  <span class="material-symbols-outlined" aria-hidden="true">delete</span>
+                </button>
+              </header>
+
+              <div class="alternativas-editor">
+                <div class="alternatives-heading">
+                  <span class="material-symbols-outlined" aria-hidden="true">swap_horiz</span>
+                  <div>
+                    <h3>Marcas alternativas</h3>
+                    <p>Usadas nesta ordem quando o principal não for suficiente.</p>
+                  </div>
+                  <span class="alternatives-count">{{ ingCtrl.value.alternativasIds.length }}</span>
+                </div>
+                <ol class="alternatives-list">
+                  @for (id of ingCtrl.value.alternativasIds; track id; let posicao = $index) {
+                    <li class="alternative-row">
+                      <span class="alternative-position" aria-hidden="true">{{ posicao + 1 }}</span>
+                      <span class="alternative-name">{{ nomeItem(id) }}</span>
+                      <div class="alternative-actions">
+                        <button type="button" (click)="moverAlternativa(ingredienteIndex, posicao, -1)"
+                          [disabled]="posicao === 0" [attr.aria-label]="'Priorizar ' + nomeItem(id)" title="Mover para cima">
+                          <span class="material-symbols-outlined" aria-hidden="true">arrow_upward</span>
+                        </button>
+                        <button type="button" (click)="moverAlternativa(ingredienteIndex, posicao, 1)"
+                          [disabled]="posicao === ingCtrl.value.alternativasIds.length - 1"
+                          [attr.aria-label]="'Diminuir prioridade de ' + nomeItem(id)" title="Mover para baixo">
+                          <span class="material-symbols-outlined" aria-hidden="true">arrow_downward</span>
+                        </button>
+                        <button type="button" class="remove-alternative" (click)="removerAlternativa(ingredienteIndex, posicao)"
+                          [attr.aria-label]="'Remover alternativa ' + nomeItem(id)" title="Remover alternativa">
+                          <span class="material-symbols-outlined" aria-hidden="true">close</span>
+                        </button>
+                      </div>
+                    </li>
+                  } @empty {
+                    <li class="alternatives-empty">Nenhuma alternativa adicionada. Este ingrediente usará apenas o item principal.</li>
+                  }
+                </ol>
+                <label class="alternative-picker">
+                  Adicionar alternativa
+                  <select #alternativa (change)="adicionarAlternativa(ingredienteIndex, alternativa)">
+                    <option value="">Selecione uma marca compatível...</option>
+                    @for (item of alternativasDisponiveis(ingredienteIndex); track item.id) {
+                      <option [value]="item.id">{{ nomeItem(item.id) }}</option>
+                    }
+                  </select>
+                </label>
+              </div>
+            </article>
+          } @empty {
+            <p class="alternatives-empty">Adicione um ingrediente para definir suas marcas alternativas.</p>
+          }
         </div>
 
       </div>

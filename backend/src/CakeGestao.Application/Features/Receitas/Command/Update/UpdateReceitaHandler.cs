@@ -1,4 +1,4 @@
-﻿using CakeGestao.Application.Common;
+using CakeGestao.Application.Common;
 using CakeGestao.Domain.Entities;
 using CakeGestao.Domain.Enum;
 using CakeGestao.Domain.Exceptions;
@@ -51,7 +51,8 @@ public class UpdateReceitaHandler: IRequestHandler<UpdateReceitaCommand, Result>
         
         receita.AtualizarReceita(request.Nome, request.ModoPreparo);
 
-        decimal custoIngredientesParaCalculo = receita.PrecoIngredientes; 
+        // Receitas antigas podem ter PrecoIngredientes zerado; preserve o custo já estimado.
+        decimal custoIngredientesParaCalculo = Math.Max(0, receita.CustoTotal - receita.CustoExtra);
 
         if (request.Ingredientes != null && request.Ingredientes.Any())
         {
@@ -120,7 +121,11 @@ public class UpdateReceitaHandler: IRequestHandler<UpdateReceitaCommand, Result>
                 return Result.Fail(new ValidationError(resultadoConversao.Errors.First().Message));
 
             var quantidadeConvertida = resultadoConversao.Value;
-            ingredientesConvertidos.Add(new Ingrediente(dto.ItemId, quantidadeConvertida, estoque.UnidadeMedida));
+            var ingrediente = new Ingrediente(dto.ItemId, quantidadeConvertida, estoque.UnidadeMedida);
+            var alternativasResult = await AlternativasIngrediente.ConfigurarAsync(
+                ingrediente, dto.AlternativasIds, empresaId, _estoqueRepository);
+            if (alternativasResult.IsFailed) return Result.Fail(alternativasResult.Errors);
+            ingredientesConvertidos.Add(ingrediente);
             
             custoTotalCalculado += estoque.ValorMedia * quantidadeConvertida;
         }
@@ -152,7 +157,10 @@ public class UpdateReceitaHandler: IRequestHandler<UpdateReceitaCommand, Result>
         for (int i = 0; i < bancoOrdenado.Count; i++)
         {
             if (bancoOrdenado[i].ItemId != convertidosOrdenados[i].ItemId || 
-                bancoOrdenado[i].Quantidade != convertidosOrdenados[i].Quantidade)
+                bancoOrdenado[i].Quantidade != convertidosOrdenados[i].Quantidade ||
+                bancoOrdenado[i].UnidadeMedida != convertidosOrdenados[i].UnidadeMedida ||
+                !bancoOrdenado[i].Alternativas.OrderBy(a => a.Ordem).Select(a => a.ItemId)
+                    .SequenceEqual(convertidosOrdenados[i].Alternativas.OrderBy(a => a.Ordem).Select(a => a.ItemId)))
             {
                 return false;
             }

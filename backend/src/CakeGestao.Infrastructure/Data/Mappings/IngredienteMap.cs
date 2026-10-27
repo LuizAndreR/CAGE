@@ -1,4 +1,4 @@
-﻿using CakeGestao.Domain.Entities;
+using CakeGestao.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -14,7 +14,7 @@ internal class IngredienteMap : IEntityTypeConfiguration<Ingrediente>
 
         builder.Property(x => x.Quantidade)
             .IsRequired()
-            .HasColumnType("decimal(10,2)");
+            .HasPrecision(18, 6);
 
         builder.Property(x => x.UnidadeMedida)
             .IsRequired();

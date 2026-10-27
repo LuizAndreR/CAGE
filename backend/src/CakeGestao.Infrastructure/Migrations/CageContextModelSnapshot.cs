@@ -22,6 +22,36 @@ namespace CakeGestao.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("CakeGestao.Domain.Entities.ConsumoEstoquePedido", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ItemId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PedidoId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Quantidade")
+                        .HasPrecision(18, 6)
+                        .HasColumnType("numeric(18,6)");
+
+                    b.Property<int>("UnidadeMedida")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("PedidoId");
+
+                    b.ToTable("ConsumosEstoquePedido", (string)null);
+                });
+
             modelBuilder.Entity("CakeGestao.Domain.Entities.Empresa", b =>
                 {
                     b.Property<int>("Id")
@@ -85,7 +115,8 @@ namespace CakeGestao.Infrastructure.Migrations
 
                     b.Property<decimal>("QuantidadeAtual")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(10,2)")
+                        .HasPrecision(18, 6)
+                        .HasColumnType("numeric(18,6)")
                         .HasDefaultValue(0m);
 
                     b.Property<decimal>("QuantidadeMinina")
@@ -124,7 +155,8 @@ namespace CakeGestao.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.Property<decimal>("Quantidade")
-                        .HasColumnType("decimal(10,2)");
+                        .HasPrecision(18, 6)
+                        .HasColumnType("numeric(18,6)");
 
                     b.Property<int>("ReceitaId")
                         .HasColumnType("integer");
@@ -139,6 +171,33 @@ namespace CakeGestao.Infrastructure.Migrations
                     b.HasIndex("ReceitaId");
 
                     b.ToTable("Ingredientes", (string)null);
+                });
+
+            modelBuilder.Entity("CakeGestao.Domain.Entities.IngredienteAlternativa", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("IngredienteId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ItemId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Ordem")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("IngredienteId", "ItemId")
+                        .IsUnique();
+
+                    b.ToTable("IngredienteAlternativas", (string)null);
                 });
 
             modelBuilder.Entity("CakeGestao.Domain.Entities.ItemPedido", b =>
@@ -231,6 +290,11 @@ namespace CakeGestao.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<decimal>("CustoExtra")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(5,2)")
+                        .HasDefaultValue(0m);
+
                     b.Property<decimal>("CustoTotal")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("decimal(10,2)")
@@ -248,11 +312,6 @@ namespace CakeGestao.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
-
-                    b.Property<decimal>("PercentualCustoExtra")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(5,2)")
-                        .HasDefaultValue(0m);
 
                     b.Property<decimal>("PercentualMargemLucro")
                         .ValueGeneratedOnAdd()
@@ -431,6 +490,21 @@ namespace CakeGestao.Infrastructure.Migrations
                     b.ToTable("Usuarios", (string)null);
                 });
 
+            modelBuilder.Entity("CakeGestao.Domain.Entities.ConsumoEstoquePedido", b =>
+                {
+                    b.HasOne("CakeGestao.Domain.Entities.Estoque", null)
+                        .WithMany()
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CakeGestao.Domain.Entities.Pedido", null)
+                        .WithMany("ConsumosEstoque")
+                        .HasForeignKey("PedidoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("CakeGestao.Domain.Entities.Estoque", b =>
                 {
                     b.HasOne("CakeGestao.Domain.Entities.Empresa", "Empresa")
@@ -459,6 +533,23 @@ namespace CakeGestao.Infrastructure.Migrations
                     b.Navigation("Item");
 
                     b.Navigation("Receita");
+                });
+
+            modelBuilder.Entity("CakeGestao.Domain.Entities.IngredienteAlternativa", b =>
+                {
+                    b.HasOne("CakeGestao.Domain.Entities.Ingrediente", null)
+                        .WithMany("Alternativas")
+                        .HasForeignKey("IngredienteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CakeGestao.Domain.Entities.Estoque", "Item")
+                        .WithMany()
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Item");
                 });
 
             modelBuilder.Entity("CakeGestao.Domain.Entities.ItemPedido", b =>
@@ -559,8 +650,15 @@ namespace CakeGestao.Infrastructure.Migrations
                     b.Navigation("Ingredientes");
                 });
 
+            modelBuilder.Entity("CakeGestao.Domain.Entities.Ingrediente", b =>
+                {
+                    b.Navigation("Alternativas");
+                });
+
             modelBuilder.Entity("CakeGestao.Domain.Entities.Pedido", b =>
                 {
+                    b.Navigation("ConsumosEstoque");
+
                     b.Navigation("Itens");
 
                     b.Navigation("Transacoes");

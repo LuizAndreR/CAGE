@@ -1,4 +1,4 @@
-﻿using CakeGestao.Domain.Entities;
+using CakeGestao.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -33,7 +33,7 @@ internal class ReceitaMap : IEntityTypeConfiguration<Receita>
             .HasColumnType("decimal(5,2)")
             .HasDefaultValue(0);
 
-        builder.Property(x => x.PercentualCustoExtra)
+        builder.Property(x => x.CustoExtra)
             .IsRequired()
             .HasColumnType("decimal(5,2)")
             .HasDefaultValue(0);

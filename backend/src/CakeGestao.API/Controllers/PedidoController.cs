@@ -139,7 +139,11 @@ public class PedidoController : ApiControllerBase
         request.PedidoId = pedidoId;
         
         var pedidoResult = await _mediator.Send(request);
-        return HandleResult<object>(pedidoResult, _logger, ControllerLogPrefix);
+        if (pedidoResult.IsFailed) return HandleResult<object>(pedidoResult, _logger, ControllerLogPrefix);
+        return Ok(new { Avisos = pedidoResult.Successes.OfType<EstoqueNegativoAviso>().Select(a => new
+        {
+            a.ItemId, a.Nome, a.Marca, a.Saldo, a.UnidadeMedida, Mensagem = a.Message
+        }) });
     }
 
     [HttpDelete("{pedidoId}")]

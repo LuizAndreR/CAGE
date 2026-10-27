@@ -46,6 +46,7 @@ public class PedidoRepository : IPedidoRepository
     public async Task<Result<Pedido>> GetByIdAsync(int id, int empresaId)
     {
         var pedido = await _context.Pedidos
+            .Include(p => p.ConsumosEstoque)
             .Include(p => p.Itens)
             .ThenInclude(i => i.Receita) 
             .FirstOrDefaultAsync(p => p.Id == id && p.EmpresaId == empresaId);

@@ -1,4 +1,4 @@
-﻿namespace CakeGestao.Application.Features.Receitas.Common;
+namespace CakeGestao.Application.Features.Receitas.Common;
 
 public class ReceitaResponse
 {
@@ -18,8 +18,18 @@ public class ReceitaResponse
 
 public class IngredienteResponse
 {
+    public List<AlternativaIngredienteResponse> Alternativas { get; set; } = new();
+    public List<int> AlternativasIds { get; set; } = new();
+    public string Marca { get; set; } = string.Empty;
     public int ItemId { get; set; }
     public string Nome { get; set; } = string.Empty;
     public decimal Quantidade { get; set; }
     public required string UnidadeMedida { get; set; }
+}
+public class AlternativaIngredienteResponse
+{
+    public int ItemId { get; set; }
+    public string Nome { get; set; } = string.Empty;
+    public string Marca { get; set; } = string.Empty;
+    public string UnidadeMedida { get; set; } = string.Empty;
 }

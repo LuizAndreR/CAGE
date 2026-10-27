@@ -49,7 +49,9 @@ export default class Receitas implements OnInit {
   }
 
   filteredReceitas = computed(() => {
-    const lista = this.receitas();
+    const lista = [...this.receitas()].sort((a, b) =>
+      a.nome.localeCompare(b.nome, 'pt-BR', { sensitivity: 'base' }) || a.id - b.id
+    );
     const filtro = this.activeTab();
 
     if (filtro === 'todas') return lista;
