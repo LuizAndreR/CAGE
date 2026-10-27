@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { finalize } from 'rxjs/operators'; 
 import { PedidoService } from '../../core/services/pedido.service'; 
 // DICA DE SÊNIOR: Importando a interface PedidoResponse
-import { AllPedidosResponse, PedidoResponse, StatusPedido } from '../../core/models/pedido.interface'; 
+import { AllPedidosResponse, PedidoResponse, StatusPedido, EstoqueNegativoAviso } from '../../core/models/pedido.interface';
 
 import { PedidosList } from '../../shared/components/pedidos/pedidos-list/pedidos-list';
 import { PedidosForm } from '../../shared/components/pedidos/pedidos-form/pedidos-form';
@@ -18,6 +18,9 @@ import { PedidoDetail } from '../../shared/components/pedidos/pedido-detail/pedi
 })
 export default class Pedidos implements OnInit {
   private pedidoService = inject(PedidoService);
+
+  avisosEstoque = signal<EstoqueNegativoAviso[]>([]);
+  erroStatus = signal<string | null>(null);
 
   view = signal<'list' | 'create' | 'detail'>('list');
   isLoading = signal<boolean>(true);
@@ -88,15 +91,18 @@ export default class Pedidos implements OnInit {
 
   onAlterarStatus(evento: { id: number, status: StatusPedido }): void {
     this.isLoading.set(true);
+    this.avisosEstoque.set([]);
+    this.erroStatus.set(null);
     this.pedidoService.updateStatus(evento.id, evento.status)
       .pipe(finalize(() => this.isLoading.set(false)))
       .subscribe({
-        next: () => {
+        next: (resultado) => {
+          this.avisosEstoque.set(resultado?.avisos ?? []);
           this.carregarPedidos(); 
           
           this.onSelecionarPedido({ id: evento.id } as any); 
         },
-        error: (erro) => console.error('Erro ao atualizar status:', erro)
+        error: () => this.erroStatus.set('Não foi possível alterar o status. Verifique os ingredientes e as unidades das alternativas.')
       });
   }
 

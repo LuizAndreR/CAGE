@@ -114,4 +114,23 @@ describe('Pedidos — criação e edição', () => {
     expect(fixture.componentInstance.view()).toBe('list');
     http.expectNone(r => r.method === 'POST' || r.method === 'PUT');
   });
+  it('mostra todos os saldos negativos recebidos após uma produção bem-sucedida', () => {
+    fixture.componentInstance.onAlterarStatus({ id: 42, status: 'EmProducao' });
+    http.expectOne({ method: 'PATCH', url: `${url}/42/status` }).flush({ avisos: [
+      { itemId: 1, nome: 'Farinha', marca: 'Marca A', saldo: -0.3, unidadeMedida: 'KG' },
+      { itemId: 2, nome: 'Açúcar', marca: 'Marca B', saldo: -1, unidadeMedida: 'KG' }
+    ] });
+    http.expectOne({ method: 'GET', url }).flush([]);
+    http.expectOne({ method: 'GET', url: `${url}/42` }).flush({ ...pedido, statusPedido: 'EmProducao' });
+    fixture.detectChanges();
+    const aviso = fixture.nativeElement.querySelector('[role="alert"]');
+    expect(aviso.textContent).toContain('Status atualizado');
+    expect(aviso.textContent).toContain('Farinha');
+    expect(aviso.textContent).toContain('Marca B');
+    expect(aviso.querySelectorAll('li').length).toBe(2);
+    aviso.querySelector('button').click();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('[role="alert"]')).toBeNull();
+  });
+
 });

@@ -65,6 +65,10 @@ export default class Estoque implements OnInit {
     const termo = this.search().toLowerCase();
     return this.items().filter(item => 
       item.nome.toLowerCase().includes(termo) || (item.marca?.toLowerCase() || '').includes(termo)
+    ).sort((a, b) =>
+      a.nome.localeCompare(b.nome, 'pt-BR', { sensitivity: 'base' }) ||
+      (a.marca ?? '').localeCompare(b.marca ?? '', 'pt-BR', { sensitivity: 'base' }) ||
+      a.id - b.id
     );
   });
 
