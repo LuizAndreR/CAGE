@@ -75,6 +75,9 @@ public class CreateReceitaHandler : IRequestHandler<CreateReceitaCommand, Result
                 itemEstoque.UnidadeMedida
             );
 
+            var alternativasResult = await AlternativasIngrediente.ConfigurarAsync(
+                ingrediente, dto.AlternativasIds, request.EmpresaId, _estoqueRepository);
+            if (alternativasResult.IsFailed) return alternativasResult;
             receita.AdicionarIngrediente(ingrediente);
 
             decimal custoDesseIngrediente = itemEstoque.ValorMedia * quantidadeConvertidaParaEstoque;

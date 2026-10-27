@@ -1,4 +1,4 @@
-﻿using CakeGestao.Domain.Entities;
+using CakeGestao.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -22,7 +22,7 @@ public class EstoqueMap : IEntityTypeConfiguration<Estoque>
 
         builder.Property(x => x.QuantidadeAtual)
             .IsRequired()
-            .HasColumnType("decimal(10,2)")
+            .HasPrecision(18, 6)
             .HasDefaultValue(0);
         
         builder.Property(x => x.QuantidadeMinina)

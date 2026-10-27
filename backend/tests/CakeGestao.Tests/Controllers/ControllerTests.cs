@@ -128,6 +128,19 @@ public class ControllerTests
     }
 
     [Fact]
+    public async Task PedidoStatusRetornaAvisosSemTransformarSucessoEmErro()
+    {
+        CommandResult(Result.Ok().WithSuccess(new EstoqueNegativoAviso(TestData.Estoque(quantidade: -0.5m))));
+        var controller = new PedidoController(NullLogger<FinanceiroController>.Instance, _mediator.Object) { ControllerContext = TestData.Context() };
+        var result = Assert.IsType<OkObjectResult>(await controller.UpdateStatus(new() { Status = "EmProducao" }, 1));
+        var json = System.Text.Json.JsonSerializer.SerializeToElement(result.Value);
+        var aviso = Assert.Single(json.GetProperty("Avisos").EnumerateArray());
+        Assert.Equal(1, aviso.GetProperty("ItemId").GetInt32());
+        Assert.Equal(-0.5m, aviso.GetProperty("Saldo").GetDecimal());
+        Assert.Equal("Marca A", aviso.GetProperty("Marca").GetString());
+    }
+
+    [Fact]
     public async Task FinanceiroCancelamentoUsaUsuarioEmpresaERota()
     {
         CommandResult(Result.Ok());

@@ -1,4 +1,4 @@
-﻿using CakeGestao.Domain.Entities;
+using CakeGestao.Domain.Entities;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
@@ -96,7 +96,8 @@ public class EstoqueRepository : IEstoqueRepository
         bool existeDependencia = await _context.Set<Receita>()
             .AsNoTracking()
             .AnyAsync(r => r.EmpresaId == empresaId && 
-                           r.Ingredientes.Any(i => i.ItemId == itemId));
+                           r.Ingredientes.Any(i => i.ItemId == itemId || i.Alternativas.Any(a => a.ItemId == itemId)))
+            || await _context.Pedidos.AnyAsync(p => p.EmpresaId == empresaId && p.ConsumosEstoque.Any(c => c.ItemId == itemId));
 
         if (existeDependencia)
         {

@@ -1,4 +1,4 @@
-﻿using CakeGestao.Domain.Entities;
+using CakeGestao.Domain.Entities;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
 using Microsoft.EntityFrameworkCore;
@@ -41,6 +41,7 @@ public class ReceitaRepository : IReceitaRepository
     public async Task<Result<Receita>> GetReceitaByIdAsync(int id, int empresaId)
     {
         var receita = await _context.Receitas
+            .Include(r => r.Ingredientes).ThenInclude(i => i.Alternativas).ThenInclude(a => a.Item)
             .Include(r => r.Ingredientes)
                 .ThenInclude(i => i.Item) 
             .FirstOrDefaultAsync(r => r.Id == id && r.EmpresaId == empresaId);

@@ -1,4 +1,4 @@
-﻿using CakeGestao.Domain.Exceptions;
+using CakeGestao.Domain.Exceptions;
 using CakeGestao.Domain.Interfaces.Repositories;
 using FluentResults;
 using FluentValidation;
@@ -38,7 +38,7 @@ public class DeleteItemEstoqueHandler : IRequestHandler<DeleteItemEstoqueCommand
         {
             _logger.LogWarning("{LogPrefix} Exclusão bloqueada. O item {ItemId} está vinculado a uma ou mais receitas.", LogPrefix, request.ItemId);
             
-            return Result.Fail(new ValidationError("Este item não pode ser excluído pois está sendo utilizado em uma ou mais receitas cadastradas."));
+            return Result.Fail(new ValidationError("Este item não pode ser excluído pois está vinculado a uma receita, alternativa ou consumo de pedido."));
         }
 
         var itemEstoqueResult = await _estoqueRepository.GetItemEstoqueByIdAsync(request.ItemId, request.EmpresaId);

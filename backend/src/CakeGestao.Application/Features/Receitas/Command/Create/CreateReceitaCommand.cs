@@ -6,6 +6,7 @@ namespace CakeGestao.Application.Features.Receitas.Command.Create;
 
 public class IngredienteRequestDto
 {
+    public List<int> AlternativasIds { get; set; } = new();
     public int ItemId { get; set; } 
     
     public decimal Quantidade { get; set; }
