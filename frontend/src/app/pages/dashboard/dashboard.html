@@ -1,4 +1,15 @@
-<div class="dashboard-container">
+<div class="dashboard-container" [attr.aria-busy]="isLoading()">
+  @if (isLoading()) {
+    <div class="loading-state" role="status" aria-live="polite">
+      <span class="material-symbols-outlined spin-icon" aria-hidden="true">progress_activity</span>
+      <p>Carregando o resumo da sua confeitaria...</p>
+    </div>
+  } @else if (erroCarregamento()) {
+    <div class="loading-state" role="alert">
+      <p>Não foi possível carregar o dashboard.</p>
+      <button type="button" class="btn-novo-pedido" (click)="carregarDadosApi()">Tentar novamente</button>
+    </div>
+  } @else {
   
   <header class="dashboard-header">
     <div>
@@ -56,4 +67,5 @@
       </ul>
     </app-list-panel>
   </section>
+  }
 </div>

@@ -1,4 +1,5 @@
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
+import { finalize } from 'rxjs/operators';
 import { RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { SummaryCard } from '../../shared/components/summary-card/summary-card';
@@ -28,7 +29,8 @@ export interface PedidoView {
 })
 export default class Dashboard implements OnInit {
   private dashboardService = inject(DashboardService);
-  private cdr = inject(ChangeDetectorRef); 
+  isLoading = signal(true);
+  erroCarregamento = signal(false);
 
   nomeUsuario: string = '';
   recentOrders: PedidoView[] = [];
@@ -45,8 +47,12 @@ export default class Dashboard implements OnInit {
     this.carregarDadosApi();
   }
 
-  private carregarDadosApi(): void {
-    this.dashboardService.getResumo().subscribe({
+  carregarDadosApi(): void {
+    this.isLoading.set(true);
+    this.erroCarregamento.set(false);
+    this.dashboardService.getResumo()
+      .pipe(finalize(() => this.isLoading.set(false)))
+      .subscribe({
       next: (dadosDaApi: DashboardResumo) => {
 
         this.nomeUsuario = dadosDaApi.nomeUsuario;
@@ -71,9 +77,10 @@ export default class Dashboard implements OnInit {
           status: pedido.status
         }));
 
-        this.cdr.detectChanges();
+
       },
       error: (erro) => {
+        this.erroCarregamento.set(true);
         console.error('Falha de conexão com a API do Cake Gestão:', erro);
       }
     });
