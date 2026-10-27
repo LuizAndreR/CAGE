@@ -23,6 +23,7 @@ export class ReceitaForm implements OnInit {
   salvo = output<void>();
 
   isEditing = signal<boolean>(false);
+  erro = signal<string | null>(null);
   estoqueItens = signal<EstoqueItem[]>([]);
 
   receitaForm: FormGroup = this.fb.group({
@@ -113,6 +114,7 @@ export class ReceitaForm implements OnInit {
           receita.ingredientes.forEach(ing => {
             this.ingredientesArray.push(this.fb.group({
               itemId: [ing.itemId, Validators.required],
+              alternativasIds: [ing.alternativasIds ?? []],
               nome: [ing.nome], 
               quantidade: [ing.quantidade, [Validators.required, Validators.min(0.1)]],
               unidadeMedida: [ing.unidadeMedida, Validators.required]
@@ -182,12 +184,60 @@ export class ReceitaForm implements OnInit {
     
     this.ingredientesArray.push(this.fb.group({
       itemId: [Number(val.itemId), Validators.required],
+      alternativasIds: [[]],
       nome: [val.nome], 
       quantidade: [Number(val.quantidade), Validators.required],
       unidadeMedida: [val.unidadeMedida, Validators.required]
     }));
 
     this.novoIngredienteForm.reset({ unidadeMedida: 'G' });
+  }
+
+  nomeItem(id: number, fallback = ''): string {
+    const item = this.estoqueItens().find(i => i.id === Number(id));
+    return item ? `${item.nome} — ${item.marca} (${item.unidadeMedida})` : (fallback || `Item #${id}`);
+  }
+
+  alternativasDisponiveis(index: number): EstoqueItem[] {
+    const ingrediente = this.ingredientesArray.at(index).value;
+    const principal = this.estoqueItens().find(item => item.id === ingrediente.itemId);
+    if (!principal) return [];
+    return this.estoqueItens().filter(item => item.id !== ingrediente.itemId &&
+      !ingrediente.alternativasIds.includes(item.id) &&
+      this.unidadesCompativeis(principal.unidadeMedida, item.unidadeMedida));
+  }
+
+  private unidadesCompativeis(principal: string, alternativa: string): boolean {
+    const massa = ['G', 'KG'];
+    const volume = ['ML', 'L'];
+    const culinarias = ['CUP', 'TSP', 'TBS'];
+    const permitidas = [...massa, ...volume, ...culinarias, 'UN'];
+    if (!permitidas.includes(principal) || !permitidas.includes(alternativa)) return false;
+    if (principal === 'UN' || alternativa === 'UN') return principal === alternativa;
+    if (culinarias.includes(principal) || culinarias.includes(alternativa)) return true;
+    return massa.includes(principal) === massa.includes(alternativa);
+  }
+
+  adicionarAlternativa(index: number, select: HTMLSelectElement): void {
+    const id = Number(select.value);
+    if (!this.alternativasDisponiveis(index).some(item => item.id === id)) return;
+    const control = this.ingredientesArray.at(index).get('alternativasIds')!;
+    control.setValue([...control.value, id]);
+    select.value = '';
+  }
+
+  removerAlternativa(index: number, posicao: number): void {
+    const control = this.ingredientesArray.at(index).get('alternativasIds')!;
+    control.setValue(control.value.filter((_: number, i: number) => i !== posicao));
+  }
+
+  moverAlternativa(index: number, posicao: number, direcao: number): void {
+    const control = this.ingredientesArray.at(index).get('alternativasIds')!;
+    const ids = [...control.value];
+    const destino = posicao + direcao;
+    if (destino < 0 || destino >= ids.length) return;
+    [ids[posicao], ids[destino]] = [ids[destino], ids[posicao]];
+    control.setValue(ids);
   }
 
   removerIngrediente(index: number): void {
@@ -205,6 +255,7 @@ export class ReceitaForm implements OnInit {
       return;
     }
 
+    this.erro.set(null);
     const payload = this.receitaForm.value;
     
     if (this.isEditing()) {
@@ -218,6 +269,7 @@ export class ReceitaForm implements OnInit {
         },
         error: (erro) => {
           console.error('Falha ao atualizar na API:', erro);
+          this.erro.set(erro.error?.errors?.join('; ') || erro.error?.detail || erro.error?.message || 'Não foi possível salvar. Verifique os ingredientes e se as unidades das alternativas são compatíveis.');
         }
       });
       
@@ -231,6 +283,7 @@ export class ReceitaForm implements OnInit {
         },
         error: (erro) => {
           console.error('Falha ao criar na API:', erro);
+          this.erro.set(erro.error?.errors?.join('; ') || erro.error?.detail || erro.error?.message || 'Não foi possível salvar. Verifique os ingredientes e se as unidades das alternativas são compatíveis.');
         }
       });
       

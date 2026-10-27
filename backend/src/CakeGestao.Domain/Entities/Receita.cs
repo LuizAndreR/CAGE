@@ -1,4 +1,4 @@
-﻿namespace CakeGestao.Domain.Entities;
+namespace CakeGestao.Domain.Entities;
 
 public class Receita
 {
@@ -6,7 +6,7 @@ public class Receita
     public string Nome { get; private set; }
     public string ModoPreparo { get; private set; }
     public decimal PrecoVenda { get; private set; }
-    public decimal PercentualCustoExtra { get; private set; } //Não e mais Percentual e Sim um valor interio 
+    public decimal CustoExtra { get; private set; }
     public decimal PercentualMargemLucro { get; private set; }
     public decimal PrecoIngredientes { get; private set; }
     public decimal CustoTotal { get; private set; }
@@ -47,7 +47,8 @@ public class Receita
 
     public void CalcularPrecificacao(decimal custoIngredientes, decimal ValorCustoExtra, decimal percMargemLucro, decimal precoVendaInformado)
     {
-        PercentualCustoExtra = ValorCustoExtra;
+        PrecoIngredientes = custoIngredientes;
+        CustoExtra = ValorCustoExtra;
         CustoTotal = custoIngredientes + ValorCustoExtra;
 
         if (precoVendaInformado > 0)

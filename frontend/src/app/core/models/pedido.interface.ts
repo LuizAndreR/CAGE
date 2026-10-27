@@ -31,3 +31,15 @@ export interface PedidoResponse {
   pago: boolean;
   itens: ItemPedidoDetailDto[]; 
 }
+export interface EstoqueNegativoAviso {
+  itemId: number;
+  nome: string;
+  marca: string;
+  saldo: number;
+  unidadeMedida: string;
+  mensagem: string;
+}
+
+export interface UpdateStatusResponse {
+  avisos: EstoqueNegativoAviso[];
+}

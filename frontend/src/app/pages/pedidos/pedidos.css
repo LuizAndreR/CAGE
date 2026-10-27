@@ -72,3 +72,5 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+.aviso-estoque { padding: 1rem; margin-bottom: 1rem; border: 1px solid #d97706; border-radius: 8px; background: #fffbeb; color: #78350f; }
+.aviso-estoque button { cursor: pointer; padding: 0.4rem 0.75rem; }

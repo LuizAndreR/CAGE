@@ -1,4 +1,4 @@
-﻿using CakeGestao.Domain.Enum;
+using CakeGestao.Domain.Enum;
 
 namespace CakeGestao.Domain.Entities;
 
@@ -19,6 +19,8 @@ public class Pedido
 
     public int EmpresaId { get; set; }
     public virtual Empresa Empresa { get; set; } = null!;
+
+    public ICollection<ConsumoEstoquePedido> ConsumosEstoque { get; private set; } = new List<ConsumoEstoquePedido>();
 
     public ICollection<ItemPedido> Itens { get; set; } = new List<ItemPedido>();
 

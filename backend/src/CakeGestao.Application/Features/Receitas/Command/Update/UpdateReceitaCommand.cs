@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 using FluentResults;
 using MediatR;
 
@@ -23,6 +23,7 @@ public class UpdateReceitaCommand : IRequest<Result>
 
 public class UpdateIngredienteDto
 {
+    public List<int> AlternativasIds { get; set; } = new();
     public int ItemId { get; set; }
     public decimal Quantidade { get; set; }
     public required string UnidadeMedida { get; set; }

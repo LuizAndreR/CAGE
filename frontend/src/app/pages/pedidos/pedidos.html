@@ -1,4 +1,16 @@
 <div class="pedido-page-wrapper">
+  @if (avisosEstoque().length) {
+    <div class="aviso-estoque" role="alert">
+      <strong>Status atualizado. Atenção ao estoque negativo:</strong>
+      <ul>
+        @for (aviso of avisosEstoque(); track aviso.itemId) {
+          <li>{{ aviso.nome }} — {{ aviso.marca }}: {{ aviso.saldo | number:'1.0-6' }} {{ aviso.unidadeMedida }}</li>
+        }
+      </ul>
+      <button type="button" (click)="avisosEstoque.set([])">Fechar aviso</button>
+    </div>
+  }
+  @if (erroStatus()) { <p role="alert">{{ erroStatus() }}</p> }
   
   @switch (view()) {
     
